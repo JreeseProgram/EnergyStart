@@ -1,5 +1,5 @@
 import * as React from "react"
-import type { AuthService } from "@/services/auth.service"
+import type { AuthService } from "@/features/auth/services/auth.service"
 
 export type Services = {
   authService: AuthService

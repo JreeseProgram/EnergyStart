@@ -1,3 +1,17 @@
-/.idea
-/.idea
-.idea/misc.xml
+# IDE settings
+/.idea/
+
+# Frontend dependencies and generated output
+/Frontend/node_modules/
+/Frontend/.pnpm-store/
+/Frontend/dist/
+/Frontend/.vite/
+/Frontend/coverage/
+/Frontend/**/*.tsbuildinfo
+/Frontend/*.log
+
+# Frontend environment files (keep examples versioned)
+/Frontend/.env
+/Frontend/.env.*
+!/Frontend/.env.example
+!/Frontend/.env.*.example

@@ -1,11 +1,15 @@
-import { JWT } from "@/models/auth.models"
-import { AuthenticatedUser, User, UserId } from "@/models/user.models"
+import { JWT } from "@/features/auth/models/auth.models"
+import {
+  AuthenticatedUser,
+  User,
+  UserId,
+} from "@/features/auth/models/user.models"
 
 import {
   LoginInput,
   RegisterInput,
   type AuthService,
-} from "@/services/auth.service"
+} from "@/features/auth/services/auth.service"
 
 export class AuthInMemoryService implements AuthService {
   private static readonly STORAGE_KEY = "auth.currentUser"

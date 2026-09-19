@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,21 +7,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { paths } from "@/config/paths"
-import { useLogout } from "@/hooks/use-logout"
-import { useUser } from "@/hooks/use-user"
+import { useLogout } from "@/features/auth/hooks/use-logout"
+import { useUser } from "@/features/auth/hooks/use-user"
+import { Link, useNavigate } from "react-router"
+
 import {
   EllipsisVerticalIcon,
   CircleUserRoundIcon,
   LogOutIcon,
 } from "lucide-react"
-import { Link, useNavigate } from "react-router"
 
 export function NavUser() {
   const user = useUser()

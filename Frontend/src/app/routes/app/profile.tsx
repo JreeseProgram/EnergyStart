@@ -1,5 +1,5 @@
 import { ContentLayout } from "@/components/layouts/content-layout"
-import { useUser } from "@/hooks/use-user"
+import { useUser } from "@/features/auth/hooks/use-user"
 
 type EntryProps = {
   label: string

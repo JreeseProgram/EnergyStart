@@ -1,8 +1,8 @@
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
-import { useLogin } from "@/hooks/use-login"
-import { type AuthenticatedUser } from "@/models/user.models"
+import { useLogin } from "@/features/auth/hooks/use-login"
+import { type AuthenticatedUser } from "@/features/auth/models/user.models"
 import {
   Field,
   FieldDescription,

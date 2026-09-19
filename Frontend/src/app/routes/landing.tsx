@@ -4,7 +4,7 @@ import { useNavigate } from "react-router"
 import { Head } from "@/components/seo"
 import { Button } from "@/components/ui/button"
 import { paths } from "@/config/paths"
-import { useUser } from "@/hooks/use-user"
+import { useUser } from "@/features/auth/hooks/use-user"
 
 const LandingRoute = () => {
   const navigate = useNavigate()

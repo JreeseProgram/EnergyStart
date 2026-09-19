@@ -9,7 +9,7 @@ import {
   default as AppRoot,
   ErrorBoundary as AppRootErrorBoundary,
 } from "./routes/app/root"
-import { ProtectedRoute } from "@/components/auth/protected-route"
+import { ProtectedRoute } from "@/features/auth/components/protected-route"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const convert = (queryClient: QueryClient) => (m: any) => {

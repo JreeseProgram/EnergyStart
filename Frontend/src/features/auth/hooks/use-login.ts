@@ -5,8 +5,11 @@ import {
   type UseMutationOptions,
 } from "@tanstack/react-query"
 import { Services } from "@/context/services.context"
-import type { AuthenticatedUser, User } from "@/models/user.models"
-import type { LoginInput } from "@/services/auth.service"
+import type {
+  AuthenticatedUser,
+  User,
+} from "@/features/auth/models/user.models"
+import type { LoginInput } from "@/features/auth/services/auth.service"
 
 type LoginParams = { input: LoginInput }
 

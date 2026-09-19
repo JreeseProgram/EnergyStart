@@ -1,5 +1,8 @@
-import { PropertyType, type Building } from "@/models/building.models"
-import { UserId } from "@/models/user.models"
+import {
+  PropertyType,
+  type Building,
+} from "@/features/portfolio/models/building.models"
+import { UserId } from "@/features/auth/models/user.models"
 import z from "zod"
 
 export interface BuildingService {

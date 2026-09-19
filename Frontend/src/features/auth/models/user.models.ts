@@ -1,4 +1,4 @@
-import { JWT, Roles } from "@/models/auth.models"
+import { JWT } from "@/features/auth/models/auth.models"
 import { BaseEntity } from "@/models/shared.models"
 import z from "zod"
 
@@ -10,7 +10,6 @@ export const User = BaseEntity(UserId).extend({
   firstName: z.string(),
   lastName: z.string(),
   email: z.string(),
-  role: Roles,
   bio: z.string().default(""),
 })
 
