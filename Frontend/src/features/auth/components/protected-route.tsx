@@ -1,5 +1,5 @@
 import { paths } from "@/config/paths"
-import { useUser } from "@/hooks/use-user"
+import { useUser } from "@/features/auth/hooks/use-user"
 import { Navigate, useLocation } from "react-router"
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {

@@ -1,4 +1,4 @@
-import { useUser } from "@/hooks/use-user"
+import { useUser } from "@/features/auth/hooks/use-user"
 import type { JSX } from "react/jsx-runtime"
 
 const getErrorMessage = (error: unknown) => {

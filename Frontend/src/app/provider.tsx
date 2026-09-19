@@ -5,10 +5,10 @@ import { ErrorBoundary } from "react-error-boundary"
 import { HelmetProvider } from "react-helmet-async"
 import { Spinner } from "@/components/ui/spinner"
 import { queryConfig } from "@/lib/react-query"
-import { AuthLoader } from "@/context/auth.context"
+import { AuthLoader } from "@/features/auth/context/auth.context"
 import { MainErrorFallback } from "@/components/errors/main"
 import { ServicesProvider } from "@/context/services.context"
-import { AuthInMemoryService } from "@/testing/services/auth-in-memory.service"
+import { AuthInMemoryService } from "@/features/auth/testing/auth-in-memory.service"
 
 type AppProviderProps = {
   children: React.ReactNode

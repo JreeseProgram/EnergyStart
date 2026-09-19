@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-query"
 import { use } from "react"
 import { Services } from "@/context/services.context"
-import type { User } from "@/models/user.models"
+import type { User } from "@/features/auth/models/user.models"
 
 export const logout = ({ authService }: Pick<Services, "authService">) => {
   return authService.logout()

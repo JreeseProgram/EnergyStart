@@ -2,9 +2,8 @@ import * as React from "react"
 import { useEffect } from "react"
 import { useNavigate, useSearchParams } from "react-router"
 import { cn } from "@/lib/shadcn"
-
 import { paths } from "@/config/paths"
-import { useUser } from "@/hooks/use-user"
+import { useUser } from "@/features/auth/hooks/use-user"
 import { Head } from "@/components/seo"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 

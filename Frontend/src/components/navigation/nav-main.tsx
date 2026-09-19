@@ -5,9 +5,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+
 import { paths } from "@/config/paths"
-import { useAuthorization } from "@/hooks/use-authorization"
-import { ROLES } from "@/models/auth.models"
+import { useAuthorization } from "@/features/auth/hooks/use-authorization"
 import { Building, Home, Users } from "lucide-react"
 import { Link } from "react-router"
 
@@ -26,12 +26,12 @@ export function NavMain() {
       url: paths.app.dashboard.getHref(),
       icon: <Home />,
     },
-    checkAccess({ allowedRoles: [ROLES.ADMIN] }) && {
+    checkAccess() && {
       title: "Buildings",
       url: paths.app.buildings.getHref(),
       icon: <Building />,
     },
-    checkAccess({ allowedRoles: [ROLES.ADMIN] }) && {
+    checkAccess() && {
       title: "Profile",
       url: paths.app.profile.getHref(),
       icon: <Users />,

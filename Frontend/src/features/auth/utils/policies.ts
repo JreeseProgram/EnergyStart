@@ -1,5 +1,5 @@
-import type { Building } from "@/models/building.models"
-import type { User } from "@/models/user.models"
+import type { Building } from "@/features/portfolio/models/building.models"
+import type { User } from "@/features/auth/models/user.models"
 
 export const POLICIES = {
   "building:delete": (user: User, building: Building) => {

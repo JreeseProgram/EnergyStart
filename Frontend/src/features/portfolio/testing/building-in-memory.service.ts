@@ -1,10 +1,13 @@
-import { Building, BuildingId } from "@/models/building.models"
-import { User } from "@/models/user.models"
+import {
+  Building,
+  BuildingId,
+} from "@/features/portfolio/models/building.models"
+import { User } from "@/features/auth/models/user.models"
 import {
   CreateBuildingInput,
   type BuildingService,
   type GetBuildingsIput,
-} from "@/services/building.service"
+} from "@/features/portfolio/services/building.service"
 
 export class BuildingInMemoryService implements BuildingService {
   private buildings = new Map<BuildingId, Building>()

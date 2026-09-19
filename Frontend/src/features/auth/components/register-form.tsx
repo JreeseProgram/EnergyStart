@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { Button } from "@/components/ui/button"
 import { Services } from "@/context/services.context"
-import { type AuthenticatedUser } from "@/models/user.models"
+import { type AuthenticatedUser } from "@/features/auth/models/user.models"
 
 type RegisterFormProps = {
   chooseTeam: boolean

@@ -1,4 +1,7 @@
-import type { AuthenticatedUser, User } from "@/models/user.models"
+import type {
+  AuthenticatedUser,
+  User,
+} from "@/features/auth/models/user.models"
 import z from "zod"
 
 export interface AuthService {
