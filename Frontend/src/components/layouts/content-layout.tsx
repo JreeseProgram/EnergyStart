@@ -1,6 +1,5 @@
 import { Head } from "@/components/seo"
 
-export { AuthLayout } from "./auth-layout"
 export { DashboardLayout } from "./dashboard-layout"
 
 export function ContentLayout({

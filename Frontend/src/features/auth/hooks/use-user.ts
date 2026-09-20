@@ -1,27 +1,14 @@
-import { queryOptions, useQuery } from "@tanstack/react-query"
-
-import type { QueryConfig } from "@/lib/react-query"
-import { use } from "react"
 import { Services } from "@/context/services.context"
+import { useQuery } from "@tanstack/react-query"
 
-export const useUserQueryOptions = ({
-  authService,
-}: Pick<Services, "authService">) => {
-  return queryOptions({
-    queryKey: ["User"],
-    queryFn: () => authService.getCurrentUser(),
-  })
-}
+import { use } from "react"
 
-type UseUserOptions = {
-  queryConfig?: QueryConfig<typeof useUserQueryOptions>
-}
-
-export const useUser = ({ queryConfig }: UseUserOptions = {}) => {
+export const useUser = () => {
   const { authService } = use(Services)
 
   return useQuery({
-    ...useUserQueryOptions({ authService }),
-    ...queryConfig,
+    queryKey: ["User"],
+    queryFn: authService.getCurrentUser,
+    enabled: !authService.isLoading,
   })
 }
