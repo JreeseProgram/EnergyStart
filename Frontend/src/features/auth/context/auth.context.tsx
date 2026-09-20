@@ -9,17 +9,19 @@ const getErrorMessage = (error: unknown) => {
   return "Unable to load authentication state."
 }
 
-export function AuthLoader({
-  children,
-  renderLoading,
-  renderUnauthenticated,
-  renderError = (error: Error) => <>{getErrorMessage(error)}</>,
-}: {
+type AuthLoaderProps = {
   children: React.ReactNode
   renderLoading: () => JSX.Element
   renderUnauthenticated?: () => JSX.Element
   renderError?: (error: Error) => JSX.Element
-}) {
+}
+
+function BaseAuthLoader({
+  children,
+  renderLoading,
+  renderUnauthenticated,
+  renderError = (error: Error) => <>{getErrorMessage(error)}</>,
+}: AuthLoaderProps) {
   const { isSuccess, isFetched, status, data, error } = useUser()
 
   if (isSuccess) {
@@ -38,4 +40,8 @@ export function AuthLoader({
   }
 
   return null
+}
+
+export function AuthLoader(props: AuthLoaderProps) {
+  return <BaseAuthLoader {...props} />
 }

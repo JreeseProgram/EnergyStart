@@ -1,6 +1,9 @@
 # IDE settings
 /.idea/
 
+# VS Code settings
+/.vscode/
+
 # Frontend dependencies and generated output
 /Frontend/node_modules/
 /Frontend/.pnpm-store/
@@ -15,3 +18,6 @@
 /Frontend/.env.*
 !/Frontend/.env.example
 !/Frontend/.env.*.example
+
+# Macs
+.DS_STORE

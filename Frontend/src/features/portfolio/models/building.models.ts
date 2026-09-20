@@ -1,5 +1,5 @@
+import { User } from "@/features/portfolio/models/user.models"
 import { BaseEntity } from "@/models/shared.models"
-import { User } from "@/features/auth/models/user.models"
 import z from "zod"
 
 export type BuildingId = z.infer<typeof BuildingId>

@@ -38,6 +38,9 @@ importers:
       '@tanstack/react-table':
         specifier: ^9.2.4
         version: 9.2.4(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@workos-inc/authkit-react':
+        specifier: ^0.16.2
+        version: 0.16.2(react@19.2.8)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -920,6 +923,14 @@ packages:
         optional: true
       oxc-transform-react:
         optional: true
+
+  '@workos-inc/authkit-js@0.20.3':
+    resolution: {integrity: sha512-99VKaujgh9ECMjRtKij6KDYQu/XC4ElbpCV8I2vItTchI9hQ1GGfJOBJpeqa2C8AYPKdZqlj3vVlpIjS/YlM0A==}
+
+  '@workos-inc/authkit-react@0.16.2':
+    resolution: {integrity: sha512-Q10bTJ3sd8zfbIlxl8KavLeHLuW7v2aJLfq+syyWsVa9VzbrBVFyr7HNxt3aAVJq1kcMfTJu1p9gSJT3Gswulg==}
+    peerDependencies:
+      react: '>=17'
 
   accepts@2.0.0:
     resolution: {integrity: sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng==}
@@ -3426,6 +3437,13 @@ snapshots:
     dependencies:
       '@rolldown/pluginutils': 1.0.1
       vite: 8.2.2(@types/node@24.13.3)(jiti@2.7.0)
+
+  '@workos-inc/authkit-js@0.20.3': {}
+
+  '@workos-inc/authkit-react@0.16.2(react@19.2.8)':
+    dependencies:
+      '@workos-inc/authkit-js': 0.20.3
+      react: 19.2.8
 
   accepts@2.0.0:
     dependencies:

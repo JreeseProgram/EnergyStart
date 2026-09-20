@@ -8,7 +8,7 @@ import { queryConfig } from "@/lib/react-query"
 import { AuthLoader } from "@/features/auth/context/auth.context"
 import { MainErrorFallback } from "@/components/errors/main"
 import { ServicesProvider } from "@/context/services.context"
-import { AuthInMemoryService } from "@/features/auth/testing/auth-in-memory.service"
+import WorkOsProvider from "@/lib/work-os"
 
 type AppProviderProps = {
   children: React.ReactNode
@@ -21,9 +21,6 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         defaultOptions: queryConfig,
       })
   )
-  const [services] = React.useState(() => ({
-    authService: new AuthInMemoryService(),
-  }))
 
   return (
     <React.Suspense
@@ -34,22 +31,24 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       }
     >
       <ErrorBoundary FallbackComponent={MainErrorFallback}>
-        <HelmetProvider>
-          <ServicesProvider services={services}>
+        <WorkOsProvider>
+          <HelmetProvider>
             <QueryClientProvider client={queryClient}>
               {import.meta.env.DEV && <ReactQueryDevtools />}
-              <AuthLoader
-                renderLoading={() => (
-                  <div className="flex h-screen w-screen items-center justify-center">
-                    <Spinner />
-                  </div>
-                )}
-              >
-                {children}
-              </AuthLoader>
+              <ServicesProvider>
+                <AuthLoader
+                  renderLoading={() => (
+                    <div className="flex h-screen w-screen items-center justify-center">
+                      <Spinner />
+                    </div>
+                  )}
+                >
+                  {children}
+                </AuthLoader>
+              </ServicesProvider>
             </QueryClientProvider>
-          </ServicesProvider>
-        </HelmetProvider>
+          </HelmetProvider>
+        </WorkOsProvider>
       </ErrorBoundary>
     </React.Suspense>
   )

@@ -19,7 +19,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { paths } from "@/config/paths"
 import { useLogout } from "@/features/auth/hooks/use-logout"
 import { useUser } from "@/features/auth/hooks/use-user"
-import { Link, useNavigate } from "react-router"
+import { Link } from "react-router"
 
 import {
   EllipsisVerticalIcon,
@@ -30,10 +30,7 @@ import {
 export function NavUser() {
   const user = useUser()
   const { isMobile } = useSidebar()
-  const navigate = useNavigate()
-  const logout = useLogout({
-    onSuccess: () => navigate(paths.auth.login.getHref(location.pathname)),
-  })
+  const logout = useLogout()
 
   return (
     <SidebarMenu>
