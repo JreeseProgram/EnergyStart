@@ -1,4 +1,4 @@
-package com.energystart.prod;
+package main.java.com.energystart.prod;
 
 public class EnergyReport {
 
@@ -8,22 +8,13 @@ public class EnergyReport {
     private int avgNumbVehiclesInInventory;
     //low-rise stories 1-4; mid-rise 5-9; high-rise 10+
     private enum BUILDING_HEIGHT_TYPES {
-        lowRise("lowRise"),
-        midRise("midRise"),
-        highRise("highRise");
-
-        private final String value;
-        BUILDING_HEIGHT_TYPES(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
+        lowRise,
+        midRise,
+        highRise
     };
     private String buildingHeight;
     private long buildingID;
-    private String BuildingType;
+    private BUILDING_HEIGHT_TYPES BuildingType;
     private boolean doesWorkWeekend = false;
     private float energyScore;
     private int grossFloorArea;
