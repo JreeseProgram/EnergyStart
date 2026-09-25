@@ -24,4 +24,11 @@ public class Building {
     private String building_size;
     private String primaryUseType;
 
+    public Building(String id, String property_id, String building_id, String building_size, String primaryUseType) {
+        this.id = id;
+        this.property_id = property_id;
+        this.building_id = building_id;
+        this.building_size = building_size;
+        this.primaryUseType = primaryUseType;
+    }
 }
