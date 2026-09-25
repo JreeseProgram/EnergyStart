@@ -23,7 +23,8 @@ public class PropertiesController {
         return propertiesService.getAllProperties();
     }
 
-    public Properties getPropertiesById(String id){
+    @GetMapping("/{id}")
+    public Properties getPropertiesById(@PathVariable String id){
         return propertiesService.getPropertiesById(id);
     }
 
