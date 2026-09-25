@@ -23,5 +23,9 @@ public class Properties {
     private String property_address;
     private String property_notes;
 
-
+    public Properties(String id, String property_address, String property_notes) {
+        this.id = id;
+        this.property_address = property_address;
+        this.property_notes = property_notes;
+    }
 }
