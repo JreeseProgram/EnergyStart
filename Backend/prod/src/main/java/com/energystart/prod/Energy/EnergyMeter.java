@@ -1,7 +1,11 @@
-package main.java.com.energystart.prod;
+package com.energystart.prod.Energy;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Map;
 
+@Document
 public class EnergyMeter {
     public enum TYPE_OF_METER {
         ELECTRIC_GRID,
@@ -47,6 +51,7 @@ public class EnergyMeter {
         Tonnes //Metric Ton
     }
 
+    @Id
     private long ID;
     private long meterID;
     private TYPE_OF_METER meterSelected;
