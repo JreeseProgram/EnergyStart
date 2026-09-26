@@ -1,7 +1,15 @@
-package main.java.com.energystart.prod;
+package com.energystart.prod;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Document
 public class EnergyReport {
 
+    @Id
     private long ID;
     private float areaOfWalkInFreezer;
     private int avgNumResidents;
@@ -16,6 +24,8 @@ public class EnergyReport {
     private long buildingID;
     private BUILDING_HEIGHT_TYPES BuildingType;
     private boolean doesWorkWeekend = false;
+    private LocalDate reportDate;
+    private List<EnergyMeter> energyMeters;
     private float energyScore;
     private int grossFloorArea;
     private int grossFloorAreaForFoodPrep;
@@ -46,12 +56,13 @@ public class EnergyReport {
     private float percentCooled;
     private float percentHeated;
     private int seatingCapacity;
+    private float siteEnergyUseIntensity;
+    private float sourceEnergyUseIntensity;
     private int weeklyOperatingHours;
     private int yearOfConstruction;
 
     //Default Constructor
     public EnergyReport() {}
-
 
 
 
