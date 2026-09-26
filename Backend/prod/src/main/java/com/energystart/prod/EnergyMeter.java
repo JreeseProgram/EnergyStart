@@ -1,4 +1,4 @@
-package main.java.com.energystart.prod;
+package com.energystart.prod;
 
 import java.util.Map;
 
@@ -682,15 +682,26 @@ public class EnergyMeter {
                        boolean isDelivered,
                        float meterKBtu,
                        float rawUse) {
-
+        this.ID = ID;
+        this.meterID = meterID;
+        this.meterSelected = meterSelected;
+        this.unitOfMeasure = unitOfMeasure;
+        this.inUse = inUse;
+        this.isDelivered = isDelivered;
+        this.rawUse = rawUse;
+        calculateKBtu();
     }
 
 
 
     protected void calculateKBtu(){
-        float result = kBtuMultipliers.get(
+        Float result = kBtuMultipliers.get(
                 new key(meterSelected, unitOfMeasure)
         );
+        if (result == null) {
+            throw new IllegalArgumentException("Unsupported meter and unit combination: "
+                    + meterSelected + " / " + unitOfMeasure);
+        }
         setMeterKBtu(rawUse * result);
     }
 
