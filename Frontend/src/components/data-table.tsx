@@ -37,7 +37,6 @@ import {
   type SortingState,
 } from "@tanstack/react-table"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-import { toast } from "sonner"
 import { z } from "zod"
 
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -102,6 +101,7 @@ import {
   ChevronsRightIcon,
   TrendingUpIcon,
 } from "lucide-react"
+import { toast } from "@/components/ui/toast"
 
 // New in v9: declare the features this table uses — anything you don't
 // register is tree-shaken out of the bundle.
