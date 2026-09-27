@@ -1,4 +1,4 @@
-package com.energystart.prod.Energy;
+package com.energystart.prod.energy;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
