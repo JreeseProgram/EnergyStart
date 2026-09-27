@@ -4,11 +4,11 @@ import com.energystart.prod.energy.EnergyReport;
 
 public class WorshipFacilityReport extends EnergyReport {
 
-    private int weeklyOperatingHours;
-    private int seatingCapacity;
     private int grossFloorAreaForFoodPrep;
-    private float percentHeated;
     private float percentCooled;
+    private float percentHeated;
+    private int seatingCapacity;
+    private int weeklyOperatingHours;
 
 
 

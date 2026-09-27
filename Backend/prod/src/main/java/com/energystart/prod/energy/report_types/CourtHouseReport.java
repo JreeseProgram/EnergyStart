@@ -4,10 +4,10 @@ import com.energystart.prod.energy.EnergyReport;
 
 public class CourtHouseReport extends EnergyReport {
 
-    private int weeklyOperatingHours;
-    private int numOfWorkersMainShift;
     private int numOfComputers;
+    private int numOfWorkersMainShift;
     private float percentCooled;
+    private int weeklyOperatingHours;
 
 
 

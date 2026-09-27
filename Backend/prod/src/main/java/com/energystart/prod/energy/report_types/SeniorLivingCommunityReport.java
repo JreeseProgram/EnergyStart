@@ -4,16 +4,16 @@ import com.energystart.prod.energy.EnergyReport;
 
 public class SeniorLivingCommunityReport extends EnergyReport {
 
-    private int maxResidentCapacity;
     private int avgNumResidents;
-    private int numOfCommercialWashingMachines;
-    private int numOfResidentialUnits;
-    private int numOfWorkersMainShift;
+    private int maxResidentCapacity;
     private int numOfComputers;
-    private int numOfResidentialWashingMachines;
-    private int numOfResidentialLifts;
     private int numCommercialFreezer;
-    private float percentHeated;
+    private int numOfCommercialWashingMachines;
+    private int numOfResidentialLifts;
+    private int numOfResidentialUnits;
+    private int numOfResidentialWashingMachines;
+    private int numOfWorkersMainShift;
     private float percentCooled;
+    private float percentHeated;
 
 }

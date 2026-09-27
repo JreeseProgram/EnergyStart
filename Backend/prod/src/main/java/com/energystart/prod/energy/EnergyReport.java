@@ -17,7 +17,6 @@ public class EnergyReport {
         midRise,
         highRise
     };
-    private LocalDate reportDate;
     private List<EnergyMeter> energyMeters;
     private float energyScore;
     private int grossFloorArea;

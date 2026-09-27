@@ -5,11 +5,11 @@ import com.energystart.prod.energy.EnergyReport;
 public class DistributionCenterReport extends EnergyReport {
 
 
-    private int weeklyOperatingHours;
     private int numOfWorkersMainShift;
     private float percentColdStorage;
     private float percentCooled;
     private float percentHeated;
+    private int weeklyOperatingHours;
 
 
 }

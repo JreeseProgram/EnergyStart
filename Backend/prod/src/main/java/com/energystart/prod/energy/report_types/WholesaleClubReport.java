@@ -4,14 +4,14 @@ import com.energystart.prod.energy.EnergyReport;
 
 public class WholesaleClubReport extends EnergyReport {
 
-    private int weeklyOperatingHours;
-    private int numOfWorkersMainShift;
+    private boolean hasExteriorEntrance = false;
+    private boolean isSingleStore = false;
     private int numOfOpenClosedFreezers;
     private int numOfWalkInFreezers;
-    private boolean isSingleStore = false;
-    private boolean hasExteriorEntrance = false;
-    private float percentHeated;
+    private int numOfWorkersMainShift;
     private float percentCooled;
+    private float percentHeated;
+    private int weeklyOperatingHours;
 
 
 

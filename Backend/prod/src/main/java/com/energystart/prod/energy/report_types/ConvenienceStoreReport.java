@@ -4,13 +4,13 @@ import com.energystart.prod.energy.EnergyReport;
 
 public class ConvenienceStoreReport extends EnergyReport {
 
-    private int numOfFullTimeWorkers;
-    private float lengthOfFreezerUnit;
     private float areaOfWalkInFreezer;
+    private float lengthOfFreezerUnit;
     private int numOfCookingEquipment;
+    private int numOfFullTimeWorkers;
     private int numOfHeatingUnits;
-    private float percentHeated;
     private float percentCooled;
+    private float percentHeated;
 
 
 }

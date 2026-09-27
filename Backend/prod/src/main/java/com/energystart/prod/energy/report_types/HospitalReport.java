@@ -4,9 +4,9 @@ import com.energystart.prod.energy.EnergyReport;
 
 public class HospitalReport extends EnergyReport {
 
-    private int numOfStaffedBeds;
     private int numOfFullTimeWorkers;
     private int numOfMRIMachines;
+    private int numOfStaffedBeds;
 
 
 
