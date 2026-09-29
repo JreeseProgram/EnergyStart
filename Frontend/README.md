@@ -48,17 +48,17 @@ the configured authentication redirect. Restart Vite after changing `.env.local`
 
 ## Technologies and libraries
 
-| Technology                         | Purpose here                                                                                                               |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| React + TypeScript                 | UI components, hooks, and static types.                                                                                    |
-| Vite                               | Local development server and production bundling.                                                                          |
-| React Router                       | Page routing, lazy-loaded routes, and protected app routes.                                                                |
-| TanStack Query                     | Async queries, mutations, and caching.                                                                                     |
-| WorkOS AuthKit                     | Hosted sign-in/sign-up and authentication state.                                                                           |
-| Zod                                | Runtime validation and TypeScript types for models and configuration.                                                      |
-| shadcn/ui + Base UI + Tailwind CSS | Shared UI components, interaction primitives, and styling.                                                                 |
-| Supporting UI libraries            | Recharts for charts, TanStack Table for tables, dnd-kit for drag-and-drop, Lucide for icons, and Sonner for notifications. |
-| ESLint + Prettier                  | Code checks and consistent formatting.                                                                                     |
+| Technology                         | Purpose here                                                                                     |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------ |
+| React + TypeScript                 | UI components, hooks, and static types.                                                          |
+| Vite                               | Local development server and production bundling.                                                |
+| React Router                       | Page routing, lazy-loaded routes, and protected app routes.                                      |
+| TanStack Query                     | Async queries, mutations, and caching.                                                           |
+| WorkOS AuthKit                     | Hosted sign-in/sign-up and authentication state.                                                 |
+| Zod                                | Runtime validation and TypeScript types for models and configuration.                            |
+| shadcn/ui + Base UI + Tailwind CSS | Shared UI components, interaction primitives, and styling.                                       |
+| Supporting UI libraries            | Recharts for charts, TanStack Table for tables, dnd-kit for drag-and-drop, and Lucide for icons. |
+| ESLint + Prettier                  | Code checks and consistent formatting.                                                           |
 
 See [package.json](package.json) for the full dependency list and scripts.
 

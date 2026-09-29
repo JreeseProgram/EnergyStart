@@ -1,7 +1,7 @@
 package com.energystart.prod.model;
 
-import com.energystart.prod.EnergyMeter.TYPE_OF_MEASURE;
-import com.energystart.prod.EnergyMeter.TYPE_OF_METER;
+import com.energystart.prod.energy.EnergyMeter.TYPE_OF_MEASURE;
+import com.energystart.prod.energy.EnergyMeter.TYPE_OF_METER;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

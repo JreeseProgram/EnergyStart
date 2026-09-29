@@ -1,7 +1,7 @@
 package com.energystart.prod.service;
 
-import com.energystart.prod.EnergyMeter;
-import com.energystart.prod.EnergyMeter.TYPE_OF_METER;
+import com.energystart.prod.energy.EnergyMeter;
+import com.energystart.prod.energy.EnergyMeter.TYPE_OF_METER;
 import com.energystart.prod.dto.BuildingEuiResponse;
 import com.energystart.prod.model.Building;
 import com.energystart.prod.model.EnergyReading;
