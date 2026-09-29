@@ -1,35 +1,50 @@
 package com.energystart.prod.service;
 
 import com.energystart.prod.model.Building;
-//this is where the repository import will go when linked.
+import com.energystart.prod.repository.BuildingRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
 public class BuildingService {
 
-    Building building1 = new Building("id","Propertyid1","Buildingid1","building size1","building 1 use type");
-    Building building2 = new Building("id","Propertyid2","Buildingid2","building size2","building 2 use type");
+    private final BuildingRepository buildingRepository;
 
-    public List<Building> getAllBuildings(){
-        return Arrays.asList(building1,building2);
+    public BuildingService(BuildingRepository buildingRepository) {
+        this.buildingRepository = buildingRepository;
     }
 
-    public Building getBuildingById(String id){
-        return building1;
+    public List<Building> getAllBuildings() {
+        return buildingRepository.findAll();
     }
 
-    public Building createBuilding(Building building){
-        return building1;
+    public Building getBuildingById(String id) {
+        return buildingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Building not found: " + id));
     }
 
-    public String updateBuilding(String id,Building building){
-        return "The id " + id+ "is updating " + building.toString();
+    public Building createBuilding(Building building) {
+        building.setId(null); // MongoDB generates the ID for a new building.
+        return buildingRepository.save(building);
     }
 
-    public String deleteBuilding(String id){
-        return  "The id " + id+ "is deleting";
+    public String updateBuilding(String id, Building building) {
+        Building existing = getBuildingById(id);
+        existing.setProperty_id(building.getProperty_id());
+        existing.setBuilding_id(building.getBuilding_id());
+        existing.setBuilding_size(building.getBuilding_size());
+        existing.setPrimaryUseType(building.getPrimaryUseType());
+        buildingRepository.save(existing);
+        return "Building updated: " + id;
+    }
+
+    public String deleteBuilding(String id) {
+        Building existing = getBuildingById(id);
+        buildingRepository.delete(existing);
+        return "Building deleted: " + id;
     }
 }
