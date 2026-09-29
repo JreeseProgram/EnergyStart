@@ -4,6 +4,7 @@ const createEnv = () => {
   const EnvSchema = z.object({
     WORKOS_CLIENT_ID: z.string(),
     REDIRECT_URI: z.string(),
+    API_URL: z.string(),
   })
 
   const envVars = Object.entries(import.meta.env).reduce<

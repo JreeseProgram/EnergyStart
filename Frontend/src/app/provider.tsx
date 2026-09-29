@@ -9,6 +9,7 @@ import { AuthLoader } from "@/features/auth/context/auth.context"
 import { MainErrorFallback } from "@/components/errors/main"
 import { ServicesProvider } from "@/context/services.context"
 import WorkOsProvider from "@/lib/work-os"
+import { Toaster } from "@/components/ui/toast"
 
 type AppProviderProps = {
   children: React.ReactNode
@@ -44,6 +45,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
                   )}
                 >
                   {children}
+                  <Toaster />
                 </AuthLoader>
               </ServicesProvider>
             </QueryClientProvider>
