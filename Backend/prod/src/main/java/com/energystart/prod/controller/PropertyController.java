@@ -11,33 +11,95 @@ import java.util.List;
 public class PropertyController {
 
     private final PropertyService propertyService;
+
+
+    // Constructor injection
     public PropertyController(PropertyService propertyService) {
+
         this.propertyService = propertyService;
     }
 
 
+    // ============================================================
+    // CREATE
+    // ============================================================
+
+    /**
+     * POST /api/properties
+     *
+     * Creates a new property.
+     */
+    @PostMapping
+    public Property createProperty(@RequestBody Property property) {
+
+        return propertyService.addProperty(property);
+    }
+
+
+    // ============================================================
+    // READ - ALL
+    // ============================================================
+
+    /**
+     * GET /api/properties
+     *
+     * Retrieves all properties.
+     */
     @GetMapping
-    public List<Property> getAllProperties(){
+    public List<Property> getAllProperties() {
+
         return propertyService.getAllProperties();
     }
 
+
+    // ============================================================
+    // READ - ONE
+    // ============================================================
+
+    /**
+     * GET /api/properties/{id}
+     *
+     * Retrieves one property by ID.
+     */
     @GetMapping("/{id}")
-    public Property getPropertiesById(@PathVariable String id){
-        return propertyService.getPropertiesById(id);
+    public Property getPropertyById(
+            @PathVariable String id) {
+
+        return propertyService.getPropertyById(id);
     }
 
-    @PostMapping
-    public String createProperties(@RequestBody Property properties){
-        return propertyService.createProperty(properties);
+
+    // ============================================================
+    // UPDATE
+    // ============================================================
+
+    /**
+     * PUT /api/properties/{id}
+     *
+     * Updates an existing property.
+     */
+    @PutMapping("/{id}")
+    public Property updateProperty(
+            @PathVariable String id,
+            @RequestBody Property property) {
+
+        return propertyService.updateProperty(id, property);
     }
 
-    @PostMapping("/{id}")
-    public String updateProperties(@PathVariable String id, @RequestBody Property properties){
-        return propertyService.updateProperty(id, properties);
-    }
 
+    // ============================================================
+    // DELETE
+    // ============================================================
+
+    /**
+     * DELETE /api/properties/{id}
+     *
+     * Deletes an existing property.
+     */
     @DeleteMapping("/{id}")
-    public void deleteProperties(@PathVariable String id){
-        propertyService.deleteProperty(id);
+    public Property deleteProperty(
+            @PathVariable String id) {
+
+        return propertyService.deleteProperty(id);
     }
 }
