@@ -1,35 +1,184 @@
 package com.energystart.prod.service;
 
 import com.energystart.prod.model.Building;
-//this is where the repository import will go when linked.
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class BuildingService {
 
-    Building building1 = new Building("id","Propertyid1","Buildingid1","building size1","building 1 use type");
-    Building building2 = new Building("id","Propertyid2","Buildingid2","building size2","building 2 use type");
+    /*
+     * Temporary list used as our prototype database.
+     *
+     * Later this will be replaced with a MongoDB repository.
+     */
+    private final List<Building> buildings = new ArrayList<>();
 
-    public List<Building> getAllBuildings(){
-        return Arrays.asList(building1,building2);
+
+    // ============================================================
+    // TEST DATA
+    // ============================================================
+
+    public BuildingService() {
+
+        Building building1 = new Building(
+                "1",
+                "BLDG-1001",
+                "1",
+                25000,
+                "Main office building."
+        );
+
+        Building building2 = new Building(
+                "2",
+                "BLDG-1002",
+                "1",
+                15000,
+                "Secondary office building."
+        );
+
+        Building building3 = new Building(
+                "3",
+                "BLDG-1003",
+                "2",
+                50000,
+                "Large commercial building."
+        );
+
+        Building building4 = new Building(
+                "4",
+                "BLDG-1004",
+                "3",
+                10000,
+                "Small commercial building."
+        );
+
+
+        // Add test buildings to temporary database
+        buildings.add(building1);
+        buildings.add(building2);
+        buildings.add(building3);
+        buildings.add(building4);
     }
 
-    public Building getBuildingById(String id){
-        return building1;
+
+    // ============================================================
+    // CREATE
+    // ============================================================
+
+    /**
+     * Creates a new building.
+     *
+     * POST /api/buildings
+     */
+    public Building addBuilding(Building building) {
+
+        buildings.add(building);
+
+        return building;
     }
 
-    public Building createBuilding(Building building){
-        return building1;
+
+    // ============================================================
+    // READ - ALL
+    // ============================================================
+
+    /**
+     * Retrieves all buildings.
+     *
+     * GET /api/buildings
+     */
+    public List<Building> getAllBuildings() {
+
+        return buildings;
     }
 
-    public String updateBuilding(String id,Building building){
-        return "The id " + id+ "is updating " + building.toString();
+
+    // ============================================================
+    // READ - ONE
+    // ============================================================
+
+    /**
+     * Retrieves one building by ID.
+     *
+     * GET /api/buildings/{id}
+     */
+    public Building getBuildingById(String id) {
+
+        for (Building building : buildings) {
+
+            if (building.getId().equals(id)) {
+
+                return building;
+            }
+        }
+
+        return null;
     }
 
-    public String deleteBuilding(String id){
-        return  "The id " + id+ "is deleting";
+
+    // ============================================================
+    // UPDATE
+    // ============================================================
+
+    /**
+     * Updates an existing building.
+     *
+     * PUT /api/buildings/{id}
+     */
+    public Building updateBuilding(
+            String id,
+            Building updatedBuilding) {
+
+        for (int i = 0; i < buildings.size(); i++) {
+
+            Building existingBuilding = buildings.get(i);
+
+            if (existingBuilding.getId().equals(id)) {
+
+                /*
+                 * Keep the ID from the URL.
+                 *
+                 * This prevents the client from accidentally
+                 * changing the ID of the building being updated.
+                 */
+                updatedBuilding.setId(id);
+
+                buildings.set(i, updatedBuilding);
+
+                return updatedBuilding;
+            }
+        }
+
+        return null;
+    }
+
+
+    // ============================================================
+    // DELETE
+    // ============================================================
+
+    /**
+     * Deletes an existing building.
+     *
+     * DELETE /api/buildings/{id}
+     */
+    public Building deleteBuilding(String id) {
+
+        for (int i = 0; i < buildings.size(); i++) {
+
+            Building building = buildings.get(i);
+
+            if (building.getId().equals(id)) {
+
+                buildings.remove(i);
+
+                return building;
+            }
+        }
+
+        return null;
     }
 }
