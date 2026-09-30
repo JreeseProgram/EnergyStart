@@ -4,12 +4,7 @@
  * when the Mongo DB is added this class will autoconfigure what needs to be added to the
  * mongo DB database.
  *
- * Notes / Questions (rolling):
- * Will we use just the email as the username or will we need both the username and an email address.
- * Do we want to add and arraylist to the users so that they can hve many propertys assigned to a user
- * > (look up) "In springboot can a @Document type have an arraylist that transfers to a  Mongo DB Database"
- *
- * (future change) the spring boot constructor doesn't need the id in the constructor.
+ * The program will temporarly use a List to retrieve and add to the values for a prototype.
  *
  */
 package com.energystart.prod.model;
@@ -18,22 +13,24 @@ package com.energystart.prod.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 
 @Document(collection = "users")
 public class User {
     @Id
     private String id;
-    private String username;
     private String email;
-    private String password_hash;
+    private String username;
     private String role;
+    public List<Integer> propertyId;
 
 
-    public User(String id, String username, String email, String password_hash, String role) {
+
+    public User(String id, String username, String email, String role) {
         this.id = id;
         this.username = username;
         this.email = email;
-        this.password_hash = password_hash;
         this.role = role;
     }
 
@@ -61,14 +58,6 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword_hash() {
-        return password_hash;
-    }
-
-    public void setPassword_hash(String password_hash) {
-        this.password_hash = password_hash;
-    }
-
     public String getRole() {
         return role;
     }
@@ -76,4 +65,5 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
+
 }

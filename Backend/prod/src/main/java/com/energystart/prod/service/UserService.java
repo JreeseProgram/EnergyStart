@@ -1,44 +1,167 @@
 package com.energystart.prod.service;
 
 import com.energystart.prod.model.User;
-// Here is where the repository import would go when connected to Mongo DB
-
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-
 
 @Service
 public class UserService {
 
-    //Hard coding User data that can be used as an example.
+    // Temporary list used instead of MongoDB
+    private final List<User> users = new ArrayList<>();
 
-    User user1 = new User("1","Username1","email1","Password","Role");
-    User user2 = new User("2","Username2","email2","Password","Role");
 
-    public List<User> getAllUsers(){
-        return List.of(user1,user2);
+    // ============================================================
+    // TEST DATA
+    // ============================================================
+
+    public UserService() {
+
+        User user1 = new User(
+                "1",
+                "admin",
+                "admin@energystart.com",
+                "ADMIN"
+        );
+
+        User user2 = new User(
+                "2",
+                "johnsmith",
+                "john.smith@example.com",
+                "USER"
+        );
+
+        User user3 = new User(
+                "3",
+                "janedoe",
+                "jane.doe@example.com",
+                "USER"
+        );
+
+        User user4 = new User(
+                "4",
+                "propertymanager",
+                "manager@energystart.com",
+                "PROPERTY_MANAGER"
+        );
+
+        // Add test users to temporary list
+        users.add(user1);
+        users.add(user2);
+        users.add(user3);
+        users.add(user4);
     }
-    public User getUserById(String id){
-        return user1;
-        //Will need to be changed when connected to the Mongo DB.
+
+
+    // ============================================================
+    // CREATE
+    // ============================================================
+
+    /**
+     * Creates a new user.
+     *
+     * POST /api/users
+     */
+    public User addUser(User user) {
+
+        users.add(user);
+
+        return user;
     }
 
-    public String createUser(User user){
-        return user.toString();
-        //Will need to be modified when the Mongo DB is created.
-        //This is for the post method.
+
+    // ============================================================
+    // READ - ALL USERS
+    // ============================================================
+
+    /**
+     * Retrieves all users.
+     *
+     * GET /api/users
+     */
+    public List<User> getAllUsers() {
+
+        return users;
     }
 
-    public String updateUser(String id, User user){
-        return "The id " + id + " has been updated successfully for " + user.toString();
-        //Will need to be modified when the Mongo DB is created.
-        //This is for the put? method
+
+    // ============================================================
+    // READ - ONE USER
+    // ============================================================
+
+    /**
+     * Retrieves a user by ID.
+     *
+     * GET /api/users/{id}
+     */
+    public User getUserById(String id) {
+
+        for (User user : users) {
+
+            if (user.getId().equals(id)) {
+                return user;
+            }
+        }
+
+        return null;
     }
 
-    public void deleteUser(String id){
-        //deleting the user
-        System.out.println("Deleting User");
+
+    // ============================================================
+    // UPDATE
+    // ============================================================
+
+    /**
+     * Updates an existing user.
+     *
+     * PUT /api/users/{id}
+     */
+    public User updateUser(String id, User updatedUser) {
+
+        for (int i = 0; i < users.size(); i++) {
+
+            User existingUser = users.get(i);
+
+            if (existingUser.getId().equals(id)) {
+
+                // Make sure the ID cannot accidentally change
+                updatedUser.setId(id);
+
+                users.set(i, updatedUser);
+
+                return updatedUser;
+            }
+        }
+
+        return null;
     }
 
+
+    // ============================================================
+    // DELETE
+    // ============================================================
+
+    /**
+     * Deletes an existing user.
+     *
+     * DELETE /api/users/{id}
+     */
+    public User deleteUser(String id) {
+
+        for (int i = 0; i < users.size(); i++) {
+
+            User user = users.get(i);
+
+            if (user.getId().equals(id)) {
+
+                users.remove(i);
+
+                return user;
+            }
+        }
+
+        return null;
+    }
 }

@@ -1,31 +1,85 @@
 /**
- *Class Name: Properties
- * Purpose: To provide a template for the database that will hold the Properties.
- * when the Mongo DB is added this class will autoconfigure what needs to be added to the
- * mongo DB database.
+ * Class Name: Property
+ * Purpose: To provide a template for the database that will hold
+ *          Property documents.
  *
- * Notes / Questions (rolling):
+ * During the prototype phase, properties will temporarily be
+ * stored in a List inside PropertyService.
  *
- *
+ * When MongoDB is added, this class will represent a MongoDB document.
  */
 
 package com.energystart.prod.model;
 
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document
+@Document(collection = "properties")
 public class Property {
 
     @Id
     private String id;
-    private String property_address;
-    private String property_notes;
 
-    public Property(String id, String property_address, String property_notes) {
+    private Integer humanReadablePropertyId;
+
+    private String address;
+
+    private String notes;
+
+
+    // No-argument constructor
+    public Property() {
+    }
+
+
+    // Constructor
+    public Property(
+            String id,
+            Integer humanReadablePropertyId,
+            String address,
+            String notes) {
+
         this.id = id;
-        this.property_address = property_address;
-        this.property_notes = property_notes;
+        this.humanReadablePropertyId = humanReadablePropertyId;
+        this.address = address;
+        this.notes = notes;
+    }
+
+
+    // Getters and Setters
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    public Integer getHumanReadablePropertyId() {
+        return humanReadablePropertyId;
+    }
+
+    public void setHumanReadablePropertyId(Integer humanReadablePropertyId) {
+        this.humanReadablePropertyId = humanReadablePropertyId;
+    }
+
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }
