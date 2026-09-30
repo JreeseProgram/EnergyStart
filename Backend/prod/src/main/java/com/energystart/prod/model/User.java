@@ -20,7 +20,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 
 @Document(collection = "users")
-public class Users {
+public class User {
     @Id
     private String id;
     private String username;
@@ -29,7 +29,7 @@ public class Users {
     private String role;
 
 
-    public Users(String id, String username, String email, String password_hash, String role) {
+    public User(String id, String username, String email, String password_hash, String role) {
         this.id = id;
         this.username = username;
         this.email = email;

@@ -1,6 +1,6 @@
 package com.energystart.prod.controller;
 
-import com.energystart.prod.model.Users;
+import com.energystart.prod.model.User;
 import com.energystart.prod.service.UserService;
 
 import org.springframework.web.bind.annotation.*;
@@ -17,22 +17,22 @@ public class UsersController {
     }
 
     @GetMapping
-    public List<Users> getAllUsers(){
+    public List<User> getAllUsers(){
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public Users getUsersById(@PathVariable String id){
+    public User getUsersById(@PathVariable String id){
         return userService.getUserById(id);
     }
 
     @PostMapping
-    public String createUser(@RequestBody Users user){
+    public String createUser(@RequestBody User user){
         return userService.createUser(user);
     }
 
     @PutMapping("/{id}")
-    public String updateUser(@PathVariable String id, @RequestBody Users user){
+    public String updateUser(@PathVariable String id, @RequestBody User user){
        return userService.updateUser(id, user);
     }
 
