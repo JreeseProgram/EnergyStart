@@ -1,9 +1,7 @@
 package com.energystart.prod.controller;
 
-import com.energystart.prod.model.Properties;
+import com.energystart.prod.model.Property;
 import com.energystart.prod.service.PropertiesService;
-import com.energystart.prod.service.UserService;
-import org.apache.catalina.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,22 +17,22 @@ public class PropertiesController {
 
 
     @GetMapping
-    public List<Properties> getAllProperties(){
+    public List<Property> getAllProperties(){
         return propertiesService.getAllProperties();
     }
 
     @GetMapping("/{id}")
-    public Properties getPropertiesById(@PathVariable String id){
+    public Property getPropertiesById(@PathVariable String id){
         return propertiesService.getPropertiesById(id);
     }
 
     @PostMapping
-    public String createProperties(@RequestBody Properties properties){
+    public String createProperties(@RequestBody Property properties){
         return propertiesService.createProperty(properties);
     }
 
     @PostMapping("/{id}")
-    public String updateProperties(@PathVariable String id, @RequestBody Properties properties){
+    public String updateProperties(@PathVariable String id, @RequestBody Property properties){
         return propertiesService.updateProperty(id, properties);
     }
 

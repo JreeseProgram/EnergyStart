@@ -1,6 +1,6 @@
 package com.energystart.prod.service;
 
-import com.energystart.prod.model.Properties;
+import com.energystart.prod.model.Property;
 // import where the repository would go.
 import org.springframework.stereotype.Service;
 
@@ -9,20 +9,20 @@ import java.util.List;
 @Service
 public class PropertiesService {
 
-    Properties property1 = new Properties("Property ID1", "Address 1", "Properties notes 1");
-    Properties property2 = new Properties("Property ID2", "Address 2", "Properties notes 2");
+    Property property1 = new Property("Property ID1", "Address 1", "Properties notes 1");
+    Property property2 = new Property("Property ID2", "Address 2", "Properties notes 2");
 
-    public List<Properties> getAllProperties(){
+    public List<Property> getAllProperties(){
         return List.of(property1,property2);
     }
-    public Properties getPropertiesById(String id){
+    public Property getPropertiesById(String id){
         return property1;
     }
-    public String createProperty(Properties properties){
+    public String createProperty(Property properties){
         return properties.toString();
     }
 
-    public String updateProperty(String id, Properties properties){
+    public String updateProperty(String id, Property properties){
         return "The id "+id+" Has been updated for "+properties.toString();
     }
 
