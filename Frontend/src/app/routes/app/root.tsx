@@ -8,7 +8,7 @@ export const ErrorBoundary = () => {
 
 const AppRoot = () => {
   return (
-    <DashboardLayout sidebar={<AppSidebar variant="inset" />}>
+    <DashboardLayout topbar={<></>} sidebar={<AppSidebar variant="sidebar" />}>
       <Outlet />
     </DashboardLayout>
   )
