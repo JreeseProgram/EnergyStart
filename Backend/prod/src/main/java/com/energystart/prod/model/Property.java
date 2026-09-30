@@ -16,14 +16,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
-public class Properties {
+public class Property {
 
     @Id
     private String id;
     private String property_address;
     private String property_notes;
 
-    public Properties(String id, String property_address, String property_notes) {
+    public Property(String id, String property_address, String property_notes) {
         this.id = id;
         this.property_address = property_address;
         this.property_notes = property_notes;
