@@ -1,8 +1,10 @@
 package com.energystart.prod.energy;
 
+import com.energystart.prod.energy.report_types.BankBranchReport;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -63,6 +65,8 @@ public class EnergyMeter {
     private boolean isDelivered;
     private float meterKBtu;
     private float rawUse;
+    private float siteEUI;
+    private float sourceEUI;
 
 
     //This is used to calculate
@@ -694,6 +698,7 @@ public class EnergyMeter {
     }
 
 
+    //Custom Methods
 
     protected void calculateKBtu(){
         float result = kBtuMultipliers.get(
@@ -701,6 +706,52 @@ public class EnergyMeter {
         );
         setMeterKBtu(rawUse * result);
     }
+
+    //TODO: update with queries to get sqrFootage
+    public void calcEUI(){
+        //Get square footage
+        int sqrFootage = -1;
+        //TODO: update this to the correct query
+        //sqrFootage = db.select(this.associatedPropertyID).where("grossFloorArea")
+        //Calc site EUI
+        setSiteEUI((this.meterKBtu/sqrFootage));
+        //Calc Source EUI
+        switch(this.meterSelected){
+            case TYPE_OF_METER.ELECTRIC_GRID:
+                setSourceEUI(this.siteEUI * 2.8f);
+                break;
+            case TYPE_OF_METER.ELECTRIC_SOLAR:
+            case TYPE_OF_METER.ELECTRIC_WIND:
+            case TYPE_OF_METER.WOOD:
+            case TYPE_OF_METER.COKE:
+            case TYPE_OF_METER.COAL_ANTHRACITE:
+            case TYPE_OF_METER.COAL_BITUMINOUS:
+                setSourceEUI(this.siteEUI);
+                break;
+            case TYPE_OF_METER.NATURAL_GAS:
+                setSourceEUI(this.siteEUI * 1.05f);
+                break;
+            case TYPE_OF_METER.FUEL_OIL_1:
+            case TYPE_OF_METER.FUEL_OIL_2:
+            case TYPE_OF_METER.FUEL_OIL_4:
+            case TYPE_OF_METER.FUEL_OIL_5_AND_6:
+            case TYPE_OF_METER.DIESEL:
+            case TYPE_OF_METER.KEROSENE:
+            case TYPE_OF_METER.PROPANE:
+                setSourceEUI(this.siteEUI * 1.01f);
+                break;
+            case TYPE_OF_METER.DISTRICT_STEAM:
+            case TYPE_OF_METER.DISTRICT_HOT_WATER:
+                setSourceEUI(this.siteEUI * 1.2f);
+                break;
+            case TYPE_OF_METER.DISTRICT_CHILLED_WATER:
+                setSourceEUI(this.siteEUI * 0.91f);
+                break;
+        }
+
+    }
+
+    //Getters and Setters
 
     public String getID() {
         return ID;
@@ -780,5 +831,21 @@ public class EnergyMeter {
 
     public void setRawUse(float rawUse) {
         this.rawUse = rawUse;
+    }
+
+    public float getSiteEUI() {
+        return siteEUI;
+    }
+
+    public void setSiteEUI(float siteEUI) {
+        this.siteEUI = siteEUI;
+    }
+
+    public float getSourceEUI() {
+        return sourceEUI;
+    }
+
+    public void setSourceEUI(float sourceEUI) {
+        this.sourceEUI = sourceEUI;
     }
 }
