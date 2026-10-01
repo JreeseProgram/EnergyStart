@@ -48,9 +48,51 @@ export const createAppRouter = (queryClient: QueryClient) =>
             import("./routes/app/dashboard").then(convert(queryClient)),
         },
         {
-          path: paths.app.buildings.path,
+          path: paths.app.properties.path,
           lazy: () =>
-            import("./routes/app/buildings").then(convert(queryClient)),
+            import("./routes/app/properties").then(convert(queryClient)),
+        },
+        {
+          path: paths.app.property.root.path,
+          lazy: () =>
+            import("./routes/app/property/root").then(convert(queryClient)),
+          children: [
+            {
+              path: paths.app.property.buildings.path,
+              lazy: () =>
+                import("./routes/app/property/buildings").then(
+                  convert(queryClient)
+                ),
+            },
+            {
+              path: paths.app.property.energyMeters.path,
+              lazy: () =>
+                import("./routes/app/property/energy-meters").then(
+                  convert(queryClient)
+                ),
+            },
+            {
+              path: paths.app.property.reports.path,
+              lazy: () =>
+                import("./routes/app/property/reports").then(
+                  convert(queryClient)
+                ),
+            },
+            {
+              path: paths.app.property.sharing.path,
+              lazy: () =>
+                import("./routes/app/property/sharing").then(
+                  convert(queryClient)
+                ),
+            },
+            {
+              path: paths.app.property.settings.path,
+              lazy: () =>
+                import("./routes/app/property/settings").then(
+                  convert(queryClient)
+                ),
+            },
+          ],
         },
       ],
     },
