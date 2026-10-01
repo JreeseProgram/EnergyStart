@@ -1,9 +1,9 @@
 import { SidebarLayout } from "@/components/layouts/sidebar-layout"
-import { AppSidebar } from "@/components/sidebars/app-sidebar"
+import { PropertySidebar } from "@/features/portfolio/components/property-sidebar"
 
 const PropertyRoute = () => {
   return (
-    <SidebarLayout sidebar={<AppSidebar />}>
+    <SidebarLayout sidebar={<PropertySidebar />}>
       <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6"></div>
     </SidebarLayout>
   )

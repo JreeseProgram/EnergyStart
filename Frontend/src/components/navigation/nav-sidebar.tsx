@@ -7,8 +7,14 @@ import {
 } from "@/components/ui/sidebar"
 
 import { paths } from "@/config/paths"
-import { useAuthorization } from "@/features/auth/hooks/use-authorization"
-import { Building, Home, Users } from "lucide-react"
+import {
+  Building2,
+  Zap,
+  Home,
+  FileBarChart2,
+  Share2,
+  Settings,
+} from "lucide-react"
 import { Link } from "react-router"
 
 export type NavMainItem = {
@@ -17,24 +23,37 @@ export type NavMainItem = {
   icon?: React.ReactNode
 }
 
-export function NavMain() {
-  const { checkAccess } = useAuthorization()
-
+export function NavSidebar({ propertyId }: { propertyId: string }) {
   const navigation = [
     {
-      title: "Dashboard",
-      url: paths.app.dashboard.getHref(),
+      title: "Overview",
+      url: paths.app.property.root.getHref(propertyId),
       icon: <Home />,
     },
-    checkAccess() && {
+    {
       title: "Buildings",
-      url: paths.app.properties.getHref(),
-      icon: <Building />,
+      url: paths.app.property.buildings.getHref(propertyId),
+      icon: <Building2 />,
     },
-    checkAccess() && {
-      title: "Profile",
-      url: paths.app.profile.getHref(),
-      icon: <Users />,
+    {
+      title: "Energy Meters",
+      url: paths.app.property.energyMeters.getHref(propertyId),
+      icon: <Zap />,
+    },
+    {
+      title: "Reports",
+      url: paths.app.property.reports.getHref(propertyId),
+      icon: <FileBarChart2 />,
+    },
+    {
+      title: "Sharing",
+      url: paths.app.property.sharing.getHref(propertyId),
+      icon: <Share2 />,
+    },
+    {
+      title: "Settings",
+      url: paths.app.property.settings.getHref(propertyId),
+      icon: <Settings />,
     },
   ].filter(Boolean) as NavMainItem[]
   return (
