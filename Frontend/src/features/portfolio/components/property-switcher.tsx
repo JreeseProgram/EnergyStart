@@ -13,11 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import {
-  GalleryVerticalEndIcon,
-  ChevronsUpDownIcon,
-  CheckIcon,
-} from "lucide-react"
+import { ChevronsUpDownIcon, CheckIcon, MapPinned } from "lucide-react"
 import type { Property } from "@/features/portfolio/models/property.models"
 
 export function PropertySwitcher({
@@ -38,15 +34,19 @@ export function PropertySwitcher({
               <SidebarMenuButton
                 size="lg"
                 className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
+                variant={"outline"}
               />
             }
           >
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-              <GalleryVerticalEndIcon className="size-4" />
+              <MapPinned className="size-4" />
             </div>
             <div className="flex flex-col gap-0.5 leading-none">
-              <span className="font-medium">Property</span>
-              <span className="">{selectedProperty.name}</span>
+              <span className="font-medium">{selectedProperty.name}</span>
+              {/* TODO: need to update to be dynamic */}
+              <span className="text-xs text-muted-foreground">
+                Office • Orlando, FL
+              </span>
             </div>
             <ChevronsUpDownIcon className="ml-auto" />
           </DropdownMenuTrigger>

@@ -1,3 +1,4 @@
+import { AppTopBar } from "@/components/app-top-bar"
 import { DashboardLayout } from "@/components/layouts/dashboard-layout"
 import { Outlet } from "react-router"
 
@@ -7,7 +8,7 @@ export const ErrorBoundary = () => {
 
 const AppRoot = () => {
   return (
-    <DashboardLayout topbar={<></>}>
+    <DashboardLayout topbar={<AppTopBar />}>
       <Outlet />
     </DashboardLayout>
   )
