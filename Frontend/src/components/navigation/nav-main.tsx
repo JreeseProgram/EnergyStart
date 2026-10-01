@@ -1,59 +1,55 @@
-import {
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar"
+import { Button } from "@/components/ui/button"
+import { ButtonGroup } from "@/components/ui/button-group"
 
 import { paths } from "@/config/paths"
-import { useAuthorization } from "@/features/auth/hooks/use-authorization"
-import { Building, Home, Users } from "lucide-react"
+import { LayoutGrid, MapPinned, PlusIcon } from "lucide-react"
+import type { ReactNode } from "react"
 import { Link } from "react-router"
 
 export type NavMainItem = {
   title: string
   url: string
   icon?: React.ReactNode
+  variant: "ghost"
 }
 
 export function NavMain() {
-  const { checkAccess } = useAuthorization()
-
-  const navigation = [
-    {
-      title: "Dashboard",
-      url: paths.app.dashboard.getHref(),
-      icon: <Home />,
-    },
-    checkAccess() && {
-      title: "Buildings",
-      url: paths.app.properties.getHref(),
-      icon: <Building />,
-    },
-    checkAccess() && {
-      title: "Profile",
-      url: paths.app.profile.getHref(),
-      icon: <Users />,
-    },
-  ].filter(Boolean) as NavMainItem[]
   return (
-    <SidebarGroup>
-      <SidebarGroupContent className="flex flex-col gap-2">
-        <SidebarMenu>
-          {navigation.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                tooltip={item.title}
-                render={<Link to={item.url} />}
-              >
-                {item.icon}
-                <span>{item.title}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
+    <div className="flex gap-1">
+      <Button
+        render={<Link to={paths.app.dashboard.getHref()} />}
+        variant={"ghost"}
+      >
+        <LayoutGrid />
+        <span>{"Dashbaord"}</span>
+      </Button>
+      <AddPropertyButton action={() => {}}>
+        <Button
+          render={<Link to={paths.app.properties.getHref()} />}
+          variant={"outline"}
+        >
+          <MapPinned />
+          <span>{"Properties"}</span>
+        </Button>
+      </AddPropertyButton>
+    </div>
+  )
+}
+
+// TODO: Eventually this will move to Portfolio feature folder once api service is ready
+function AddPropertyButton({
+  action,
+  children,
+}: {
+  children: ReactNode
+  action: () => void
+}) {
+  return (
+    <ButtonGroup>
+      {children}
+      <Button variant="outline" size="icon" onClick={action}>
+        <PlusIcon />
+      </Button>
+    </ButtonGroup>
   )
 }
