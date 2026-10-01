@@ -11,6 +11,7 @@ public class EnergyReport {
 
     @Id
     private String ID;
+    private String relatedPropertyID;
     //low-rise stories 1-4; mid-rise 5-9; high-rise 10+
     public enum BUILDING_HEIGHT_TYPES {
         lowRise,
@@ -33,9 +34,10 @@ public class EnergyReport {
         setYearOfConstruction(yearOfConstruction);
     }
 
-    public EnergyReport(String ID, List<EnergyMeter> energyMeters, float energyScore,
+    public EnergyReport(String ID, String relatedPropertyID, List<EnergyMeter> energyMeters, float energyScore,
                         int grossFloorArea, int parkingSize, int yearOfConstruction) {
         setID(ID);
+        setRelatedPropertyID(relatedPropertyID);
         setEnergyMeters(energyMeters);
         setEnergyScore(energyScore);
         setGrossFloorArea(grossFloorArea);
@@ -63,6 +65,14 @@ public class EnergyReport {
 
     public void setID(String ID) {
         this.ID = ID;
+    }
+
+    public String getRelatedPropertyID() {
+        return relatedPropertyID;
+    }
+
+    public void setRelatedPropertyID(String relatedPropertyID) {
+        this.relatedPropertyID = relatedPropertyID;
     }
 
     public List<EnergyMeter> getEnergyMeters() {
