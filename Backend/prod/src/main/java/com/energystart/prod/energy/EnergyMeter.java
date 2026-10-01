@@ -3,6 +3,7 @@ package com.energystart.prod.energy;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @Document
@@ -52,8 +53,10 @@ public class EnergyMeter {
     }
 
     @Id
-    private long ID;
-    private long meterID;
+    private String ID;
+    private String associatedReportID;
+    private LocalDate date;
+    private String meterID;
     private TYPE_OF_METER meterSelected;
     private TYPE_OF_MEASURE unitOfMeasure;
     private boolean inUse;
@@ -699,19 +702,35 @@ public class EnergyMeter {
         setMeterKBtu(rawUse * result);
     }
 
-    public long getID() {
+    public String getID() {
         return ID;
     }
 
-    public void setID(long ID) {
+    public void setID(String ID) {
         this.ID = ID;
     }
 
-    public long getMeterID() {
+    public String getAssociatedReportID() {
+        return associatedReportID;
+    }
+
+    public void setAssociatedReportID(String associatedReportID) {
+        this.associatedReportID = associatedReportID;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public String getMeterID() {
         return meterID;
     }
 
-    public void setMeterID(long meterID) {
+    public void setMeterID(String meterID) {
         this.meterID = meterID;
     }
 
