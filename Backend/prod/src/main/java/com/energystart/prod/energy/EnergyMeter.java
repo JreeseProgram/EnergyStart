@@ -1,14 +1,17 @@
 package com.energystart.prod.energy;
 
-import com.energystart.prod.energy.report_types.BankBranchReport;
+import com.energystart.prod.repos.EnergyReportRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
+
 import java.time.LocalDate;
 import java.util.Map;
 
 @Document
+@Service
 public class EnergyMeter {
     public enum TYPE_OF_METER {
         ELECTRIC_GRID,
@@ -57,6 +60,8 @@ public class EnergyMeter {
     @Id
     private String ID;
     private String associatedReportID;
+    @Autowired
+    private EnergyReportRepo repo;
     private LocalDate date;
     private String meterID;
     private TYPE_OF_METER meterSelected;
@@ -699,7 +704,7 @@ public class EnergyMeter {
 
 
     //Custom Methods
-
+    //TODO: Add Error Handling to incompatible Keys
     protected void calculateKBtu(){
         float result = kBtuMultipliers.get(
                 new key(meterSelected, unitOfMeasure)
@@ -707,12 +712,19 @@ public class EnergyMeter {
         setMeterKBtu(rawUse * result);
     }
 
-    //TODO: update with queries to get sqrFootage
+    //TODO: update with potentially better error handling
     public void calcEUI(){
         //Get square footage
         int sqrFootage = -1;
-        //TODO: update this to the correct query
-        //sqrFootage = db.select(this.associatedPropertyID).where("grossFloorArea")
+        EnergyReport report = repo.findById(associatedReportID).orElse(null);
+
+        if (report == null){
+            System.out.println("No associated report");
+            return;
+        }
+
+        sqrFootage = report.getGrossFloorArea();
+
         //Calc site EUI
         setSiteEUI((this.meterKBtu/sqrFootage));
         //Calc Source EUI
