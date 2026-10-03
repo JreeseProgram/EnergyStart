@@ -30,4 +30,11 @@ export const PropertyType = z.enum([
 export type Property = z.infer<typeof Property>
 export const Property = BaseEntity(PropertyId).extend({
   name: z.string(),
+  propertyType: PropertyType,
+  streetAddress: z.string(),
+  city: z.string(),
+  state: z.string(),
+  zip: z.string(),
+  notes: z.string(),
+  energyStarScore: z.number().optional().default(0),
 })
