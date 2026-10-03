@@ -1,18 +1,10 @@
-/**
- * Class Name: Property
- * Purpose: To provide a template for the database that will hold
- *          Property documents.
- *
- * During the prototype phase, properties will temporarily be
- * stored in a List inside PropertyService.
- *
- * When MongoDB is added, this class will represent a MongoDB document.
- */
-
 package com.energystart.prod.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Document(collection = "properties")
 public class Property {
@@ -21,18 +13,16 @@ public class Property {
     private String id;
 
     private Integer humanReadablePropertyId;
-
     private String address;
-
     private String notes;
 
+    // WorkOS user IDs allowed to access this property.
+    private List<String> authorizedUserIds = new ArrayList<>();
 
-    // No-argument constructor
     public Property() {
     }
 
-
-    // Constructor
+    // Preserve the constructor used by the team's existing code.
     public Property(
             String id,
             Integer humanReadablePropertyId,
@@ -45,9 +35,6 @@ public class Property {
         this.notes = notes;
     }
 
-
-    // Getters and Setters
-
     public String getId() {
         return id;
     }
@@ -55,7 +42,6 @@ public class Property {
     public void setId(String id) {
         this.id = id;
     }
-
 
     public Integer getHumanReadablePropertyId() {
         return humanReadablePropertyId;
@@ -65,7 +51,6 @@ public class Property {
         this.humanReadablePropertyId = humanReadablePropertyId;
     }
 
-
     public String getAddress() {
         return address;
     }
@@ -74,12 +59,24 @@ public class Property {
         this.address = address;
     }
 
-
     public String getNotes() {
         return notes;
     }
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public List<String> getAuthorizedUserIds() {
+        // Return a copy so callers cannot change access accidentally.
+        return authorizedUserIds == null
+                ? new ArrayList<>()
+                : new ArrayList<>(authorizedUserIds);
+    }
+
+    public void setAuthorizedUserIds(List<String> authorizedUserIds) {
+        this.authorizedUserIds = authorizedUserIds == null
+                ? new ArrayList<>()
+                : new ArrayList<>(authorizedUserIds);
     }
 }
