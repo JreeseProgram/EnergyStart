@@ -1,5 +1,6 @@
 import {
   Property,
+  PropertyId,
   PropertyType,
 } from "@/features/portfolio/models/property.models"
 import { type PropertyService } from "@/features/portfolio/services/property.service"
@@ -61,17 +62,21 @@ const defaultProperties = [
 ]
 
 export function usePropertyService(): PropertyService {
-  const [properties, setProperties] =
-    React.useState<Property[]>(defaultProperties)
+  const properties = React.useRef<Property[]>(defaultProperties)
+
   return {
     getProperties: async () => {
-      await delay(300)
-      return properties
+      await delay(500)
+      return properties.current
     },
     createProperty: async (input) => {
-      await delay(300)
-      const property = Property.parse(input)
-      setProperties((prev) => [...prev, property])
+      await delay(500)
+      const property = Property.parse({
+        id: PropertyId.parse(crypto.randomUUID()),
+        createdAt: new Date().toISOString(),
+        ...input,
+      })
+      properties.current = [...properties.current, property]
       return property
     },
   }
