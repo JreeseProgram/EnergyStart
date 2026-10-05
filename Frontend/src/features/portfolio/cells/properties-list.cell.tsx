@@ -1,4 +1,4 @@
-import { useProperties } from "@/features/portfolio/api/get-properties"
+import { useProperties } from "@/features/portfolio/api/get-properties.api"
 import {
   PropertiesList,
   PropertiesListEmpty,

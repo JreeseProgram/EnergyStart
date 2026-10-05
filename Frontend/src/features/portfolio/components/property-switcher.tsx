@@ -16,6 +16,8 @@ import {
 import { ChevronsUpDownIcon, CheckIcon, MapPinned } from "lucide-react"
 import type { Property } from "@/features/portfolio/models/property.models"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useNavigate } from "react-router"
+import { paths } from "@/config/paths"
 
 export function PropertySwitcher({
   properties,
@@ -26,6 +28,7 @@ export function PropertySwitcher({
 }) {
   const [selectedProperty, setSelectedProperty] =
     React.useState<Property>(defaultProperty)
+  const navigate = useNavigate()
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -57,6 +60,7 @@ export function PropertySwitcher({
                 key={`property_switcher_item_${property.id}`}
                 onClick={() => {
                   setSelectedProperty(property)
+                  navigate(paths.app.property.root.getHref(property.id))
                 }}
               >
                 {property.name}{" "}

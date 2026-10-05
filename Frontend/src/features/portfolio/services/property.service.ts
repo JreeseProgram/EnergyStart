@@ -7,4 +7,8 @@ export interface PropertyService {
 }
 
 export type CreatePropertyInput = z.infer<typeof CreatePropertyInput>
-export const CreatePropertyInput = Property.omit({ id: true, createdAt: true })
+export const CreatePropertyInput = Property.omit({
+  id: true,
+  createdAt: true,
+  energyStarScore: true,
+})
