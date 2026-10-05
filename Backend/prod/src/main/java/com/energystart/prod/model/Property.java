@@ -23,6 +23,8 @@ public class Property {
     private Integer humanReadablePropertyId;
 
     private String address;
+    
+    private String zipcode;
 
     private String notes;
 
