@@ -62,7 +62,7 @@ public class EnergyMeter {
     private String associatedReportID;
     @Autowired
     private EnergyReportRepo repo;
-    private LocalDate date;
+    private LocalDate date; //YYYY-MM-DD
     private String meterID;
     private TYPE_OF_METER meterSelected;
     private TYPE_OF_MEASURE unitOfMeasure;

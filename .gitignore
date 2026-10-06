@@ -21,3 +21,12 @@
 
 # Macs
 .DS_STORE
+Backend/prod/target/classes/com/energystart/prod/energy/EnergyMeter$key.class
+Backend/prod/target/classes/com/energystart/prod/energy/EnergyMeter$key.class
+Backend/prod/target/classes/com/energystart/prod/energy/EnergyMeter$TYPE_OF_MEASURE.class
+Backend/prod/target/classes/com/energystart/prod/energy/EnergyMeter$TYPE_OF_MEASURE.class
+Backend/prod/target/classes/com/energystart/prod/energy/EnergyMeter$TYPE_OF_METER.class
+Backend/prod/target/classes/com/energystart/prod/repos/EnergyReportRepo.class
+Backend/prod/target/classes/com/energystart/prod/repos/PropertyRepo.class
+*.class
+Backend/prod/target/classes/com/energystart/prod/energy/EnergyMeter.class
