@@ -84,4 +84,12 @@ public class Property {
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
+    public String getZipcode() {
+        return zipcode;
+    }
+
+    public void setZipcode(String zipcode) {
+        this.zipcode = zipcode;
+    }
 }
