@@ -1,9 +1,6 @@
 package com.energystart.prod.energy;
 
-import com.energystart.prod.energy.report_types.BankBranchReport;
-import com.energystart.prod.energy.report_types.CourtHouseReport;
-import com.energystart.prod.energy.report_types.FinancialOfficeReport;
-import com.energystart.prod.energy.report_types.OfficeReport;
+import com.energystart.prod.energy.report_types.*;
 
 import java.util.List;
 //All Scores derrived from here:
@@ -128,6 +125,114 @@ public class EnergyStarLookupTable {
             new Range(2.3444f, Float.MAX_VALUE, 0.01f)
     );
 
+    /**
+     * Category B Contains:
+     * Convenience Store
+     */
+    private static final List<Range> CategoryBScore = List.of(
+            new Range(0.0000f, 0.6225f, 1.00f),
+            new Range(0.6225f, 0.6588f, 0.99f),
+            new Range(0.6588f, 0.6828f, 0.98f),
+            new Range(0.6828f, 0.7008f, 0.97f),
+            new Range(0.7008f, 0.7159f, 0.96f),
+            new Range(0.7159f, 0.7289f, 0.95f),
+            new Range(0.7289f, 0.7405f, 0.94f),
+            new Range(0.7405f, 0.7509f, 0.93f),
+            new Range(0.7509f, 0.7605f, 0.92f),
+            new Range(0.7605f, 0.7694f, 0.91f),
+            new Range(0.7694f, 0.7778f, 0.90f),
+            new Range(0.7778f, 0.7856f, 0.89f),
+            new Range(0.7856f, 0.7931f, 0.88f),
+            new Range(0.7931f, 0.8002f, 0.87f),
+            new Range(0.8002f, 0.8070f, 0.86f),
+            new Range(0.8070f, 0.8136f, 0.85f),
+            new Range(0.8136f, 0.8199f, 0.84f),
+            new Range(0.8199f, 0.8260f, 0.83f),
+            new Range(0.8260f, 0.8319f, 0.82f),
+            new Range(0.8319f, 0.8374f, 0.81f),
+            new Range(0.8374f, 0.8430f, 0.80f),
+            new Range(0.8430f, 0.8489f, 0.79f),
+            new Range(0.8489f, 0.8543f, 0.78f),
+            new Range(0.8543f, 0.8596f, 0.77f),
+            new Range(0.8596f, 0.8648f, 0.76f),
+            new Range(0.8648f, 0.8699f, 0.75f),
+            new Range(0.8699f, 0.8749f, 0.74f),
+            new Range(0.8749f, 0.8789f, 0.73f),
+            new Range(0.8789f, 0.8847f, 0.72f),
+            new Range(0.8847f, 0.8895f, 0.71f),
+            new Range(0.8895f, 0.8943f, 0.70f),
+            new Range(0.8943f, 0.8990f, 0.69f),
+            new Range(0.8990f, 0.9037f, 0.68f),
+            new Range(0.9037f, 0.9083f, 0.67f),
+            new Range(0.9083f, 0.9129f, 0.66f),
+            new Range(0.9129f, 0.9174f, 0.65f),
+            new Range(0.9174f, 0.9220f, 0.64f),
+            new Range(0.9220f, 0.9265f, 0.63f),
+            new Range(0.9265f, 0.9310f, 0.62f),
+            new Range(0.9310f, 0.9354f, 0.61f),
+            new Range(0.9354f, 0.9399f, 0.60f),
+            new Range(0.9399f, 0.9443f, 0.59f),
+            new Range(0.9443f, 0.9487f, 0.58f),
+            new Range(0.9487f, 0.9532f, 0.57f),
+            new Range(0.9532f, 0.9576f, 0.56f),
+            new Range(0.9576f, 0.9620f, 0.55f),
+            new Range(0.9620f, 0.9664f, 0.54f),
+            new Range(0.9664f, 0.9709f, 0.53f),
+            new Range(0.9709f, 0.9753f, 0.52f),
+            new Range(0.9753f, 0.9797f, 0.51f),
+
+            new Range(0.9797f, 0.9842f, 0.50f),
+            new Range(0.9842f, 0.9887f, 0.49f),
+            new Range(0.9887f, 0.9932f, 0.48f),
+            new Range(0.9932f, 0.9977f, 0.47f),
+            new Range(0.9977f, 1.0022f, 0.46f),
+            new Range(1.0022f, 1.0068f, 0.45f),
+            new Range(1.0068f, 1.0114f, 0.44f),
+            new Range(1.0114f, 1.0160f, 0.43f),
+            new Range(1.0160f, 1.0207f, 0.42f),
+            new Range(1.0207f, 1.0254f, 0.41f),
+            new Range(1.0254f, 1.0301f, 0.40f),
+            new Range(1.0301f, 1.0348f, 0.39f),
+            new Range(1.0348f, 1.0396f, 0.38f),
+            new Range(1.0396f, 1.0444f, 0.37f),
+            new Range(1.0444f, 1.0492f, 0.36f),
+            new Range(1.0492f, 1.0540f, 0.35f),
+            new Range(1.0540f, 1.0588f, 0.34f),
+            new Range(1.0588f, 1.0636f, 0.33f),
+            new Range(1.0636f, 1.0685f, 0.32f),
+            new Range(1.0685f, 1.0735f, 0.31f),
+            new Range(1.0735f, 1.0785f, 0.30f),
+            new Range(1.0785f, 1.0836f, 0.29f),
+            new Range(1.0836f, 1.0926f, 0.28f),
+            new Range(1.0926f, 1.0985f, 0.27f),
+            new Range(1.0985f, 1.1045f, 0.26f),
+            new Range(1.1045f, 1.1106f, 0.25f),
+            new Range(1.1106f, 1.1169f, 0.24f),
+            new Range(1.1169f, 1.1233f, 0.23f),
+            new Range(1.1233f, 1.1300f, 0.22f),
+            new Range(1.1300f, 1.1369f, 0.21f),
+            new Range(1.1369f, 1.1440f, 0.20f),
+            new Range(1.1440f, 1.1514f, 0.19f),
+            new Range(1.1514f, 1.1591f, 0.18f),
+            new Range(1.1591f, 1.1671f, 0.17f),
+            new Range(1.1671f, 1.1755f, 0.16f),
+            new Range(1.1755f, 1.1843f, 0.15f),
+            new Range(1.1843f, 1.1936f, 0.14f),
+            new Range(1.1936f, 1.2035f, 0.13f),
+            new Range(1.2035f, 1.2140f, 0.12f),
+            new Range(1.2140f, 1.2253f, 0.11f),
+            new Range(1.2253f, 1.2375f, 0.10f),
+            new Range(1.2375f, 1.2509f, 0.09f),
+            new Range(1.2509f,1.2657f,0.08f),
+            new Range(1.2657f,1.2824f,0.07f),
+            new Range(1.2824f,1.3016f,0.06f),
+            new Range(1.3014f,1.3244f,0.05f),
+            new Range(1.3244f,1.3528f,0.04f),
+            new Range(1.3528f,1.3911f,0.03f),
+            new Range(1.3911f,1.4529f,0.02f),
+            new Range(1.4529f,Float.MAX_VALUE,0.01f)
+    );
+
 
     /**
      *
@@ -144,6 +249,14 @@ public class EnergyStarLookupTable {
                 || report instanceof OfficeReport
                 || report instanceof CourtHouseReport){
             for (Range r : CategoryAScore){
+                if(EER >= r.min && EER < r.max){
+                    result = r.score;
+                }
+            }
+        }
+        //CategoryB Test
+        else if(report instanceof ConvenienceStoreReport){
+            for (Range r : CategoryBScore){
                 if(EER >= r.min && EER < r.max){
                     result = r.score;
                 }
