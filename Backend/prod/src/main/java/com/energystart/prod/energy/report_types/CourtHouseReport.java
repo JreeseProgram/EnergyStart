@@ -63,8 +63,9 @@ public class CourtHouseReport extends EnergyReport {
             sourceEUI += meter.getSourceEUI();
         }
         float EER = sourceEUI / predictedSourceEUI;
-        return EnergyStarLookupTable.getScore(EER, this);
-    }
+        float score = EnergyStarLookupTable.getScore(EER, this);
+        setEnergyScore(score);
+        return score;    }
 
     //Getters and Setters
 

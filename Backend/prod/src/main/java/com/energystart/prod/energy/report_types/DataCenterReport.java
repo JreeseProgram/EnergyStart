@@ -38,8 +38,9 @@ public class DataCenterReport extends EnergyReport {
         float realPUE = sourceKBtu/sourceITUsage;
         predictedPUE += (realPUE - 0.2091f) * (-0.9506f);
         float EER = realPUE / predictedPUE;
-        return EnergyStarLookupTable.getScore(EER, this);
-    }
+        float score = EnergyStarLookupTable.getScore(EER, this);
+        setEnergyScore(score);
+        return score;    }
 
     //Setters and Getters
     public float getAnnualITEnergy() {
