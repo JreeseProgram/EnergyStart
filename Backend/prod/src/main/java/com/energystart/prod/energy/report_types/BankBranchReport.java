@@ -65,9 +65,7 @@ public class BankBranchReport extends EnergyReport {
             sourceEUI += meter.getSourceEUI();
         }
         float EER = sourceEUI / predictedSourceEUI;
-        float energyScore = EnergyStarLookupTable.getScore(EER, this);
-        return energyScore;
-
+        return EnergyStarLookupTable.getScore(EER, this);
     }
 
     //Getters and Setters

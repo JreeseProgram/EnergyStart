@@ -76,7 +76,6 @@ public class EnergyStarLookupTable {
             new Range(0.8256f, 0.8365f, 0.53f),
             new Range(0.8365f, 0.8475f, 0.52f),
             new Range(0.8475f, 0.8586f, 0.51f),
-
             new Range(0.8586f, 0.8697f, 0.50f),
             new Range(0.8697f, 0.8810f, 0.49f),
             new Range(0.8810f, 0.8924f, 0.48f),
