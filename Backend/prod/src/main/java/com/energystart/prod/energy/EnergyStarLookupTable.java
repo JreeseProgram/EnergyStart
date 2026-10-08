@@ -889,6 +889,115 @@ public class EnergyStarLookupTable {
     );
 
     /**
+     * Conatins scores for CategoryI, including:
+     * RetailStore, Supermarket
+     */
+    private static final List<Range> CategoryIScore = List.of(
+            new Range(0.0000f, 0.3054f, 1.00f),
+            new Range(0.3054f, 0.3547f, 0.99f),
+            new Range(0.3547f, 0.3889f, 0.98f),
+            new Range(0.3889f, 0.4161f, 0.97f),
+            new Range(0.4161f, 0.4392f, 0.96f),
+            new Range(0.4392f, 0.4596f, 0.95f),
+            new Range(0.4596f, 0.4780f, 0.94f),
+            new Range(0.4780f, 0.4949f, 0.93f),
+            new Range(0.4949f, 0.5107f, 0.92f),
+            new Range(0.5107f, 0.5255f, 0.91f),
+            new Range(0.5255f, 0.5396f, 0.90f),
+            new Range(0.5396f, 0.5529f, 0.89f),
+            new Range(0.5529f, 0.5658f, 0.88f),
+            new Range(0.5658f, 0.5781f, 0.87f),
+            new Range(0.5781f, 0.5901f, 0.86f),
+            new Range(0.5901f, 0.6017f, 0.85f),
+            new Range(0.6017f, 0.6129f, 0.84f),
+            new Range(0.6129f, 0.6239f, 0.83f),
+            new Range(0.6239f, 0.6346f, 0.82f),
+            new Range(0.6346f, 0.6452f, 0.81f),
+            new Range(0.6452f, 0.6555f, 0.80f),
+            new Range(0.6555f, 0.6656f, 0.79f),
+            new Range(0.6656f, 0.6756f, 0.78f),
+            new Range(0.6756f, 0.6855f, 0.77f),
+            new Range(0.6855f, 0.6952f, 0.76f),
+            new Range(0.6952f, 0.7048f, 0.75f),
+            new Range(0.7048f, 0.7143f, 0.74f),
+            new Range(0.7143f, 0.7237f, 0.73f),
+            new Range(0.7237f, 0.7330f, 0.72f),
+            new Range(0.7330f, 0.7423f, 0.71f),
+            new Range(0.7423f, 0.7515f, 0.70f),
+            new Range(0.7515f, 0.7607f, 0.69f),
+            new Range(0.7607f, 0.7698f, 0.68f),
+            new Range(0.7698f, 0.7788f, 0.67f),
+            new Range(0.7788f, 0.7879f, 0.66f),
+            new Range(0.7879f, 0.7969f, 0.65f),
+            new Range(0.7969f, 0.8059f, 0.64f),
+            new Range(0.8059f, 0.8149f, 0.63f),
+            new Range(0.8149f, 0.8239f, 0.62f),
+            new Range(0.8239f, 0.8329f, 0.61f),
+            new Range(0.8329f, 0.8418f, 0.60f),
+            new Range(0.8418f, 0.8509f, 0.59f),
+            new Range(0.8509f, 0.8599f, 0.58f),
+            new Range(0.8599f, 0.8689f, 0.57f),
+            new Range(0.8689f, 0.8780f, 0.56f),
+            new Range(0.8780f, 0.8871f, 0.55f),
+            new Range(0.8871f, 0.8962f, 0.54f),
+            new Range(0.8962f, 0.9054f, 0.53f),
+            new Range(0.9054f, 0.9147f, 0.52f),
+            new Range(0.9147f, 0.9240f, 0.51f),
+
+            new Range(0.9240f, 0.9333f, 0.50f),
+            new Range(0.9333f, 0.9428f, 0.49f),
+            new Range(0.9428f, 0.9523f, 0.48f),
+            new Range(0.9523f, 0.9619f, 0.47f),
+            new Range(0.9619f, 0.9716f, 0.46f),
+            new Range(0.9716f, 0.9813f, 0.45f),
+            new Range(0.9813f, 0.9912f, 0.44f),
+            new Range(0.9912f, 1.0012f, 0.43f),
+            new Range(1.0012f, 1.0113f, 0.42f),
+            new Range(1.0113f, 1.0216f, 0.41f),
+            new Range(1.0216f, 1.0319f, 0.40f),
+            new Range(1.0319f, 1.0424f, 0.39f),
+            new Range(1.0424f, 1.0531f, 0.38f),
+            new Range(1.0531f, 1.0640f, 0.37f),
+            new Range(1.0640f, 1.0750f, 0.36f),
+            new Range(1.0750f, 1.0862f, 0.35f),
+            new Range(1.0862f, 1.0976f, 0.34f),
+            new Range(1.0976f, 1.1093f, 0.33f),
+            new Range(1.1093f, 1.1211f, 0.32f),
+            new Range(1.1211f, 1.1333f, 0.31f),
+            new Range(1.1333f, 1.1457f, 0.30f),
+            new Range(1.1457f, 1.1584f, 0.29f),
+            new Range(1.1584f, 1.1714f, 0.28f),
+            new Range(1.1714f, 1.1847f, 0.27f),
+            new Range(1.1847f, 1.1985f, 0.26f),
+            new Range(1.1985f, 1.2126f, 0.25f),
+            new Range(1.2126f, 1.2271f, 0.24f),
+            new Range(1.2271f, 1.2422f, 0.23f),
+            new Range(1.2422f, 1.2577f, 0.22f),
+            new Range(1.2577f, 1.2739f, 0.21f),
+            new Range(1.2739f, 1.2907f, 0.20f),
+            new Range(1.2907f, 1.3081f, 0.19f),
+            new Range(1.3081f, 1.3264f, 0.18f),
+            new Range(1.3264f, 1.3455f, 0.17f),
+            new Range(1.3455f, 1.3656f, 0.16f),
+            new Range(1.3656f, 1.3869f, 0.15f),
+            new Range(1.3869f, 1.4094f, 0.14f),
+            new Range(1.4094f, 1.4334f, 0.13f),
+            new Range(1.4334f, 1.4592f, 0.12f),
+            new Range(1.4592f, 1.4870f, 0.11f),
+            new Range(1.4870f, 1.5173f, 0.10f),
+            new Range(1.5173f, 1.5507f, 0.09f),
+            new Range(1.5507f, 1.5880f, 0.08f),
+            new Range(1.5880f, 1.6302f, 0.07f),
+            new Range(1.6302f, 1.6793f, 0.06f),
+            new Range(1.6793f, 1.7382f, 0.05f),
+            new Range(1.7382f, 1.8123f, 0.04f),
+            new Range(1.8123f, 1.9139f, 0.03f),
+            new Range(1.9139f, 2.0812f, 0.02f),
+            new Range(2.0812f, Float.MAX_VALUE, 0.01f)
+
+    );
+
+    /**
      *
      * @param EER The Energy Efficiency Ratio
      * @param report A type of energy report or child of
@@ -961,6 +1070,15 @@ public class EnergyStarLookupTable {
         //CategoryH Test
         else if (report instanceof MultifamilyHousingReport) {
             for (Range r : CategoryHScore){
+                if(EER >= r.min && EER < r.max){
+                    result = r.score;
+                }
+            }
+        }
+        //CategoryI Test
+        else if(report instanceof RetailStoreReport
+                || report instanceof SupermarketReport){
+            for (Range r : CategoryIScore){
                 if(EER >= r.min && EER < r.max){
                     result = r.score;
                 }
