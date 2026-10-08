@@ -1001,7 +1001,7 @@ public class EnergyStarLookupTable {
      *  Contains scores for Category J, including:
      *  Schools
      */
-    private static final List<Range> CategroryJScore = List.of(
+    private static final List<Range> CategoryJScore = List.of(
             new Range(0.0000f, 0.3158f, 1.00f),
             new Range(0.3158f, 0.3664f, 0.99f),
             new Range(0.3664f, 0.4015f, 0.98f),
@@ -1105,6 +1105,115 @@ public class EnergyStarLookupTable {
             new Range(2.1299f, Float.MAX_VALUE, 0.01f)
 
     );
+    /**
+     * Contains Scores for Category K, including
+     * Senior Living Communities
+     */
+
+    private static final List<Range> CategoryKScore = List.of(
+            new Range(0.0000f, 0.4770f, 1.00f),
+            new Range(0.4770f, 0.5244f, 0.99f),
+            new Range(0.5244f, 0.5561f, 0.98f),
+            new Range(0.5561f, 0.5809f, 0.97f),
+            new Range(0.5809f, 0.6016f, 0.96f),
+            new Range(0.6016f, 0.6196f, 0.95f),
+            new Range(0.6196f, 0.6357f, 0.94f),
+            new Range(0.6357f, 0.6504f, 0.93f),
+            new Range(0.6504f, 0.6639f, 0.92f),
+            new Range(0.6639f, 0.6765f, 0.91f),
+            new Range(0.6765f, 0.6884f, 0.90f),
+            new Range(0.6884f, 0.6997f, 0.89f),
+            new Range(0.6997f, 0.7104f, 0.88f),
+            new Range(0.7104f, 0.7207f, 0.87f),
+            new Range(0.7207f, 0.7306f, 0.86f),
+            new Range(0.7306f, 0.7401f, 0.85f),
+            new Range(0.7401f, 0.7493f, 0.84f),
+            new Range(0.7493f, 0.7583f, 0.83f),
+            new Range(0.7583f, 0.7670f, 0.82f),
+            new Range(0.7670f, 0.7756f, 0.81f),
+            new Range(0.7756f, 0.7839f, 0.80f),
+            new Range(0.7839f, 0.7921f, 0.79f),
+            new Range(0.7921f, 0.8001f, 0.78f),
+            new Range(0.8001f, 0.8079f, 0.77f),
+            new Range(0.8079f, 0.8157f, 0.76f),
+            new Range(0.8157f, 0.8233f, 0.75f),
+            new Range(0.8233f, 0.8308f, 0.74f),
+            new Range(0.8308f, 0.8382f, 0.73f),
+            new Range(0.8382f, 0.8456f, 0.72f),
+            new Range(0.8456f, 0.8528f, 0.71f),
+            new Range(0.8528f, 0.8600f, 0.70f),
+            new Range(0.8600f, 0.8672f, 0.69f),
+            new Range(0.8672f, 0.8743f, 0.68f),
+            new Range(0.8743f, 0.8813f, 0.67f),
+            new Range(0.8813f, 0.8883f, 0.66f),
+            new Range(0.8883f, 0.8953f, 0.65f),
+            new Range(0.8953f, 0.9022f, 0.64f),
+            new Range(0.9022f, 0.9091f, 0.63f),
+            new Range(0.9091f, 0.9160f, 0.62f),
+            new Range(0.9160f, 0.9229f, 0.61f),
+            new Range(0.9229f, 0.9297f, 0.60f),
+            new Range(0.9297f, 0.9366f, 0.59f),
+            new Range(0.9366f, 0.9434f, 0.58f),
+            new Range(0.9434f, 0.9503f, 0.57f),
+            new Range(0.9503f, 0.9572f, 0.56f),
+            new Range(0.9572f, 0.9640f, 0.55f),
+            new Range(0.9640f, 0.9709f, 0.54f),
+            new Range(0.9709f, 0.9778f, 0.53f),
+            new Range(0.9778f, 0.9848f, 0.52f),
+            new Range(0.9848f, 0.9917f, 0.51f),
+
+            new Range(0.9917f, 0.9987f, 0.50f),
+            new Range(0.9987f, 1.0057f, 0.49f),
+            new Range(1.0057f, 1.0128f, 0.48f),
+            new Range(1.0128f, 1.0199f, 0.47f),
+            new Range(1.0199f, 1.0271f, 0.46f),
+            new Range(1.0271f, 1.0343f, 0.45f),
+            new Range(1.0343f, 1.0416f, 0.44f),
+            new Range(1.0416f, 1.0490f, 0.43f),
+            new Range(1.0490f, 1.0564f, 0.42f),
+            new Range(1.0564f, 1.0639f, 0.41f),
+            new Range(1.0639f, 1.0715f, 0.40f),
+            new Range(1.0715f, 1.0792f, 0.39f),
+            new Range(1.0792f, 1.0870f, 0.38f),
+            new Range(1.0870f, 1.0949f, 0.37f),
+            new Range(1.0949f, 1.1029f, 0.36f),
+            new Range(1.1029f, 1.1110f, 0.35f),
+            new Range(1.1110f, 1.1193f, 0.34f),
+            new Range(1.1193f, 1.1277f, 0.33f),
+            new Range(1.1277f, 1.1362f, 0.32f),
+            new Range(1.1362f, 1.1450f, 0.31f),
+            new Range(1.1450f, 1.1539f, 0.30f),
+            new Range(1.1539f, 1.1629f, 0.29f),
+            new Range(1.1629f, 1.1722f, 0.28f),
+            new Range(1.1722f, 1.1818f, 0.27f),
+            new Range(1.1818f, 1.1915f, 0.26f),
+            new Range(1.1915f, 1.2016f, 0.25f),
+            new Range(1.2016f, 1.2119f, 0.24f),
+            new Range(1.2119f, 1.2225f, 0.23f),
+            new Range(1.2225f, 1.2335f, 0.22f),
+            new Range(1.2335f, 1.2448f, 0.21f),
+            new Range(1.2448f, 1.2566f, 0.20f),
+            new Range(1.2566f, 1.2688f, 0.19f),
+            new Range(1.2688f, 1.2816f, 0.18f),
+            new Range(1.2816f, 1.2949f, 0.17f),
+            new Range(1.2949f, 1.3089f, 0.16f),
+            new Range(1.3089f, 1.3236f, 0.15f),
+            new Range(1.3236f, 1.3392f, 0.14f),
+            new Range(1.3392f, 1.3558f, 0.13f),
+            new Range(1.3558f, 1.3735f, 0.12f),
+            new Range(1.3735f, 1.3925f, 0.11f),
+            new Range(1.3925f, 1.4133f, 0.10f),
+            new Range(1.4133f, 1.4360f, 0.09f),
+            new Range(1.4360f, 1.4612f, 0.08f),
+            new Range(1.4612f, 1.4898f, 0.07f),
+            new Range(1.4898f, 1.5228f, 0.06f),
+            new Range(1.5228f, 1.5621f, 0.05f),
+            new Range(1.5621f, 1.6114f, 0.04f),
+            new Range(1.6114f, 1.6784f, 0.03f),
+            new Range(1.6784f, 1.7876f, 0.02f),
+            new Range(1.7876f, Float.MAX_VALUE, 0.01f)
+
+    );
 
     /**
      *
@@ -1195,7 +1304,15 @@ public class EnergyStarLookupTable {
         }
         //CategoryJ Test
         else if(report instanceof SchoolReport){
-            for(Range r : CategroryJScore){
+            for(Range r : CategoryJScore){
+                if(EER >= r.min && EER < r.max){
+                    result = r.score;
+                }
+            }
+        }
+        //CategoryK Test
+        else if(report instanceof SeniorLivingCommunityReport){
+            for (Range r : CategoryKScore){
                 if(EER >= r.min && EER < r.max){
                     result = r.score;
                 }
