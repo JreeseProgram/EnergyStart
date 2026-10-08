@@ -23,6 +23,8 @@ public class Property {
     private Integer humanReadablePropertyId;
 
     private String address;
+    
+    private String zipcode;
 
     private String notes;
 
@@ -81,5 +83,13 @@ public class Property {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public String getZipcode() {
+        return zipcode;
+    }
+
+    public void setZipcode(String zipcode) {
+        this.zipcode = zipcode;
     }
 }
