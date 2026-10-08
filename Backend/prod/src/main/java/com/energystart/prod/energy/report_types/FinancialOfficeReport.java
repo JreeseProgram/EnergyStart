@@ -56,6 +56,8 @@ public class FinancialOfficeReport extends EnergyReport {
         predictedSourceEUI += (cooled - 6.332f) * 4.529f;
         predictedSourceEUI += (heated - 924f) * 0.004693f;
 
+        if(squareFoot < 50000){predictedSourceEUI += 82.87f;}
+
         //Energy Efficiency Ratio
 
         List<EnergyMeter> meters = meterRepo.findByAssociatedReportIDAndDateBetween(this.getID(),startDate,endDate);
