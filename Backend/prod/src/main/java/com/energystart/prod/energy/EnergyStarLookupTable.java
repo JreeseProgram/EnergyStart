@@ -890,7 +890,7 @@ public class EnergyStarLookupTable {
 
     /**
      * Conatins scores for CategoryI, including:
-     * RetailStore, Supermarket
+     * RetailStore, Supermarket, Wholesale Clubs
      */
     private static final List<Range> CategoryIScore = List.of(
             new Range(0.0000f, 0.3054f, 1.00f),
@@ -1404,7 +1404,8 @@ public class EnergyStarLookupTable {
         }
         //CategoryI Test
         else if(report instanceof RetailStoreReport
-                || report instanceof SupermarketReport){
+                || report instanceof SupermarketReport
+                || report instanceof WholesaleClubReport){
             for (Range r : CategoryIScore){
                 if(EER >= r.min && EER < r.max){
                     result = r.score;
