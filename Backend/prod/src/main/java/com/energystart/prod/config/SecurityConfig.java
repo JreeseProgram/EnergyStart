@@ -27,18 +27,12 @@ public class SecurityConfig {
             throws Exception {
 
         http
-                // This API uses Bearer tokens, not browser session cookies.
+                // Requests use Bearer tokens instead of session cookies.
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // Do not store authentication in an HTTP session.
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // Every request requires a verified login token.
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().authenticated())
-
-                // Validate the token from the Authorization header.
                 .oauth2ResourceServer(oauth -> oauth
                         .jwt(withDefaults()));
 
@@ -48,10 +42,9 @@ public class SecurityConfig {
     @Bean
     public JwtDecoder jwtDecoder(
             @Value("${WORKOS_CLIENT_ID:}") String clientId,
-            @Value("${WORKOS_ISSUER:https://api.workos.com/}") String issuer) {
+            @Value("${WORKOS_ISSUER:}") String issuer) {
 
-        // Allow startup and local tests while awaiting team configuration.
-        // No token is accepted when the client ID is missing.
+        // Reject tokens until the team's client ID is configured.
         if (clientId.isBlank()) {
             return token -> {
                 throw new BadJwtException(
@@ -64,14 +57,15 @@ public class SecurityConfig {
                     "WORKOS_CLIENT_ID must be a valid WorkOS client ID.");
         }
 
-        String jwksUrl =
-                "https://api.workos.com/sso/jwks/" + clientId;
+        // Default to this application's WorkOS issuer.
+        String expectedIssuer = issuer.isBlank()
+                ? "https://api.workos.com/user_management/" + clientId
+                : issuer;
 
         NimbusJwtDecoder decoder = NimbusJwtDecoder
-                .withJwkSetUri(jwksUrl)
+                .withJwkSetUri("https://api.workos.com/sso/jwks/" + clientId)
                 .build();
 
-        // Require a user ID and expiration time in every token.
         OAuth2TokenValidator<Jwt> requiredClaims = jwt -> {
             if (jwt.getSubject() == null
                     || jwt.getSubject().isBlank()
@@ -87,10 +81,10 @@ public class SecurityConfig {
             return OAuth2TokenValidatorResult.success();
         };
 
-        // Check issuer and timestamps in addition to the signature.
+        // Verify the signature, issuer, timestamps, and required claims.
         decoder.setJwtValidator(
                 new DelegatingOAuth2TokenValidator<>(
-                        JwtValidators.createDefaultWithIssuer(issuer),
+                        JwtValidators.createDefaultWithIssuer(expectedIssuer),
                         requiredClaims));
 
         return decoder;
