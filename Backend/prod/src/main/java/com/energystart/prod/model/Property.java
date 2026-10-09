@@ -14,6 +14,7 @@ public class Property {
 
     private Integer humanReadablePropertyId;
     private String address;
+    private String zipcode;
     private String notes;
 
     // WorkOS user IDs allowed to access this property.
@@ -22,7 +23,7 @@ public class Property {
     public Property() {
     }
 
-    // Preserve the constructor used by the team's existing code.
+    // Keep the constructor used by the team's existing code.
     public Property(
             String id,
             Integer humanReadablePropertyId,
@@ -59,6 +60,14 @@ public class Property {
         this.address = address;
     }
 
+    public String getZipcode() {
+        return zipcode;
+    }
+
+    public void setZipcode(String zipcode) {
+        this.zipcode = zipcode;
+    }
+
     public String getNotes() {
         return notes;
     }
@@ -68,7 +77,7 @@ public class Property {
     }
 
     public List<String> getAuthorizedUserIds() {
-        // Return a copy so callers cannot change access accidentally.
+        // Return a copy to protect the stored permissions.
         return authorizedUserIds == null
                 ? new ArrayList<>()
                 : new ArrayList<>(authorizedUserIds);

@@ -28,7 +28,9 @@ public class PropertyService {
                 request.getNotes()
         );
 
-        // Use the verified login ID, never an access list from the request.
+        property.setZipcode(request.getZipcode());
+
+        // Grant access using the verified login ID.
         property.setAuthorizedUserIds(List.of(userId));
         properties.add(property);
 
@@ -38,7 +40,7 @@ public class PropertyService {
     public synchronized List<Property> getAllProperties(String userId) {
         requireUser(userId);
 
-        // Each user sees only properties they can access.
+        // Only return properties this user can access.
         return properties.stream()
                 .filter(property ->
                         property.getAuthorizedUserIds().contains(userId))
@@ -63,9 +65,10 @@ public class PropertyService {
         existing.setHumanReadablePropertyId(
                 request.getHumanReadablePropertyId());
         existing.setAddress(request.getAddress());
+        existing.setZipcode(request.getZipcode());
         existing.setNotes(request.getNotes());
 
-        // Preserve the existing ID and access list.
+        // Keep the existing ID and access list.
         return copy(existing);
     }
 
@@ -117,7 +120,9 @@ public class PropertyService {
                 original.getNotes()
         );
 
+        result.setZipcode(original.getZipcode());
         result.setAuthorizedUserIds(original.getAuthorizedUserIds());
+
         return result;
     }
 }

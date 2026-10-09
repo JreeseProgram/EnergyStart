@@ -15,6 +15,9 @@ import {
 } from "@/components/ui/sidebar"
 import { ChevronsUpDownIcon, CheckIcon, MapPinned } from "lucide-react"
 import type { Property } from "@/features/portfolio/models/property.models"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useNavigate } from "react-router"
+import { paths } from "@/config/paths"
 
 export function PropertySwitcher({
   properties,
@@ -23,8 +26,9 @@ export function PropertySwitcher({
   properties: Property[]
   defaultProperty: Property
 }) {
-  const [selectedProperty, setselectedProperty] =
+  const [selectedProperty, setSelectedProperty] =
     React.useState<Property>(defaultProperty)
+  const navigate = useNavigate()
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -54,10 +58,13 @@ export function PropertySwitcher({
             {properties.map((property) => (
               <DropdownMenuItem
                 key={`property_switcher_item_${property.id}`}
-                onSelect={() => setselectedProperty(property)}
+                onClick={() => {
+                  setSelectedProperty(property)
+                  navigate(paths.app.property.root.getHref(property.id))
+                }}
               >
                 {property.name}{" "}
-                {property === selectedProperty && (
+                {property.id === selectedProperty.id && (
                   <CheckIcon className="ml-auto" />
                 )}
               </DropdownMenuItem>
@@ -66,5 +73,18 @@ export function PropertySwitcher({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
+  )
+}
+
+export function PropertySwitcherSkeleton() {
+  return (
+    <Skeleton className="flex h-12 items-center gap-2 p-2">
+      <div className="aspect-square size-8 rounded-lg bg-foreground/5" />
+      <div className="flex w-full flex-col gap-2">
+        <div className="h-2 w-2/3 rounded-full bg-foreground/5" />
+        <div className="h-2 w-1/3 rounded-full bg-foreground/5" />
+      </div>
+      <div className="mr-1 h-4 w-3 rounded-full bg-foreground/5" />
+    </Skeleton>
   )
 }

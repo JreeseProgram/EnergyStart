@@ -1,8 +1,19 @@
 package com.energystart.prod.energy;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -11,6 +22,7 @@ public class EnergyReport {
 
     @Id
     private String ID;
+    private String relatedPropertyID;
     //low-rise stories 1-4; mid-rise 5-9; high-rise 10+
     public enum BUILDING_HEIGHT_TYPES {
         lowRise,
@@ -33,9 +45,10 @@ public class EnergyReport {
         setYearOfConstruction(yearOfConstruction);
     }
 
-    public EnergyReport(String ID, List<EnergyMeter> energyMeters, float energyScore,
+    public EnergyReport(String ID, String relatedPropertyID, List<EnergyMeter> energyMeters, float energyScore,
                         int grossFloorArea, int parkingSize, int yearOfConstruction) {
         setID(ID);
+        setRelatedPropertyID(relatedPropertyID);
         setEnergyMeters(energyMeters);
         setEnergyScore(energyScore);
         setGrossFloorArea(grossFloorArea);
@@ -53,6 +66,108 @@ public class EnergyReport {
     public float calcEnergyScore() {
         return -1f;
     }
+    /**
+     * @param zipcode Provide the 5 digit zipcode for the request
+     * @param startDate Start date for query (YYYY-MM-DD LocalDate)
+     * @param endDate End date for query (YYYY-MM-DD LocalDate)
+     * @return Index 0 is CDD, Index 1 is HDD
+    */
+    public static Integer[] retrieveCDDHDD(int zipcode, LocalDate startDate, LocalDate endDate) {
+        Integer[] result = new Integer[] {-1,-1};
+        try {
+            double cdd = 0.0;
+            double hdd = 0.0;
+            double latitude = 0.0;
+            double longitude = 0.0;
+
+            //Must convert Zipcode to Coordinates for open-mateo
+            //Can be easily updated via country code if scope changes
+            String zipURL = "https://api.zippopotam.us/us/" + zipcode;
+            URL zipContainer = URI.create(zipURL).toURL();
+            HttpURLConnection zipCon = (HttpURLConnection) zipContainer.openConnection();
+            zipCon.setRequestMethod("GET");
+
+            if(zipCon.getResponseCode() != 200) {
+                System.out.println("Zip code retrieval failed: "
+                        + zipCon.getResponseMessage());
+                return result;
+            }
+
+            BufferedReader zipReader = new BufferedReader(
+                    new InputStreamReader(zipCon.getInputStream(), StandardCharsets.UTF_8));
+            Gson gson = new Gson();
+            JsonObject zipJson = gson.fromJson(zipReader, JsonObject.class);
+            zipReader.close();
+            zipCon.disconnect();
+
+            longitude = zipJson.getAsJsonArray("places")
+                    .get(0)
+                    .getAsJsonObject()
+                    .get("longitude")
+                    .getAsDouble();
+            latitude = zipJson.getAsJsonArray("places")
+                    .get(0)
+                    .getAsJsonObject()
+                    .get("latitude")
+                    .getAsDouble();
+
+            //Structured URL for temperature data
+            String queryURL = "https://archive-api.open-meteo.com/v1/archive"
+                    + "?latitude=" + latitude
+                    + "&longitude=" + longitude
+                    + "&start_date=" + startDate
+                    + "&end_date=" + endDate
+                    + "&timezone=auto"
+                    + "&daily=temperature_2m_max,temperature_2m_min"
+                    + "&temperature_unit=fahrenheit";
+            //Connect and Retrieve info
+            URL url = URI.create(queryURL).toURL();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            if(connection.getResponseCode() != 200){
+                System.out.println("Unexpected Response code: " + connection.getResponseMessage());
+                return result;
+            }
+
+            BufferedReader weatherReader = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+
+            JsonObject weatherJson = gson.fromJson(weatherReader, JsonObject.class);
+            weatherReader.close();
+            connection.disconnect();
+
+            //Extract Data and compute a mean for each day
+            JsonObject dailyWeather = weatherJson.getAsJsonObject("daily");
+            JsonArray maxTemps = dailyWeather.getAsJsonArray("temperature_2m_max");
+            JsonArray minTemps = dailyWeather.getAsJsonArray("temperature_2m_min");
+
+            for (int i = 0; i < maxTemps.size(); i++) {
+                if(maxTemps.get(i).isJsonNull() || minTemps.get(i).isJsonNull()) {
+                    continue;
+                }
+                double maxTemp = maxTemps.get(i).getAsDouble();
+                double minTemp = minTemps.get(i).getAsDouble();
+
+                double meanTemp = (maxTemp + minTemp) / 2;
+
+                if(meanTemp > 65.0) {
+                    cdd += (meanTemp - 65.0);
+                } else {
+                    hdd += (65.0 - meanTemp);
+                }
+
+            }
+
+            result[0] = (int) Math.round(cdd);
+            result[1] = (int) Math.round(hdd);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return result;
+        }
+        return result;
+    }
 
     //Getters and Setters
 
@@ -63,6 +178,14 @@ public class EnergyReport {
 
     public void setID(String ID) {
         this.ID = ID;
+    }
+
+    public String getRelatedPropertyID() {
+        return relatedPropertyID;
+    }
+
+    public void setRelatedPropertyID(String relatedPropertyID) {
+        this.relatedPropertyID = relatedPropertyID;
     }
 
     public List<EnergyMeter> getEnergyMeters() {

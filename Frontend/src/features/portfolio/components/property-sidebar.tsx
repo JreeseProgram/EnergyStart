@@ -1,34 +1,22 @@
 import * as React from "react"
 import { NavSidebar } from "@/components/navigation/nav-sidebar"
-
 import { Sidebar, SidebarContent, SidebarHeader } from "@/components/ui/sidebar"
-import { PropertySwitcher } from "@/features/portfolio/components/property-switcher"
-import { Property } from "@/features/portfolio/models/property.models"
-
-const properties = [
-  {
-    id: crypto.randomUUID(),
-    name: "Lake Eola Offices",
-  },
-  {
-    id: crypto.randomUUID(),
-    name: "Central Shopping Center",
-  },
-].map((property) => Property.parse(property))
+import { PropertySwitcherCell } from "@/features/portfolio/cells/properties-switcher.cell"
+import { Navigate, useParams } from "react-router"
+import { paths } from "@/config/paths"
 
 export function PropertySidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  const { propertyId } = useParams<{ propertyId: string }>()
+  if (!propertyId) return <Navigate to={paths.app.properties.getHref()} />
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
-        <PropertySwitcher
-          properties={properties}
-          defaultProperty={properties[0]}
-        />
+        <PropertySwitcherCell />
       </SidebarHeader>
       <SidebarContent>
-        <NavSidebar propertyId="test" />
+        <NavSidebar propertyId={propertyId} />
       </SidebarContent>
     </Sidebar>
   )

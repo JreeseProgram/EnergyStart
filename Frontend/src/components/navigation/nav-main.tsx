@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button"
 import { ButtonGroup } from "@/components/ui/button-group"
 
 import { paths } from "@/config/paths"
+import { PropertyModal } from "@/features/portfolio/modals/property.modal"
 import { LayoutGrid, MapPinned, PlusIcon } from "lucide-react"
-import type { ReactNode } from "react"
 import { Link } from "react-router"
 
 export type NavMainItem = {
@@ -23,33 +23,22 @@ export function NavMain() {
         <LayoutGrid />
         <span>{"Dashbaord"}</span>
       </Button>
-      <AddPropertyButton action={() => {}}>
+      <ButtonGroup>
         <Button
           render={<Link to={paths.app.properties.getHref()} />}
           variant={"outline"}
         >
           <MapPinned />
-          <span>{"Properties"}</span>
+          <span>Properties</span>
         </Button>
-      </AddPropertyButton>
+        <PropertyModal
+          render={
+            <Button variant="outline" size="icon">
+              <PlusIcon />
+            </Button>
+          }
+        />
+      </ButtonGroup>
     </div>
-  )
-}
-
-// TODO: Eventually this will move to Portfolio feature folder once api service is ready
-function AddPropertyButton({
-  action,
-  children,
-}: {
-  children: ReactNode
-  action: () => void
-}) {
-  return (
-    <ButtonGroup>
-      {children}
-      <Button variant="outline" size="icon" onClick={action}>
-        <PlusIcon />
-      </Button>
-    </ButtonGroup>
   )
 }

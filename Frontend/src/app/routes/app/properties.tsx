@@ -1,15 +1,25 @@
 import { ContentLayout } from "@/components/layouts/content-layout"
-import { Link } from "@/components/ui/link"
-import { paths } from "@/config/paths"
+import { Button } from "@/components/ui/button"
+import { PropertiesListCell } from "@/features/portfolio/cells/properties-list.cell"
+import { PropertyModal } from "@/features/portfolio/modals/property.modal"
+import { Plus } from "lucide-react"
 
 const PropertiesRoute = () => {
   return (
-    <ContentLayout title="Properties">
-      <div className="flex flex-col items-center justify-center gap-4 py-4 md:gap-6 md:py-6">
-        <Link to={paths.app.property.root.getHref("TEST")}>
-          To property details
-        </Link>
-      </div>
+    <ContentLayout
+      title="Properties"
+      description="Manage portfolio properties, performance, and associated records."
+      action={
+        <PropertyModal
+          render={
+            <Button>
+              Add Proprerty <Plus />
+            </Button>
+          }
+        />
+      }
+    >
+      <PropertiesListCell />
     </ContentLayout>
   )
 }
