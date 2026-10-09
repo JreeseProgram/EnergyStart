@@ -14,7 +14,7 @@ export function SidebarLayout({
       <main className="flex min-w-0 flex-1 flex-col bg-background">
         <div
           className={cn(
-            "@container/main mx-auto flex w-full flex-1 flex-col gap-2 px-4 py-6 sm:px-6 lg:px-10 lg:py-8",
+            "@container/main mx-auto flex w-full flex-1 flex-col gap-2 px-4 sm:px-6",
             sidebar && "container"
           )}
         >
