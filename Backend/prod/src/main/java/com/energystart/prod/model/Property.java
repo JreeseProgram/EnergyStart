@@ -13,8 +13,10 @@ public class Property {
     private String id;
 
     private Integer humanReadablePropertyId;
-    private String address;
-    private String zipcode;
+    private String streetAddress;
+    private String city;
+    private String state;
+    private Integer zipcode;
     private String notes;
 
     // WorkOS user IDs allowed to access this property.
@@ -23,16 +25,20 @@ public class Property {
     public Property() {
     }
 
-    // Keep the constructor used by the team's existing code.
     public Property(
             String id,
             Integer humanReadablePropertyId,
-            String address,
+            String streetAddress,
+            String city,
+            String state,
+            Integer zipcode,
             String notes) {
-
         this.id = id;
         this.humanReadablePropertyId = humanReadablePropertyId;
-        this.address = address;
+        this.streetAddress = streetAddress;
+        this.city = city;
+        this.state = state;
+        this.zipcode = zipcode;
         this.notes = notes;
     }
 
@@ -52,19 +58,35 @@ public class Property {
         this.humanReadablePropertyId = humanReadablePropertyId;
     }
 
-    public String getAddress() {
-        return address;
+    public String getStreetAddress() {
+        return streetAddress;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setStreetAddress(String streetAddress) {
+        this.streetAddress = streetAddress;
     }
 
-    public String getZipcode() {
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public Integer getZipcode() {
         return zipcode;
     }
 
-    public void setZipcode(String zipcode) {
+    public void setZipcode(Integer zipcode) {
         this.zipcode = zipcode;
     }
 

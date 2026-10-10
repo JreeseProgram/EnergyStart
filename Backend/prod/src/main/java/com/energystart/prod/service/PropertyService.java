@@ -15,20 +15,18 @@ public class PropertyService {
     // Temporary storage until the team's MongoDB repository is connected.
     private final List<Property> properties = new ArrayList<>();
 
-    public synchronized Property addProperty(
-            Property request,
-            String userId) {
-
+    public synchronized Property addProperty(Property request, String userId) {
         requireUser(userId);
 
         Property property = new Property(
                 UUID.randomUUID().toString(),
                 request.getHumanReadablePropertyId(),
-                request.getAddress(),
+                request.getStreetAddress(),
+                request.getCity(),
+                request.getState(),
+                request.getZipcode(),
                 request.getNotes()
         );
-
-        property.setZipcode(request.getZipcode());
 
         // Grant access using the verified login ID.
         property.setAuthorizedUserIds(List.of(userId));
@@ -48,23 +46,19 @@ public class PropertyService {
                 .toList();
     }
 
-    public synchronized Property getPropertyById(
-            String id,
-            String userId) {
-
+    public synchronized Property getPropertyById(String id, String userId) {
         return copy(requireAccess(id, userId));
     }
 
     public synchronized Property updateProperty(
-            String id,
-            Property request,
-            String userId) {
-
+            String id, Property request, String userId) {
         Property existing = requireAccess(id, userId);
 
         existing.setHumanReadablePropertyId(
                 request.getHumanReadablePropertyId());
-        existing.setAddress(request.getAddress());
+        existing.setStreetAddress(request.getStreetAddress());
+        existing.setCity(request.getCity());
+        existing.setState(request.getState());
         existing.setZipcode(request.getZipcode());
         existing.setNotes(request.getNotes());
 
@@ -72,10 +66,7 @@ public class PropertyService {
         return copy(existing);
     }
 
-    public synchronized Property deleteProperty(
-            String id,
-            String userId) {
-
+    public synchronized Property deleteProperty(String id, String userId) {
         Property existing = requireAccess(id, userId);
         properties.remove(existing);
 
@@ -89,15 +80,12 @@ public class PropertyService {
                 .filter(candidate -> candidate.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Property not found."
-                ));
+                        HttpStatus.NOT_FOUND, "Property not found."));
 
         if (!property.getAuthorizedUserIds().contains(userId)) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    "You do not have access to this property."
-            );
+                    "You do not have access to this property.");
         }
 
         return property;
@@ -107,8 +95,7 @@ public class PropertyService {
         if (userId == null || userId.isBlank()) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
-                    "Authentication is required."
-            );
+                    "Authentication is required.");
         }
     }
 
@@ -116,13 +103,14 @@ public class PropertyService {
         Property result = new Property(
                 original.getId(),
                 original.getHumanReadablePropertyId(),
-                original.getAddress(),
+                original.getStreetAddress(),
+                original.getCity(),
+                original.getState(),
+                original.getZipcode(),
                 original.getNotes()
         );
 
-        result.setZipcode(original.getZipcode());
         result.setAuthorizedUserIds(original.getAuthorizedUserIds());
-
         return result;
     }
 }

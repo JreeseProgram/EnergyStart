@@ -16,11 +16,8 @@ class PropertyServiceTests {
 
     private Property request() {
         return new Property(
-                null,
-                1001,
-                "123 Main Street",
-                "Test property"
-        );
+                null, 1001, "123 Main Street",
+                "Orlando", "FL", 32801, "Test property");
     }
 
     @Test
@@ -30,14 +27,17 @@ class PropertyServiceTests {
         request.setAuthorizedUserIds(List.of("user_other"));
 
         Property created = service.addProperty(request, "user_owner");
+        Property stored = service.getPropertyById(
+                created.getId(), "user_owner");
 
         assertNotNull(created.getId());
         assertNotEquals("submitted-id", created.getId());
         assertEquals(List.of("user_owner"), created.getAuthorizedUserIds());
-        assertEquals(
-                created.getId(),
-                service.getPropertyById(created.getId(), "user_owner").getId()
-        );
+        assertEquals(created.getId(), stored.getId());
+        assertEquals("123 Main Street", stored.getStreetAddress());
+        assertEquals("Orlando", stored.getCity());
+        assertEquals("FL", stored.getState());
+        assertEquals(Integer.valueOf(32801), stored.getZipcode());
     }
 
     @Test
@@ -57,8 +57,7 @@ class PropertyServiceTests {
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> service.getPropertyById(created.getId(), "user_other")
-        );
+                () -> service.getPropertyById(created.getId(), "user_other"));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
     }
@@ -67,21 +66,20 @@ class PropertyServiceTests {
     void anotherUserCannotEditOrGiveThemselvesAccess() {
         Property created = service.addProperty(request(), "user_owner");
         Property update = request();
-        update.setAddress("Unauthorized change");
+        update.setStreetAddress("Unauthorized change");
         update.setAuthorizedUserIds(List.of("user_other"));
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
                 () -> service.updateProperty(
-                        created.getId(), update, "user_other")
-        );
+                        created.getId(), update, "user_other"));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
 
         Property stored = service.getPropertyById(
                 created.getId(), "user_owner");
 
-        assertEquals("123 Main Street", stored.getAddress());
+        assertEquals("123 Main Street", stored.getStreetAddress());
         assertEquals(List.of("user_owner"), stored.getAuthorizedUserIds());
     }
 
@@ -91,8 +89,7 @@ class PropertyServiceTests {
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> service.deleteProperty(created.getId(), "user_other")
-        );
+                () -> service.deleteProperty(created.getId(), "user_other"));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
         assertNotNull(service.getPropertyById(created.getId(), "user_owner"));
@@ -103,27 +100,33 @@ class PropertyServiceTests {
         Property created = service.addProperty(request(), "user_owner");
         Property update = request();
         update.setId("replacement-id");
-        update.setAddress("456 Updated Street");
+        update.setStreetAddress("456 Updated Street");
+        update.setCity("Miami");
+        update.setState("FL");
+        update.setZipcode(33101);
         update.setAuthorizedUserIds(List.of("user_other"));
 
         Property updated = service.updateProperty(
                 created.getId(), update, "user_owner");
+        Property stored = service.getPropertyById(
+                created.getId(), "user_owner");
 
         assertEquals(created.getId(), updated.getId());
-        assertEquals("456 Updated Street", updated.getAddress());
-        assertEquals(List.of("user_owner"), updated.getAuthorizedUserIds());
+        assertEquals("456 Updated Street", stored.getStreetAddress());
+        assertEquals("Miami", stored.getCity());
+        assertEquals("FL", stored.getState());
+        assertEquals(Integer.valueOf(33101), stored.getZipcode());
+        assertEquals(List.of("user_owner"), stored.getAuthorizedUserIds());
     }
 
     @Test
     void authorizedUserCanDeleteProperty() {
         Property created = service.addProperty(request(), "user_owner");
-
         service.deleteProperty(created.getId(), "user_owner");
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> service.getPropertyById(created.getId(), "user_owner")
-        );
+                () -> service.getPropertyById(created.getId(), "user_owner"));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
     }
@@ -143,8 +146,7 @@ class PropertyServiceTests {
     void missingUserIsRejected() {
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> service.addProperty(request(), "")
-        );
+                () -> service.addProperty(request(), ""));
 
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());
     }
