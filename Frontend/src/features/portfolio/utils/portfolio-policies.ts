@@ -1,16 +1,14 @@
-import type { Building } from "@/features/portfolio/models/building.models"
+import type { Property } from "@/features/portfolio/models/property.models"
 import type { User } from "@/features/portfolio/models/user.models"
 
-export const POLICIES = {
-  "building:delete": (user: User, building: Building) => {
-    if (!user) {
-      return false
-    }
+const ownsProperty = (user: User | null | undefined, property: Property) =>
+  user != null && property.owner.id === user.id
 
-    if (building.owner?.id === user.id) {
-      return true
-    }
-
-    return false
-  },
+export const PROPERTY_POLICIES = {
+  "property:view": ownsProperty,
+  "property:edit": ownsProperty,
+  "property:delete": ownsProperty,
+  "building:view": ownsProperty,
+  "building:edit": ownsProperty,
+  "building:delete": ownsProperty,
 }
