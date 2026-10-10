@@ -48,7 +48,7 @@ public class WarehouseReport extends EnergyReport {
         float percentColdStorage = this.getPercentColdStorage();
 
         Property associatedProperty = repo.findById(this.getRelatedPropertyID()).orElse(null);
-        Integer[] cddhdd = EnergyReport.retrieveCDDHDD(Integer.parseInt(associatedProperty.getZipcode()), startDate, endDate);
+        Integer[] cddhdd = EnergyReport.retrieveCDDHDD(associatedProperty.getZipcode(), startDate, endDate);
         float cooled = cddhdd[0] * (this.getPercentCooled()+ percentColdStorage);
         float heated = cddhdd[1] * this.getPercentHeated();
 

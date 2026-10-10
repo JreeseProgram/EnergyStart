@@ -22,9 +22,10 @@ public class Property {
 
     private Integer humanReadablePropertyId;
 
-    private String address;
-    
-    private String zipcode;
+    private String streetAddress;
+    private String city;
+    private String state;
+    private Integer zipcode;
 
     private String notes;
 
@@ -38,12 +39,18 @@ public class Property {
     public Property(
             String id,
             Integer humanReadablePropertyId,
-            String address,
+            String streetAddress,
+            String city,
+            String state,
+            Integer zipcode,
             String notes) {
 
         this.id = id;
         this.humanReadablePropertyId = humanReadablePropertyId;
-        this.address = address;
+        this.streetAddress = streetAddress;
+        this.city = city;
+        this.state = state;
+        this.zipcode = zipcode;
         this.notes = notes;
     }
 
@@ -68,14 +75,37 @@ public class Property {
     }
 
 
-    public String getAddress() {
-        return address;
+    public String getStreetAddress() {
+        return streetAddress;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setStreetAddress(String streetAddress) {
+        this.streetAddress = streetAddress;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public Integer getZipcode() {
+        return zipcode;
+    }
+
+    public void setZipcode(Integer zipcode) {
+        this.zipcode = zipcode;
+    }
 
     public String getNotes() {
         return notes;
@@ -83,13 +113,5 @@ public class Property {
 
     public void setNotes(String notes) {
         this.notes = notes;
-    }
-
-    public String getZipcode() {
-        return zipcode;
-    }
-
-    public void setZipcode(String zipcode) {
-        this.zipcode = zipcode;
     }
 }
