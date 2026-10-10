@@ -3,6 +3,11 @@ package com.energystart.prod.energy;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.energystart.prod.energy.report_types.*;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,8 +22,37 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 
+
 @Document("EnergyReports")
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "reportType"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = BankBranchReport.class, name = "BANK_BRANCH"),
+        @JsonSubTypes.Type(value = ConvenienceStoreReport.class, name = "CONVENIENCE_STORE"),
+        @JsonSubTypes.Type(value = CourtHouseReport.class, name = "COURT_HOUSE"),
+        @JsonSubTypes.Type(value = DataCenterReport.class, name = "DATA_CENTER"),
+        @JsonSubTypes.Type(value = DistributionCenterReport.class, name = "DISTRIBUTION_CENTER"),
+        @JsonSubTypes.Type(value = FinancialOfficeReport.class, name = "FINANCIAL_OFFICE"),
+        @JsonSubTypes.Type(value = HospitalReport.class, name = "HOSPITAL"),
+        @JsonSubTypes.Type(value = HotelReport.class, name = "HOTEL"),
+        @JsonSubTypes.Type(value = MedicalOfficeReport.class, name = "MEDICAL_OFFICE"),
+        @JsonSubTypes.Type(value = MultifamilyHousingReport.class, name = "MULTIFAMILY_HOUSING"),
+        @JsonSubTypes.Type(value = OfficeReport.class, name = "OFFICE"),
+        @JsonSubTypes.Type(value = RetailStoreReport.class, name = "RETAIL_STORE"),
+        @JsonSubTypes.Type(value = SchoolReport.class, name = "SCHOOL"),
+        @JsonSubTypes.Type(value = SeniorLivingCommunityReport.class, name = "SENIOR_LIVING_COMMUNITY"),
+        @JsonSubTypes.Type(value = SupermarketReport.class, name = "SUPERMARKET"),
+        @JsonSubTypes.Type(value = VehicleDealershipReport.class, name = "VEHICLE_DEALERSHIP"),
+        @JsonSubTypes.Type(value = WarehouseRefrigeratedReport.class, name = "WAREHOUSE_REFRIGERATED"),
+        @JsonSubTypes.Type(value = WarehouseReport.class, name = "WAREHOUSE"),
+        @JsonSubTypes.Type(value = WholesaleClubReport.class, name = "WHOLESALE_CLUB"),
+        @JsonSubTypes.Type(value = WorshipFacilityReport.class, name = "WORSHIP_FACILITY")
+})
 public class EnergyReport {
+
 
     @Id
     private String ID;
