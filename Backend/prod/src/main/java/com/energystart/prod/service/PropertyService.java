@@ -1,191 +1,116 @@
 package com.energystart.prod.service;
 
 import com.energystart.prod.model.Property;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PropertyService {
 
-    /*
-     * Temporary list used as our prototype database.
-     *
-     * Later this List will be replaced with a MongoDB repository.
-     */
+    // Temporary storage until the team's MongoDB repository is connected.
     private final List<Property> properties = new ArrayList<>();
 
+    public synchronized Property addProperty(Property request, String userId) {
+        requireUser(userId);
 
-    // ============================================================
-    // TEST DATA
-    // ============================================================
-
-
-    public PropertyService() {
-
-        Property property1 = new Property(
-                "1",
-                1001,
-                "123 Main Street",
-                "Orlando",
-                "FL",
-                32801,
-                "Downtown commercial property."
+        Property property = new Property(
+                UUID.randomUUID().toString(),
+                request.getHumanReadablePropertyId(),
+                request.getStreetAddress(),
+                request.getCity(),
+                request.getState(),
+                request.getZipcode(),
+                request.getNotes()
         );
 
-        Property property2 = new Property(
-                "2",
-                1002,
-                "456 Orange Avenue",
-                "Orlando",
-                "FL",
-                32801,
-                "Office building."
-        );
+        // Grant access using the verified login ID.
+        property.setAuthorizedUserIds(List.of(userId));
+        properties.add(property);
 
-        Property property3 = new Property(
-                "3",
-                1003,
-                "789 Colonial Drive",
-                "Orlando",
-                "FL",
-                32803,
-                "Multi-purpose commercial property."
-        );
-
-        Property property4 = new Property(
-                "4",
-                1004,
-                "2500 International Drive",
-                "Orlando",
-                "FL",
-                32819,
-                "Large commercial property."
-        );
-
-        // Add test properties to our temporary database
-        properties.add(property1);
-        properties.add(property2);
-        properties.add(property3);
-        properties.add(property4);
+        return copy(property);
     }
 
+    public synchronized List<Property> getAllProperties(String userId) {
+        requireUser(userId);
 
+        // Only return properties this user can access.
+        return properties.stream()
+                .filter(property ->
+                        property.getAuthorizedUserIds().contains(userId))
+                .map(this::copy)
+                .toList();
+    }
 
-    // ============================================================
-    // CREATE
-    // ============================================================
+    public synchronized Property getPropertyById(String id, String userId) {
+        return copy(requireAccess(id, userId));
+    }
 
-    /**
-     * Creates a new property.
-     *
-     * POST /api/properties
-     */
-    public Property addProperty(Property property) {
+    public synchronized Property updateProperty(
+            String id, Property request, String userId) {
+        Property existing = requireAccess(id, userId);
 
-        properties.add(property);
+        existing.setHumanReadablePropertyId(
+                request.getHumanReadablePropertyId());
+        existing.setStreetAddress(request.getStreetAddress());
+        existing.setCity(request.getCity());
+        existing.setState(request.getState());
+        existing.setZipcode(request.getZipcode());
+        existing.setNotes(request.getNotes());
+
+        // Keep the existing ID and access list.
+        return copy(existing);
+    }
+
+    public synchronized Property deleteProperty(String id, String userId) {
+        Property existing = requireAccess(id, userId);
+        properties.remove(existing);
+
+        return copy(existing);
+    }
+
+    private Property requireAccess(String id, String userId) {
+        requireUser(userId);
+
+        Property property = properties.stream()
+                .filter(candidate -> candidate.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Property not found."));
+
+        if (!property.getAuthorizedUserIds().contains(userId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "You do not have access to this property.");
+        }
 
         return property;
     }
 
-
-    // ============================================================
-    // READ - ALL
-    // ============================================================
-
-    /**
-     * Retrieves all properties.
-     *
-     * GET /api/properties
-     */
-    public List<Property> getAllProperties() {
-
-        return properties;
+    private void requireUser(String userId) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Authentication is required.");
+        }
     }
 
+    private Property copy(Property original) {
+        Property result = new Property(
+                original.getId(),
+                original.getHumanReadablePropertyId(),
+                original.getStreetAddress(),
+                original.getCity(),
+                original.getState(),
+                original.getZipcode(),
+                original.getNotes()
+        );
 
-    // ============================================================
-    // READ - ONE
-    // ============================================================
-
-    /**
-     * Retrieves one property by its MongoDB-style ID.
-     *
-     * GET /api/properties/{id}
-     */
-    public Property getPropertyById(String id) {
-
-        for (Property property : properties) {
-
-            if (property.getId().equals(id)) {
-
-                return property;
-            }
-        }
-
-        return null;
-    }
-
-
-    // ============================================================
-    // UPDATE
-    // ============================================================
-
-    /**
-     * Updates an existing property.
-     *
-     * PUT /api/properties/{id}
-     */
-    public Property updateProperty(
-            String id,
-            Property updatedProperty) {
-
-        for (int i = 0; i < properties.size(); i++) {
-
-            Property existingProperty = properties.get(i);
-
-            if (existingProperty.getId().equals(id)) {
-
-                /*
-                 * Make sure the ID from the URL remains the ID
-                 * of the property being updated.
-                 */
-                updatedProperty.setId(id);
-
-                properties.set(i, updatedProperty);
-
-                return updatedProperty;
-            }
-        }
-
-        return null;
-    }
-
-
-    // ============================================================
-    // DELETE
-    // ============================================================
-
-    /**
-     * Deletes an existing property.
-     *
-     * DELETE /api/properties/{id}
-     */
-    public Property deleteProperty(String id) {
-
-        for (int i = 0; i < properties.size(); i++) {
-
-            Property property = properties.get(i);
-
-            if (property.getId().equals(id)) {
-
-                properties.remove(i);
-
-                return property;
-            }
-        }
-
-        return null;
+        result.setAuthorizedUserIds(original.getAuthorizedUserIds());
+        return result;
     }
 }

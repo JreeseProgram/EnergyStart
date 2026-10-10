@@ -2,6 +2,8 @@ package com.energystart.prod.controller;
 
 import com.energystart.prod.model.Property;
 import com.energystart.prod.service.PropertyService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,94 +14,51 @@ public class PropertyController {
 
     private final PropertyService propertyService;
 
-
-    // Constructor injection
     public PropertyController(PropertyService propertyService) {
-
         this.propertyService = propertyService;
     }
 
-
-    // ============================================================
-    // CREATE
-    // ============================================================
-
-    /**
-     * POST /api/properties
-     *
-     * Creates a new property.
-     */
     @PostMapping
-    public Property createProperty(@RequestBody Property property) {
+    public Property createProperty(
+            @RequestBody Property property,
+            @AuthenticationPrincipal Jwt jwt) {
 
-        return propertyService.addProperty(property);
+        return propertyService.addProperty(property, jwt.getSubject());
     }
 
-
-    // ============================================================
-    // READ - ALL
-    // ============================================================
-
-    /**
-     * GET /api/properties
-     *
-     * Retrieves all properties.
-     */
     @GetMapping
-    public List<Property> getAllProperties() {
+    public List<Property> getAllProperties(
+            @AuthenticationPrincipal Jwt jwt) {
 
-        return propertyService.getAllProperties();
+        return propertyService.getAllProperties(jwt.getSubject());
     }
 
-
-    // ============================================================
-    // READ - ONE
-    // ============================================================
-
-    /**
-     * GET /api/properties/{id}
-     *
-     * Retrieves one property by ID.
-     */
     @GetMapping("/{id}")
     public Property getPropertyById(
-            @PathVariable String id) {
+            @PathVariable String id,
+            @AuthenticationPrincipal Jwt jwt) {
 
-        return propertyService.getPropertyById(id);
+        return propertyService.getPropertyById(id, jwt.getSubject());
     }
 
-
-    // ============================================================
-    // UPDATE
-    // ============================================================
-
-    /**
-     * PUT /api/properties/{id}
-     *
-     * Updates an existing property.
-     */
     @PutMapping("/{id}")
     public Property updateProperty(
             @PathVariable String id,
-            @RequestBody Property property) {
+            @RequestBody Property property,
+            @AuthenticationPrincipal Jwt jwt) {
 
-        return propertyService.updateProperty(id, property);
+        return propertyService.updateProperty(
+                id,
+                property,
+                jwt.getSubject()
+        );
     }
 
-
-    // ============================================================
-    // DELETE
-    // ============================================================
-
-    /**
-     * DELETE /api/properties/{id}
-     *
-     * Deletes an existing property.
-     */
     @DeleteMapping("/{id}")
     public Property deleteProperty(
-            @PathVariable String id) {
+            @PathVariable String id,
+            @AuthenticationPrincipal Jwt jwt) {
 
-        return propertyService.deleteProperty(id);
+        return propertyService.deleteProperty(id, jwt.getSubject());
     }
 }

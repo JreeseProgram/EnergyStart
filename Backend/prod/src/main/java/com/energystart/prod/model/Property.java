@@ -1,18 +1,10 @@
-/**
- * Class Name: Property
- * Purpose: To provide a template for the database that will hold
- *          Property documents.
- *
- * During the prototype phase, properties will temporarily be
- * stored in a List inside PropertyService.
- *
- * When MongoDB is added, this class will represent a MongoDB document.
- */
-
 package com.energystart.prod.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Document(collection = "properties")
 public class Property {
@@ -21,21 +13,18 @@ public class Property {
     private String id;
 
     private Integer humanReadablePropertyId;
-
     private String streetAddress;
     private String city;
     private String state;
     private Integer zipcode;
-
     private String notes;
 
+    // WorkOS user IDs allowed to access this property.
+    private List<String> authorizedUserIds = new ArrayList<>();
 
-    // No-argument constructor
     public Property() {
     }
 
-
-    // Constructor
     public Property(
             String id,
             Integer humanReadablePropertyId,
@@ -44,7 +33,6 @@ public class Property {
             String state,
             Integer zipcode,
             String notes) {
-
         this.id = id;
         this.humanReadablePropertyId = humanReadablePropertyId;
         this.streetAddress = streetAddress;
@@ -54,9 +42,6 @@ public class Property {
         this.notes = notes;
     }
 
-
-    // Getters and Setters
-
     public String getId() {
         return id;
     }
@@ -65,7 +50,6 @@ public class Property {
         this.id = id;
     }
 
-
     public Integer getHumanReadablePropertyId() {
         return humanReadablePropertyId;
     }
@@ -73,7 +57,6 @@ public class Property {
     public void setHumanReadablePropertyId(Integer humanReadablePropertyId) {
         this.humanReadablePropertyId = humanReadablePropertyId;
     }
-
 
     public String getStreetAddress() {
         return streetAddress;
@@ -113,5 +96,18 @@ public class Property {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public List<String> getAuthorizedUserIds() {
+        // Return a copy to protect the stored permissions.
+        return authorizedUserIds == null
+                ? new ArrayList<>()
+                : new ArrayList<>(authorizedUserIds);
+    }
+
+    public void setAuthorizedUserIds(List<String> authorizedUserIds) {
+        this.authorizedUserIds = authorizedUserIds == null
+                ? new ArrayList<>()
+                : new ArrayList<>(authorizedUserIds);
     }
 }
