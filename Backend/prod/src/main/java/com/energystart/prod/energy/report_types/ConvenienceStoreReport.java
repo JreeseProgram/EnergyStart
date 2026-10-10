@@ -52,7 +52,7 @@ public class ConvenienceStoreReport extends EnergyReport {
         float lenOpenCloseFreezerPerThousandFt = this.getLengthOfFreezerUnit()/squareFootPerThousand;
         float percentWalkinFreezer = this.getAreaOfWalkInFreezer()/squareFoot;
         Property associatedProperty = repo.findById(this.getRelatedPropertyID()).orElse(null);
-        Integer[] cddhdd = EnergyReport.retrieveCDDHDD(Integer.parseInt(associatedProperty.getZipcode()), startDate, endDate);
+        Integer[] cddhdd = EnergyReport.retrieveCDDHDD(associatedProperty.getZipcode(), startDate, endDate);
         float cooled = cddhdd[0] * this.getPercentCooled();
         float heated = cddhdd[1] * this.getPercentHeated();
 

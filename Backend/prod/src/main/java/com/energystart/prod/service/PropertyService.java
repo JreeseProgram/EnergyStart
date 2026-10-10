@@ -21,36 +21,48 @@ public class PropertyService {
     // TEST DATA
     // ============================================================
 
+
     public PropertyService() {
 
         Property property1 = new Property(
                 "1",
                 1001,
-                "123 Main Street, Orlando, FL 32801",
+                "123 Main Street",
+                "Orlando",
+                "FL",
+                32801,
                 "Downtown commercial property."
         );
 
         Property property2 = new Property(
                 "2",
                 1002,
-                "456 Orange Avenue, Orlando, FL 32801",
+                "456 Orange Avenue",
+                "Orlando",
+                "FL",
+                32801,
                 "Office building."
         );
 
         Property property3 = new Property(
                 "3",
                 1003,
-                "789 Colonial Drive, Orlando, FL 32803",
+                "789 Colonial Drive",
+                "Orlando",
+                "FL",
+                32803,
                 "Multi-purpose commercial property."
         );
 
         Property property4 = new Property(
                 "4",
                 1004,
-                "2500 International Drive, Orlando, FL 32819",
+                "2500 International Drive",
+                "Orlando",
+                "FL",
+                32819,
                 "Large commercial property."
         );
-
 
         // Add test properties to our temporary database
         properties.add(property1);
@@ -58,6 +70,7 @@ public class PropertyService {
         properties.add(property3);
         properties.add(property4);
     }
+
 
 
     // ============================================================
