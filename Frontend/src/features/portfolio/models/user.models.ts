@@ -7,7 +7,7 @@ export const UserId = z.union([z.uuid(), z.string()]).brand("UserId")
 export type User = z.infer<typeof User>
 export const User = BaseEntity(z.uuid()).extend({
   id: UserId,
-  firstName: z.string(),
-  lastName: z.string(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
   email: z.string(),
 })

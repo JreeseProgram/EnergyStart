@@ -30,7 +30,7 @@ export function PropertiesList({ properties }: { properties: Property[] }) {
 
 export function PropertiesListSkeleton() {
   return (
-    <div className="relative isolate max-h-[calc(100vh-var(--header-height)-8rem)] overflow-hidden">
+    <div className="relative isolate max-h-[calc(100vh-var(--header-height)-10rem)] overflow-hidden">
       <Grid>
         {Array.from({ length: 12 }, (_, index) => (
           <PropertyCardSkeleton key={`property_card_skeleton_${index}`} />

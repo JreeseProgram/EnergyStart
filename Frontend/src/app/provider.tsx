@@ -7,9 +7,9 @@ import { Spinner } from "@/components/ui/spinner"
 import { queryConfig } from "@/lib/react-query"
 import { AuthLoader } from "@/features/auth/context/auth.context"
 import { MainErrorFallback } from "@/components/errors/main"
-import { ServicesProvider } from "@/context/services.context"
 import WorkOsProvider from "@/lib/work-os"
 import { Toaster } from "@/components/ui/toast"
+import { ServicesProvider } from "@/testing/context/services-test.context"
 
 type AppProviderProps = {
   children: React.ReactNode
