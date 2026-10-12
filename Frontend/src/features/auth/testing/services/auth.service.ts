@@ -1,22 +1,31 @@
+import { paths } from "@/config/paths"
 import { AuthenticatedUser } from "@/features/auth/models/auth.models"
 import type { AuthService } from "@/features/auth/services/auth.service"
-import { useState } from "react"
+
+const SESSION_KEY = "energy-start:test-auth:authenticated"
+
+export const testUser = AuthenticatedUser.parse({
+  id: crypto.randomUUID(),
+  createdAt: new Date().toISOString(),
+  email: "luke-skywalker@jmail.com",
+  firstName: "Luke",
+  lastName: "Skywalker",
+})
 
 export function useAuthService(): AuthService {
-  const [user, setUser] = useState<AuthenticatedUser | null>(null)
-
-  const testUser = AuthenticatedUser.parse({
-    id: "user-123",
-    createdAt: new Date().toISOString(),
-    email: "test@test.com",
-    firstName: "test",
-    lastName: "test",
-  })
+  const login = async () => {
+    // Preserve the mock session across the redirect, like the real auth flow.
+    sessionStorage.setItem(SESSION_KEY, "true")
+    window.location.assign(paths.app.dashboard.getHref())
+  }
 
   return {
-    getCurrentUser: async () => user,
-    login: async () => setUser(testUser),
-    logout: async () => setUser(null),
-    register: async () => setUser(testUser),
+    getCurrentUser: async () =>
+      sessionStorage.getItem(SESSION_KEY) === "true" ? testUser : null,
+    login,
+    logout: async () => {
+      sessionStorage.removeItem(SESSION_KEY)
+    },
+    register: login,
   } satisfies AuthService
 }
