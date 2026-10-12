@@ -1,3 +1,4 @@
+import { testUser } from "@/features/auth/testing/services/auth.service"
 import {
   Property,
   PropertyId,
@@ -6,10 +7,11 @@ import {
 import { type PropertyService } from "@/features/portfolio/services/property.service"
 import { delay } from "@/utils/delay"
 import React from "react"
+import z from "zod"
 
-const defaultProperties = [
-  Property.parse({
-    id: crypto.randomUUID(),
+export const defaultProperties = [
+  {
+    id: "a0ed477e-df48-4e5a-9c79-2323c5df5301",
     createdAt: new Date().toISOString(),
     name: "Lake Eola Offices",
     notes: "",
@@ -19,10 +21,10 @@ const defaultProperties = [
     streetAddress: "123 Address",
     zip: "12345",
     energyStarScore: 86,
-  }),
+  },
 
-  Property.parse({
-    id: crypto.randomUUID(),
+  {
+    id: "a0ed477e-df48-4e5a-9c79-2323c5df5302",
     createdAt: new Date().toISOString(),
     name: "Mills 50 Market",
     notes: "",
@@ -32,10 +34,10 @@ const defaultProperties = [
     streetAddress: "123 Address",
     zip: "12345",
     energyStarScore: 50,
-  }),
+  },
 
-  Property.parse({
-    id: crypto.randomUUID(),
+  {
+    id: "a0ed477e-df48-4e5a-9c79-2323c5df5303",
     createdAt: new Date().toISOString(),
     name: "Sunrail Commons",
     notes: "",
@@ -45,10 +47,10 @@ const defaultProperties = [
     streetAddress: "123 Address",
     zip: "12345",
     energyStarScore: 91,
-  }),
+  },
 
-  Property.parse({
-    id: crypto.randomUUID(),
+  {
+    id: "a0ed477e-df48-4e5a-9c79-2323c5df5304",
     createdAt: new Date().toISOString(),
     name: "Cypress Logistics",
     notes: "",
@@ -58,22 +60,40 @@ const defaultProperties = [
     streetAddress: "123 Address",
     zip: "12345",
     energyStarScore: 24,
-  }),
+  },
 ]
 
+const SERVER_DELAY = 300
+
 export function usePropertyService(): PropertyService {
-  const properties = React.useRef<Property[]>(defaultProperties)
+  const properties = React.useRef<Property[]>(
+    z.array(Property).parse(
+      defaultProperties.map((prop) => ({
+        ...prop,
+        owner: testUser,
+      }))
+    )
+  )
 
   return {
     getProperties: async () => {
-      await delay(500)
+      await delay(SERVER_DELAY)
       return properties.current
     },
+    getProperty: async ({ propertyId }) => {
+      await delay(SERVER_DELAY)
+      const property = properties.current.find(
+        (property) => property.id === propertyId
+      )
+      if (!property) throw new Error(`Building ${propertyId} not found`)
+      return property
+    },
     createProperty: async (input) => {
-      await delay(500)
+      await delay(SERVER_DELAY)
       const property = Property.parse({
         id: PropertyId.parse(crypto.randomUUID()),
         createdAt: new Date().toISOString(),
+        owner: testUser,
         ...input,
       })
       properties.current = [...properties.current, property]
