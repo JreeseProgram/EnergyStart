@@ -13,6 +13,7 @@ import {
   STATES,
 } from "@/features/portfolio/utils/form-constants"
 import { useCreateProperty } from "@/features/portfolio/api/create-property.api"
+import { useUpdateProperty } from "@/features/portfolio/api/update-property.api"
 import type { Property } from "@/features/portfolio/models/property.models"
 
 export function PropertyForm({
@@ -20,7 +21,7 @@ export function PropertyForm({
   children,
   property,
 }: PropsWithChildren<{
-  onSuccess: (data: ReturnType<typeof useCreateProperty>["data"]) => void
+  onSuccess: (data: Property) => void
   property?: Property
 }>) {
   const form = useForm<CreatePropertyInput>({
@@ -28,31 +29,38 @@ export function PropertyForm({
     defaultValues: { ...property },
   })
 
-  // Todo: Update mutation to use UPDATE mutation whenever a property exists.
-  const createProperty = useCreateProperty({
-    mutationConfig: {
-      onSuccess: (data) => {
-        toast.add({
-          type: "success",
-          title: "Property Created",
-        })
-        onSuccess(data)
-      },
-    },
-  })
+  const createProperty = useCreateProperty()
+  const updateProperty = useUpdateProperty()
+  const mutation = property ? updateProperty : createProperty
 
   async function onSubmit(data: CreatePropertyInput) {
-    await createProperty.mutateAsync(data)
+    if (mutation.isPending) return
+
+    let savedProperty: Property
+    try {
+      savedProperty = property
+        ? await updateProperty.mutateAsync({ ...data, propertyId: property.id })
+        : await createProperty.mutateAsync(data)
+    } catch {
+      // The mutation keeps the error available for the form's feedback below.
+      return
+    }
+
+    toast.add({
+      type: "success",
+      title: property ? "Property Updated" : "Property Created",
+    })
+    onSuccess(savedProperty)
   }
 
   return (
     <form id="form-rhf-input" onSubmit={form.handleSubmit(onSubmit)}>
-      <FieldSet>
+      <FieldSet disabled={form.formState.isSubmitting}>
         <InputField
           control={form.control}
           name="name"
-          label="Name"
-          placeholder="e.g. Lake Eola Offices *"
+          label="Property name *"
+          placeholder="e.g. Lake Eola Offices"
         />
 
         <SelectField
@@ -74,7 +82,7 @@ export function PropertyForm({
           <InputField
             control={form.control}
             name="city"
-            label="City"
+            label="City *"
             className="col-span-4"
             placeholder="Orlando"
           />
@@ -82,7 +90,7 @@ export function PropertyForm({
           <SelectField
             control={form.control}
             name="state"
-            label="State"
+            label="State *"
             items={STATES}
             className="col-span-2"
             placeholder="Florida"
@@ -90,16 +98,19 @@ export function PropertyForm({
 
           <InputField
             control={form.control}
-            type="number"
+            inputMode="numeric"
             name="zip"
-            label="Zip"
+            label="ZIP code *"
             className="col-span-2"
             placeholder="12345"
           />
         </FieldGroup>
-        {createProperty.isError && (
+        {mutation.isError && (
           <FieldGroup>
-            <FieldError>{JSON.stringify(createProperty.error)}</FieldError>
+            <FieldError>
+              {mutation.error?.message ||
+                "Unable to save property. Please try again."}
+            </FieldError>
           </FieldGroup>
         )}
       </FieldSet>

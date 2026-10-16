@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { PROPERTY_TYPES } from "@/features/portfolio/utils/form-constants"
 
 import {
   DropdownMenu,
@@ -26,8 +26,7 @@ export function PropertySwitcher({
   properties: Property[]
   defaultProperty: Property
 }) {
-  const [selectedProperty, setSelectedProperty] =
-    React.useState<Property>(defaultProperty)
+  const selectedProperty = defaultProperty
   const navigate = useNavigate()
   return (
     <SidebarMenu>
@@ -47,9 +46,14 @@ export function PropertySwitcher({
             </div>
             <div className="flex flex-col gap-0.5 leading-none">
               <span className="font-medium">{selectedProperty.name}</span>
-              {/* TODO: need to update to be dynamic */}
+
               <span className="text-xs text-muted-foreground">
-                Office • Orlando, FL
+                {
+                  PROPERTY_TYPES.find(
+                    (type) => type.value === selectedProperty.propertyType
+                  )?.label
+                }{" "}
+                {" • "} {selectedProperty.city}, {selectedProperty.state}
               </span>
             </div>
             <ChevronsUpDownIcon className="ml-auto" />
@@ -59,7 +63,6 @@ export function PropertySwitcher({
               <DropdownMenuItem
                 key={`property_switcher_item_${property.id}`}
                 onClick={() => {
-                  setSelectedProperty(property)
                   navigate(paths.app.property.root.getHref(property.id))
                 }}
               >

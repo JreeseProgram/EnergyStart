@@ -28,13 +28,16 @@ export function PropertyModal({
         <DialogHeader>
           <DialogTitle>{action} Property</DialogTitle>
           <DialogDescription>
-            {action} a property and add buildings after it is saved.
+            {property
+              ? "Update the details for this property."
+              : "Create a property and add buildings after it is saved."}
           </DialogDescription>
         </DialogHeader>
         <PropertyForm
           onSuccess={() => {
             setOpen(false)
           }}
+          key={property?.id ?? "create"}
           property={property}
         >
           <Separator className={"my-6"} />
@@ -44,9 +47,11 @@ export function PropertyModal({
               type="button"
               onClick={() => setOpen(false)}
             >
-              Close
+              Cancel
             </Button>
-            <SubmitButton>Submit</SubmitButton>
+            <SubmitButton>
+              {property ? "Save changes" : "Create property"}
+            </SubmitButton>
           </DialogFooter>
         </PropertyForm>
       </DialogContent>

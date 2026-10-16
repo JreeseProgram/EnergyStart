@@ -2,16 +2,15 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardIcon,
   CardTitle,
 } from "@/components/ui/card"
 import { Gauge } from "@/components/ui/gauge"
-import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { paths } from "@/config/paths"
 import type { Property } from "@/features/portfolio/models/property.models"
+import { PROPERTY_TYPES } from "@/features/portfolio/utils/form-constants"
 import { MapPinned } from "lucide-react"
 import { Link } from "react-router"
 
@@ -33,18 +32,15 @@ export function PropertyCard({ property }: { property: Property }) {
           </CardIcon>
           <CardTitle>{property.name}</CardTitle>
           <CardDescription>
-            {property.propertyType}
+            {
+              PROPERTY_TYPES.find(
+                (type) => type.value === property.propertyType
+              )?.label
+            }
             <br />
-            {property.city},{property.state}
+            {property.city}, {property.state}
           </CardDescription>
         </CardContent>
-        <div className="px-4">
-          <Separator />
-        </div>
-        <CardFooter className="justify-between gap-1">
-          <div>2 buildings</div>
-          <div className="text-muted-foreground">184,000</div>
-        </CardFooter>
       </Card>
     </Link>
   )
@@ -65,11 +61,6 @@ export function PropertyCardSkeleton() {
           <div className="h-2 w-1/4 rounded-full bg-foreground/5" />
           <div className="h-2 w-1/3 rounded-full bg-foreground/5" />
         </div>
-      </div>
-      <Separator />
-      <div className="flex items-center justify-between pt-4 pb-2">
-        <div className="h-2 w-1/3 rounded-full bg-foreground/5" />
-        <div className="h-2 w-1/3 rounded-full bg-foreground/5" />
       </div>
     </Skeleton>
   )

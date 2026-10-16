@@ -1,9 +1,12 @@
 import { ContentLayout } from "@/components/layouts/content-layout"
+import { PropertySettingsCell } from "@/features/portfolio/cells/property-settings.cell"
+import { useParams } from "react-router"
 
 const PropertySettingsRoute = () => {
+  const { propertyId } = useParams<{ propertyId: string }>()
   return (
     <ContentLayout title="Settings">
-      <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6"></div>
+      {propertyId && <PropertySettingsCell propertyId={propertyId} />}
     </ContentLayout>
   )
 }
