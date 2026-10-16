@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 
+//NOTE: due to abstraction issues, this will not be abstract. Instead NEVER MAKE A REAL ENERGY REPORT OBJECT;
+//Only use its children
 
 @Document("EnergyReports")
 @JsonTypeInfo(
@@ -91,10 +93,21 @@ public class EnergyReport {
     //Custom Methods
 
 
+
     //TODO: Calculate Energy Star Score
-    public float calcEnergyScore() {
-        return -1f;
+
+    //IMPORTANT: DO NOT USE THIS METHOD IN AN ENERGY REPORT, IT WILL BE OVERRIDDEN BY CHILD CLASSES
+    public float energyStarRegressionCalc(float cdd, float hdd) {
+        return -1;
     }
+
+    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate) {
+        return -1;
+    }
+
+
+
+
     /**
      * @param zipcode Provide the 5 digit zipcode for the request
      * @param startDate Start date for query (YYYY-MM-DD LocalDate)
