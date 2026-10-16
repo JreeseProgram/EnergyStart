@@ -41,7 +41,7 @@ public class HotelReport extends EnergyReport {
 
     //Custom Methods
 
-    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate) {
+    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate, float cdd, float hdd) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 146.5f; //standard
         float squareFoot = this.getGrossFloorArea();
@@ -50,11 +50,8 @@ public class HotelReport extends EnergyReport {
         float numWorkersPer1000ft = this.getNumOfWorkersMainShift() / squareFootPerThousand;
         float numCommercialFreezerPerThousandFt = this.getNumCommercialFreezer() / squareFootPerThousand;
         float cookingFacilities = isHasCookingFacilities() ? 1.0f : 0.0f;
-
-        Property associatedProperty = repo.findById(this.getRelatedPropertyID()).orElse(null);
-        Integer[] cddhdd = EnergyReport.retrieveCDDHDD(associatedProperty.getZipcode(), startDate, endDate);
-        float cooled = cddhdd[0] * this.getPercentCooled();
-        float heated = cddhdd[1] * this.getPercentHeated();
+        float cooled = cdd * this.getPercentCooled();
+        float heated = hdd * this.getPercentHeated();
 
 
         if (numRoomsPerThousandFt < 3.0f){numRoomsPerThousandFt = 3.0f;}
@@ -67,17 +64,7 @@ public class HotelReport extends EnergyReport {
         predictedSourceEUI += (cooled - 1722f) * 0.008473f;
         predictedSourceEUI += (heated - 2873f) * 0.006324f;
 
-        //Energy Efficiency Ratio
-
-        List<EnergyMeter> meters = meterRepo.findByAssociatedReportIDAndDateBetween(this.getID(), startDate, endDate);
-        float sourceEUI = 0;
-        for (EnergyMeter meter : meters) {
-            sourceEUI += meter.getSourceEUI();
-        }
-        float EER = sourceEUI / predictedSourceEUI;
-        float score = EnergyStarLookupTable.getScore(EER, this);
-        setEnergyScore(score);
-        return score;
+        return predictedSourceEUI * this.getGrossFloorArea();
     }
 
     //Getters and Setters
