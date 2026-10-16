@@ -7,8 +7,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface EnergyMeterRepo extends MongoRepository<EnergyMeter,String> {
-    List<EnergyMeter> findByAssociatedReportIDAndDateBetween(
-            String associatedReportID,
+    List<EnergyMeter> findByAssociatedPropertyIDAndDateBetween(
+            String associatedPropertyID,
             LocalDate low,
             LocalDate high
     );
