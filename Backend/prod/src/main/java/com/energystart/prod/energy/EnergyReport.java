@@ -63,7 +63,6 @@ public class EnergyReport {
         midRise,
         highRise
     };
-    private List<EnergyMeter> energyMeters;
     private float energyScore;
     private int grossFloorArea;
     private int parkingSize;
@@ -79,11 +78,10 @@ public class EnergyReport {
         setYearOfConstruction(yearOfConstruction);
     }
 
-    public EnergyReport(String ID, String relatedPropertyID, List<EnergyMeter> energyMeters, float energyScore,
+    public EnergyReport(String ID, String relatedPropertyID, float energyScore,
                         int grossFloorArea, int parkingSize, int yearOfConstruction) {
         setID(ID);
         setRelatedPropertyID(relatedPropertyID);
-        setEnergyMeters(energyMeters);
         setEnergyScore(energyScore);
         setGrossFloorArea(grossFloorArea);
         setParkingSize(parkingSize);
@@ -92,9 +90,6 @@ public class EnergyReport {
 
     //Custom Methods
 
-    public void addEnergyMeter(EnergyMeter newMeter){
-        energyMeters.add(newMeter);
-    }
 
     //TODO: Calculate Energy Star Score
     public float calcEnergyScore() {
@@ -220,14 +215,6 @@ public class EnergyReport {
 
     public void setRelatedPropertyID(String relatedPropertyID) {
         this.relatedPropertyID = relatedPropertyID;
-    }
-
-    public List<EnergyMeter> getEnergyMeters() {
-        return energyMeters;
-    }
-
-    public void setEnergyMeters(List<EnergyMeter> energyMeters) {
-        this.energyMeters = energyMeters;
     }
 
     public float getEnergyScore() {
