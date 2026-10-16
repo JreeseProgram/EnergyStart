@@ -11,11 +11,12 @@ import { Gauge } from "@/components/ui/gauge"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { paths } from "@/config/paths"
-import type { Property } from "@/features/portfolio/models/property.models"
+import type { PropertySummary } from "@/features/portfolio/models/property-summary.models"
+import { PROPERTY_TYPES } from "@/features/portfolio/utils/form-constants"
 import { MapPinned } from "lucide-react"
 import { Link } from "react-router"
 
-export function PropertyCard({ property }: { property: Property }) {
+export function PropertyCard({ property }: { property: PropertySummary }) {
   return (
     <Link to={paths.app.property.root.getHref(property.id)} className="group">
       <Card
@@ -33,17 +34,26 @@ export function PropertyCard({ property }: { property: Property }) {
           </CardIcon>
           <CardTitle>{property.name}</CardTitle>
           <CardDescription>
-            {property.propertyType}
+            {
+              PROPERTY_TYPES.find(
+                (type) => type.value === property.propertyType
+              )?.label
+            }
             <br />
-            {property.city},{property.state}
+            {property.city}, {property.state}
           </CardDescription>
         </CardContent>
         <div className="px-4">
           <Separator />
         </div>
         <CardFooter className="justify-between gap-1">
-          <div>2 buildings</div>
-          <div className="text-muted-foreground">184,000</div>
+          <div>
+            {property.buildingCount}{" "}
+            {property.buildingCount === 1 ? "building" : "buildings"}
+          </div>
+          <div className="text-muted-foreground">
+            {property.totalFloorArea.toLocaleString("en-US")} sq ft
+          </div>
         </CardFooter>
       </Card>
     </Link>
