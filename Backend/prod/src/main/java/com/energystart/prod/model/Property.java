@@ -18,6 +18,7 @@ public class Property {
     private String state;
     private Integer zipcode;
     private String notes;
+    private float energyScore;
 
     // WorkOS user IDs allowed to access this property.
     private List<String> authorizedUserIds = new ArrayList<>();
@@ -96,6 +97,14 @@ public class Property {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public float getEnergyScore() {
+        return energyScore;
+    }
+
+    public void setEnergyScore(float energyScore) {
+        this.energyScore = energyScore;
     }
 
     public List<String> getAuthorizedUserIds() {
