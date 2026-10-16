@@ -1,21 +1,27 @@
+
 package com.energystart.prod.service;
 
 import com.energystart.prod.model.Property;
+import com.energystart.prod.repos.PropertyRepo;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class PropertyService {
 
-    // Temporary storage until the team's MongoDB repository is connected.
-    private final List<Property> properties = new ArrayList<>();
+    private final PropertyRepo propertyRepo;
 
-    public synchronized Property addProperty(Property request, String userId) {
+    // Constructor injection for MongoDB repository.
+    public PropertyService(PropertyRepo propertyRepo) {
+        this.propertyRepo = propertyRepo;
+    }
+
+    // CREATE
+    public Property addProperty(Property request, String userId) {
         requireUser(userId);
 
         Property property = new Property(
@@ -28,30 +34,33 @@ public class PropertyService {
                 request.getNotes()
         );
 
-        // Grant access using the verified login ID.
+        // Grant access to the authenticated creator.
+        // Do not trust permissions submitted in the request.
         property.setAuthorizedUserIds(List.of(userId));
-        properties.add(property);
 
-        return copy(property);
+        Property saved = propertyRepo.save(property);
+        return copy(saved);
     }
 
-    public synchronized List<Property> getAllProperties(String userId) {
+    // READ ALL - only properties authorized for this user.
+    public List<Property> getAllProperties(String userId) {
         requireUser(userId);
 
-        // Only return properties this user can access.
-        return properties.stream()
-                .filter(property ->
-                        property.getAuthorizedUserIds().contains(userId))
+        return propertyRepo.findByAuthorizedUserIdsContaining(userId)
+                .stream()
                 .map(this::copy)
                 .toList();
     }
 
-    public synchronized Property getPropertyById(String id, String userId) {
+    // READ ONE
+    public Property getPropertyById(String id, String userId) {
         return copy(requireAccess(id, userId));
     }
 
-    public synchronized Property updateProperty(
+    // UPDATE
+    public Property updateProperty(
             String id, Property request, String userId) {
+
         Property existing = requireAccess(id, userId);
 
         existing.setHumanReadablePropertyId(
@@ -62,25 +71,28 @@ public class PropertyService {
         existing.setZipcode(request.getZipcode());
         existing.setNotes(request.getNotes());
 
-        // Keep the existing ID and access list.
-        return copy(existing);
+        // Preserve the existing ID and access permissions.
+        Property saved = propertyRepo.save(existing);
+        return copy(saved);
     }
 
-    public synchronized Property deleteProperty(String id, String userId) {
+    // DELETE
+    public Property deleteProperty(String id, String userId) {
         Property existing = requireAccess(id, userId);
-        properties.remove(existing);
+
+        propertyRepo.delete(existing);
 
         return copy(existing);
     }
 
+    // Check property access.
     private Property requireAccess(String id, String userId) {
         requireUser(userId);
 
-        Property property = properties.stream()
-                .filter(candidate -> candidate.getId().equals(id))
-                .findFirst()
+        Property property = propertyRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Property not found."));
+                        HttpStatus.NOT_FOUND,
+                        "Property not found."));
 
         if (!property.getAuthorizedUserIds().contains(userId)) {
             throw new ResponseStatusException(
@@ -91,6 +103,7 @@ public class PropertyService {
         return property;
     }
 
+    // Require an authenticated user ID.
     private void requireUser(String userId) {
         if (userId == null || userId.isBlank()) {
             throw new ResponseStatusException(
@@ -99,6 +112,7 @@ public class PropertyService {
         }
     }
 
+    // Return a separate copy of the property.
     private Property copy(Property original) {
         Property result = new Property(
                 original.getId(),

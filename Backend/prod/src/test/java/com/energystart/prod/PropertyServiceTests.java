@@ -1,23 +1,88 @@
+
 package com.energystart.prod;
 
 import com.energystart.prod.model.Property;
+import com.energystart.prod.repos.PropertyRepo;
 import com.energystart.prod.service.PropertyService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 class PropertyServiceTests {
 
-    private final PropertyService service = new PropertyService();
+    private PropertyRepo propertyRepo;
+    private PropertyService service;
+
+    // Simulates documents stored in MongoDB.
+    private Map<String, Property> storedProperties;
+
+    @BeforeEach
+    void setUp() {
+        propertyRepo = mock(PropertyRepo.class);
+        storedProperties = new HashMap<>();
+        service = new PropertyService(propertyRepo);
+
+        when(propertyRepo.save(any(Property.class)))
+                .thenAnswer(invocation -> {
+                    Property property = invocation.getArgument(0);
+                    Property stored = copy(property);
+                    storedProperties.put(stored.getId(), stored);
+                    return copy(stored);
+                });
+
+        when(propertyRepo.findById(anyString()))
+                .thenAnswer(invocation -> {
+                    String id = invocation.getArgument(0);
+                    Property stored = storedProperties.get(id);
+                    return Optional.ofNullable(stored).map(this::copy);
+                });
+
+        when(propertyRepo.findByAuthorizedUserIdsContaining(anyString()))
+                .thenAnswer(invocation -> {
+                    String userId = invocation.getArgument(0);
+                    return storedProperties.values().stream()
+                            .filter(property ->
+                                    property.getAuthorizedUserIds().contains(userId))
+                            .map(this::copy)
+                            .toList();
+                });
+
+        doAnswer(invocation -> {
+            Property property = invocation.getArgument(0);
+            storedProperties.remove(property.getId());
+            return null;
+        }).when(propertyRepo).delete(any(Property.class));
+    }
 
     private Property request() {
         return new Property(
                 null, 1001, "123 Main Street",
                 "Orlando", "FL", 32801, "Test property");
+    }
+
+    private Property copy(Property original) {
+        Property result = new Property(
+                original.getId(),
+                original.getHumanReadablePropertyId(),
+                original.getStreetAddress(),
+                original.getCity(),
+                original.getState(),
+                original.getZipcode(),
+                original.getNotes()
+        );
+        result.setAuthorizedUserIds(original.getAuthorizedUserIds());
+        return result;
     }
 
     @Test
@@ -38,6 +103,8 @@ class PropertyServiceTests {
         assertEquals("Orlando", stored.getCity());
         assertEquals("FL", stored.getState());
         assertEquals(Integer.valueOf(32801), stored.getZipcode());
+
+        verify(propertyRepo).save(any(Property.class));
     }
 
     @Test
@@ -49,6 +116,9 @@ class PropertyServiceTests {
 
         assertEquals(1, visible.size());
         assertEquals(ownerProperty.getId(), visible.get(0).getId());
+
+        verify(propertyRepo)
+                .findByAuthorizedUserIdsContaining("user_owner");
     }
 
     @Test
@@ -81,6 +151,9 @@ class PropertyServiceTests {
 
         assertEquals("123 Main Street", stored.getStreetAddress());
         assertEquals(List.of("user_owner"), stored.getAuthorizedUserIds());
+
+        // Only the initial creation should have saved.
+        verify(propertyRepo, times(1)).save(any(Property.class));
     }
 
     @Test
@@ -93,6 +166,8 @@ class PropertyServiceTests {
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
         assertNotNull(service.getPropertyById(created.getId(), "user_owner"));
+
+        verify(propertyRepo, never()).delete(any(Property.class));
     }
 
     @Test
@@ -117,6 +192,8 @@ class PropertyServiceTests {
         assertEquals("FL", stored.getState());
         assertEquals(Integer.valueOf(33101), stored.getZipcode());
         assertEquals(List.of("user_owner"), stored.getAuthorizedUserIds());
+
+        verify(propertyRepo, times(2)).save(any(Property.class));
     }
 
     @Test
@@ -129,6 +206,8 @@ class PropertyServiceTests {
                 () -> service.getPropertyById(created.getId(), "user_owner"));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+
+        verify(propertyRepo).delete(any(Property.class));
     }
 
     @Test
@@ -149,5 +228,7 @@ class PropertyServiceTests {
                 () -> service.addProperty(request(), ""));
 
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());
+
+        verify(propertyRepo, never()).save(any(Property.class));
     }
 }
