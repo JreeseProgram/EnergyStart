@@ -59,7 +59,7 @@ public class SchoolReport extends EnergyReport {
         predictedSourceEUI += openWeekend;
         predictedSourceEUI += (cooled - 1472f) * 0.02059f;
         predictedSourceEUI += (heated - 3597f) * 0.008370f;
-        
+
         return  predictedSourceEUI * this.getGrossFloorArea();
     }
 
