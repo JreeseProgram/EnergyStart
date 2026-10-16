@@ -44,7 +44,6 @@ public class BankBranchReport extends EnergyReport {
         float weeklyOperatingHours = this.getWeeklyOperatingHours();
         float numWorkersPer1000ft = this.getNumOfWorkersMainShift() / squareFootPerThousand;
         float numComputerPer1000ft = this.getNumOfComputers() / squareFootPerThousand;
-        Property associatedProperty = repo.findById(this.getRelatedPropertyID()).orElse(null);
         float cooled = cdd * this.getPercentCooled();
         float heated = hdd;
 
