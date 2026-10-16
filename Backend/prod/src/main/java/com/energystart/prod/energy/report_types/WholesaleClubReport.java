@@ -1,14 +1,10 @@
 package com.energystart.prod.energy.report_types;
 
-import com.energystart.prod.energy.EnergyMeter;
 import com.energystart.prod.energy.EnergyReport;
-import com.energystart.prod.energy.EnergyStarLookupTable;
-import com.energystart.prod.model.Property;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.PropertyRepo;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public class WholesaleClubReport extends EnergyReport {
 
@@ -48,7 +44,7 @@ public class WholesaleClubReport extends EnergyReport {
 
     //Custom Methods
 
-    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate, float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 162.0f + 252.6f; //standard + supermarket specific added
         float squareFoot = this.getGrossFloorArea();

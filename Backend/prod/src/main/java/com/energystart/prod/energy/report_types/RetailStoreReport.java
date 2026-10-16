@@ -1,14 +1,8 @@
 package com.energystart.prod.energy.report_types;
 
-import com.energystart.prod.energy.EnergyMeter;
 import com.energystart.prod.energy.EnergyReport;
-import com.energystart.prod.energy.EnergyStarLookupTable;
-import com.energystart.prod.model.Property;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.PropertyRepo;
-
-import java.time.LocalDate;
-import java.util.List;
 
 public class RetailStoreReport extends EnergyReport {
 
@@ -44,7 +38,7 @@ public class RetailStoreReport extends EnergyReport {
         setWeeklyOperatingHours(weeklyOperatingHours);
     }
 
-    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate, float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 162.0f; //standard
         float squareFoot = this.getGrossFloorArea();
