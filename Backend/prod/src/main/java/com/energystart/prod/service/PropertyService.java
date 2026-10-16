@@ -1,21 +1,24 @@
 package com.energystart.prod.service;
 
 import com.energystart.prod.model.Property;
+import com.energystart.prod.repos.PropertyRepo;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class PropertyService {
 
-    // Temporary storage until the team's MongoDB repository is connected.
-    private final List<Property> properties = new ArrayList<>();
+    private final PropertyRepo propertyRepo;
 
-    public synchronized Property addProperty(Property request, String userId) {
+    public PropertyService(PropertyRepo propertyRepo) {
+        this.propertyRepo = propertyRepo;
+    }
+
+    public Property addProperty(Property request, String userId) {
         requireUser(userId);
 
         Property property = new Property(
@@ -28,30 +31,30 @@ public class PropertyService {
                 request.getNotes()
         );
 
-        // Grant access using the verified login ID.
+        // Grant access using the user ID from the verified token.
         property.setAuthorizedUserIds(List.of(userId));
-        properties.add(property);
 
-        return copy(property);
+        return copy(propertyRepo.save(property));
     }
 
-    public synchronized List<Property> getAllProperties(String userId) {
+    public List<Property> getAllProperties(String userId) {
         requireUser(userId);
 
-        // Only return properties this user can access.
-        return properties.stream()
+        // Keep the existing list behavior: show only accessible properties.
+        return propertyRepo.findAll().stream()
                 .filter(property ->
                         property.getAuthorizedUserIds().contains(userId))
                 .map(this::copy)
                 .toList();
     }
 
-    public synchronized Property getPropertyById(String id, String userId) {
+    public Property getPropertyById(String id, String userId) {
         return copy(requireAccess(id, userId));
     }
 
-    public synchronized Property updateProperty(
+    public Property updateProperty(
             String id, Property request, String userId) {
+
         Property existing = requireAccess(id, userId);
 
         existing.setHumanReadablePropertyId(
@@ -62,13 +65,13 @@ public class PropertyService {
         existing.setZipcode(request.getZipcode());
         existing.setNotes(request.getNotes());
 
-        // Keep the existing ID and access list.
-        return copy(existing);
+        // The request cannot replace the stored ID or permissions.
+        return copy(propertyRepo.save(existing));
     }
 
-    public synchronized Property deleteProperty(String id, String userId) {
+    public Property deleteProperty(String id, String userId) {
         Property existing = requireAccess(id, userId);
-        properties.remove(existing);
+        propertyRepo.delete(existing);
 
         return copy(existing);
     }
@@ -76,19 +79,21 @@ public class PropertyService {
     private Property requireAccess(String id, String userId) {
         requireUser(userId);
 
-        Property property = properties.stream()
-                .filter(candidate -> candidate.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Property not found."));
+        // MongoDB checks the property ID and authorized-user list together.
+        return propertyRepo
+                .findByIdAndAuthorizedUserIdsContaining(id, userId)
+                .orElseThrow(() -> {
+                    // Preserve the existing 403 and 404 responses.
+                    if (propertyRepo.existsById(id)) {
+                        return new ResponseStatusException(
+                                HttpStatus.FORBIDDEN,
+                                "You do not have access to this property.");
+                    }
 
-        if (!property.getAuthorizedUserIds().contains(userId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "You do not have access to this property.");
-        }
-
-        return property;
+                    return new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Property not found.");
+                });
     }
 
     private void requireUser(String userId) {
