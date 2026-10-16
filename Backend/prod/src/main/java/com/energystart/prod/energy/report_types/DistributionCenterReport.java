@@ -40,7 +40,7 @@ public class DistributionCenterReport extends EnergyReport {
 
     //Custom Methods
 
-    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate) {
+    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate, float cdd, float hdd) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 69.62f; //standard
         float squareFoot = this.getGrossFloorArea();
@@ -49,10 +49,8 @@ public class DistributionCenterReport extends EnergyReport {
         float numWorkersPer1000ft = this.getNumOfWorkersMainShift() / squareFootPerThousand;
         float percentColdStorage = this.getPercentColdStorage();
 
-        Property associatedProperty = repo.findById(this.getRelatedPropertyID()).orElse(null);
-        Integer[] cddhdd = EnergyReport.retrieveCDDHDD(associatedProperty.getZipcode(), startDate, endDate);
-        float cooled = cddhdd[0] * (this.getPercentCooled()+ percentColdStorage);
-        float heated = cddhdd[1] * this.getPercentHeated();
+        float cooled = cdd * (this.getPercentCooled()+ percentColdStorage);
+        float heated = hdd * this.getPercentHeated();
 
         predictedSourceEUI += (weeklyOperatingHours - 59.25f) * 0.1943f;
         predictedSourceEUI += (numWorkersPer1000ft - 0.8502f) * 25.83f;
@@ -60,17 +58,7 @@ public class DistributionCenterReport extends EnergyReport {
         predictedSourceEUI += (cooled - 552.1f) * 0.01209f;
         predictedSourceEUI += (heated - 1602f) * 0.009370f;
 
-        //Energy Efficiency Ratio
-
-        List<EnergyMeter> meters = meterRepo.findByAssociatedReportIDAndDateBetween(this.getID(),startDate,endDate);
-        float sourceEUI = 0;
-        for(EnergyMeter meter: meters){
-            sourceEUI += meter.getSourceEUI();
-        }
-        float EER = sourceEUI / predictedSourceEUI;
-        float score = EnergyStarLookupTable.getScore(EER, this);
-        setEnergyScore(score);
-        return score;
+        return predictedSourceEUI * this.getGrossFloorArea();
     }
 
     //Getters and Setters
