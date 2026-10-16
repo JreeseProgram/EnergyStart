@@ -4,7 +4,11 @@ import {
   PropertyId,
   PropertyType,
 } from "@/features/portfolio/models/property.models"
-import { type PropertyService } from "@/features/portfolio/services/property.service"
+import {
+  type PropertyService,
+  CreatePropertyInput,
+  UpdatePropertyInput,
+} from "@/features/portfolio/services/property.service"
 import { delay } from "@/utils/delay"
 import React from "react"
 import z from "zod"
@@ -88,13 +92,27 @@ export function usePropertyService(): PropertyService {
       if (!property) throw new Error(`Building ${propertyId} not found`)
       return property
     },
+    updateProperty: async (input) => {
+      const { propertyId, ...fields } = UpdatePropertyInput.parse(input)
+      await delay(SERVER_DELAY)
+      const existing = properties.current.find(
+        (property) => property.id === propertyId
+      )
+      if (!existing) throw new Error(`Property ${propertyId} not found`)
+      const updated = Property.parse({ ...existing, ...fields })
+      properties.current = properties.current.map((property) =>
+        property.id === propertyId ? updated : property
+      )
+      return updated
+    },
     createProperty: async (input) => {
+      const fields = CreatePropertyInput.parse(input)
       await delay(SERVER_DELAY)
       const property = Property.parse({
         id: PropertyId.parse(crypto.randomUUID()),
         createdAt: new Date().toISOString(),
         owner: testUser,
-        ...input,
+        ...fields,
       })
       properties.current = [...properties.current, property]
       return property

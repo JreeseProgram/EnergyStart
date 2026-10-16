@@ -1,24 +1,25 @@
 import type { PropertyType } from "@/features/portfolio/models/property.models"
 
 export const PROPERTY_TYPES = [
+  { label: "Bank Branch", value: "BANK_BRANCH" },
   { label: "Convenience Store", value: "CONVENIENCE_STORE" },
+  { label: "Courthouse", value: "COURT_HOUSE" },
   { label: "Data Center", value: "DATA_CENTER" },
+  { label: "Distribution Center", value: "DISTRIBUTION_CENTER" },
+  { label: "Financial Office", value: "FINANCIAL_OFFICE" },
   { label: "Hospital", value: "HOSPITAL" },
   { label: "Hotel", value: "HOTEL" },
-  { label: "K–12 School", value: "K12_SCHOOL" },
   { label: "Medical Office", value: "MEDICAL_OFFICE" },
   { label: "Multifamily Housing", value: "MULTIFAMILY_HOUSING" },
   { label: "Office", value: "OFFICE" },
-  { label: "Parking", value: "PARKING" },
-  { label: "Residence Hall", value: "RESIDENCE_HALL" },
+  { label: "Refrigerated Warehouse", value: "WAREHOUSE_REFRIGERATED" },
   { label: "Retail Store", value: "RETAIL_STORE" },
+  { label: "School", value: "SCHOOL" },
   { label: "Senior Living", value: "SENIOR_LIVING" },
-  { label: "Single Family Homes", value: "SINGLE_FAMILY_HOMES" },
   { label: "Supermarket", value: "SUPERMARKET" },
-  { label: "Swimming Pool", value: "SWIMMING_POOL" },
   { label: "Vehicle Dealership", value: "VEHICLE_DEALERSHIP" },
   { label: "Warehouse", value: "WAREHOUSE" },
-  { label: "Wastewater Treatment Plant", value: "WASTEWATER_TREATMENT_PLANT" },
+  { label: "Wholesale Club", value: "WHOLESALE_CLUB" },
   { label: "Worship Facility", value: "WORSHIP_FACILITY" },
 ] satisfies { label: string; value: PropertyType }[]
 
