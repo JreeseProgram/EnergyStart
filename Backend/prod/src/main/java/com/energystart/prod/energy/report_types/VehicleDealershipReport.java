@@ -36,40 +36,22 @@ public class VehicleDealershipReport extends EnergyReport {
     }
 
     //Custom Methods
-    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate) {
+    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate, float cdd, float hdd) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 147.2f; //standard
         float squareFoot = this.getGrossFloorArea();
         float squareFootPerThousand = squareFoot / 1000f;
-
         float numWorkersPer1000ft = this.getNumOfWorkersMainShift() / squareFootPerThousand;
         float numVehiclesPerThousandFt = this.getAvgNumVehiclesInInventory() / squareFootPerThousand;
-
-
-
-        Property associatedProperty = repo.findById(this.getRelatedPropertyID()).orElse(null);
-        Integer[] cddhdd = EnergyReport.retrieveCDDHDD(associatedProperty.getZipcode(), startDate, endDate);
-        float cooled = cddhdd[0] * this.getPercentCooled();
-        float heated = cddhdd[1] *  this.getPercentHeated();
-
-
+        float cooled = cdd * this.getPercentCooled();
+        float heated = hdd *  this.getPercentHeated();
 
         predictedSourceEUI += (numWorkersPer1000ft - 1.680f) * 25.04f;
         predictedSourceEUI += (numVehiclesPerThousandFt - 7.551f) * 2.628f;
         predictedSourceEUI += (cooled - 1557f) * 0.01039f;
         predictedSourceEUI += (heated - 3644f) * 0.003730f;
 
-        //Energy Efficiency Ratio
-
-        List<EnergyMeter> meters = meterRepo.findByAssociatedReportIDAndDateBetween(this.getID(), startDate, endDate);
-        float sourceEUI = 0;
-        for (EnergyMeter meter : meters) {
-            sourceEUI += meter.getSourceEUI();
-        }
-        float EER = sourceEUI / predictedSourceEUI;
-        float score = EnergyStarLookupTable.getScore(EER, this);
-        setEnergyScore(score);
-        return score;
+        return predictedSourceEUI * this.getGrossFloorArea();
     }
 
     //Setters and Getters
