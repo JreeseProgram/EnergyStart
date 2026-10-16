@@ -22,6 +22,8 @@ export const CreatePropertyInput = Property.omit({
   createdAt: true,
   energyStarScore: true,
   owner: true,
+  totalFloorArea: true,
+  buildingCount: true,
 }).extend({
   name: z
     .string("Enter the property name")

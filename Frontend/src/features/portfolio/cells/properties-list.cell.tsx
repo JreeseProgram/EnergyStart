@@ -1,4 +1,4 @@
-import { usePropertySummaries } from "@/features/portfolio/api/get-property-summaries.api"
+import { useProperties } from "@/features/portfolio/api/get-properties.api"
 import {
   PropertiesList,
   PropertiesListEmpty,
@@ -7,7 +7,7 @@ import {
 import { createCell } from "@/lib/react-query"
 
 export function PropertiesListCell() {
-  const query = usePropertySummaries()
+  const query = useProperties({})
 
   return createCell(query, {
     Loading: () => <PropertiesListSkeleton />,

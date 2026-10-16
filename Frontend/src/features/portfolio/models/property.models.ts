@@ -44,4 +44,6 @@ export const Property = BaseEntity(PropertyId).extend({
   state: z.string("Enter the city the property is located in"),
   streetAddress: z.string("Enter a the property street address"),
   zip: z.string("Enter the property zip code"),
+  buildingCount: z.number().optional().default(0),
+  totalFloorArea: z.number().optional().default(0),
 })

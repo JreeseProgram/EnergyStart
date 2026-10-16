@@ -2,21 +2,19 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardIcon,
   CardTitle,
 } from "@/components/ui/card"
 import { Gauge } from "@/components/ui/gauge"
-import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { paths } from "@/config/paths"
-import type { PropertySummary } from "@/features/portfolio/models/property-summary.models"
+import type { Property } from "@/features/portfolio/models/property.models"
 import { PROPERTY_TYPES } from "@/features/portfolio/utils/form-constants"
 import { MapPinned } from "lucide-react"
 import { Link } from "react-router"
 
-export function PropertyCard({ property }: { property: PropertySummary }) {
+export function PropertyCard({ property }: { property: Property }) {
   return (
     <Link to={paths.app.property.root.getHref(property.id)} className="group">
       <Card
@@ -43,18 +41,6 @@ export function PropertyCard({ property }: { property: PropertySummary }) {
             {property.city}, {property.state}
           </CardDescription>
         </CardContent>
-        <div className="px-4">
-          <Separator />
-        </div>
-        <CardFooter className="justify-between gap-1">
-          <div>
-            {property.buildingCount}{" "}
-            {property.buildingCount === 1 ? "building" : "buildings"}
-          </div>
-          <div className="text-muted-foreground">
-            {property.totalFloorArea.toLocaleString("en-US")} sq ft
-          </div>
-        </CardFooter>
       </Card>
     </Link>
   )
@@ -75,11 +61,6 @@ export function PropertyCardSkeleton() {
           <div className="h-2 w-1/4 rounded-full bg-foreground/5" />
           <div className="h-2 w-1/3 rounded-full bg-foreground/5" />
         </div>
-      </div>
-      <Separator />
-      <div className="flex items-center justify-between pt-4 pb-2">
-        <div className="h-2 w-1/3 rounded-full bg-foreground/5" />
-        <div className="h-2 w-1/3 rounded-full bg-foreground/5" />
       </div>
     </Skeleton>
   )

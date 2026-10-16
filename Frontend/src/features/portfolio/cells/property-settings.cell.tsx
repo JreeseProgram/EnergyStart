@@ -1,13 +1,18 @@
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { paths } from "@/config/paths"
-import { useProperties } from "@/features/portfolio/api/get-properties.api"
+import { useProperty } from "@/features/portfolio/api/get-property.api"
 import { PropertySettings } from "@/features/portfolio/components/property-settings"
+import type { PropertyId } from "@/features/portfolio/models/property.models"
 import { createCell } from "@/lib/react-query"
 import { Link } from "react-router"
 
-export function PropertySettingsCell({ propertyId }: { propertyId: string }) {
-  const query = useProperties({})
+export function PropertySettingsCell({
+  propertyId,
+}: {
+  propertyId: PropertyId
+}) {
+  const query = useProperty({ propertyId })
 
   return createCell(query, {
     Loading: () => (
@@ -23,8 +28,7 @@ export function PropertySettingsCell({ propertyId }: { propertyId: string }) {
         </Button>
       </div>
     ),
-    Success: ({ data }) => {
-      const property = data.find((item) => item.id === propertyId)
+    Success: ({ data: property }) => {
       if (!property)
         return (
           <div className="flex flex-col items-start gap-3">

@@ -21,7 +21,7 @@ export function PropertyForm({
   children,
   property,
 }: PropsWithChildren<{
-  onSuccess: (data: Property) => void
+  onSuccess: (data: ReturnType<typeof useCreateProperty>["data"]) => void
   property?: Property
 }>) {
   const form = useForm<CreatePropertyInput>({

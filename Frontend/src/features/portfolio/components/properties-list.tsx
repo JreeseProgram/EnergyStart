@@ -11,15 +11,11 @@ import {
   PropertyCard,
   PropertyCardSkeleton,
 } from "@/features/portfolio/components/property-card"
-import type { PropertySummary } from "@/features/portfolio/models/property-summary.models"
+import type { Property } from "@/features/portfolio/models/property.models"
 import { MapPinned } from "lucide-react"
 import type { PropsWithChildren } from "react"
 
-export function PropertiesList({
-  properties,
-}: {
-  properties: PropertySummary[]
-}) {
+export function PropertiesList({ properties }: { properties: Property[] }) {
   return (
     <Grid>
       {properties.map((property) => (
