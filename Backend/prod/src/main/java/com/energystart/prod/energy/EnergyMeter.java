@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Document
@@ -59,7 +60,7 @@ public class EnergyMeter {
 
     @Id
     private String ID;
-    private String associatedReportID;
+    private String associatedPropertyID;
     @Autowired
     private EnergyReportRepo repo;
     private LocalDate date; //YYYY-MM-DD
@@ -715,15 +716,18 @@ public class EnergyMeter {
     //TODO: update with potentially better error handling
     public void calcEUI(){
         //Get square footage
-        int sqrFootage = -1;
-        EnergyReport report = repo.findById(associatedReportID).orElse(null);
+        int sqrFootage = 0;
+        List<EnergyReport> reports = repo.findAllByRelatedPropertyID(getAssociatedPropertyID());
 
-        if (report == null){
-            System.out.println("No associated report");
+
+        if (reports.isEmpty()){
+            System.out.println("No associated Reports");
             return;
         }
 
-        sqrFootage = report.getGrossFloorArea();
+        for(EnergyReport report : reports){
+            sqrFootage += report.getGrossFloorArea();
+        }
 
         //Calc site EUI
         setSiteEUI((this.meterKBtu/sqrFootage));
@@ -773,12 +777,12 @@ public class EnergyMeter {
         this.ID = ID;
     }
 
-    public String getAssociatedReportID() {
-        return associatedReportID;
+    public String getAssociatedPropertyID() {
+        return associatedPropertyID;
     }
 
-    public void setAssociatedReportID(String associatedReportID) {
-        this.associatedReportID = associatedReportID;
+    public void setAssociatedPropertyID(String associatedReportID) {
+        this.associatedPropertyID = associatedReportID;
     }
 
     public LocalDate getDate() {
