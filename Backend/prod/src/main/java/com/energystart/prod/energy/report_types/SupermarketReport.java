@@ -37,7 +37,7 @@ public class SupermarketReport extends EnergyReport {
         setWeeklyOperatingHours(weeklyOperatingHours);
     }
     //Custom Methods
-    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate) {
+    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate, float cdd, float hdd) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 162.0f + 252.6f; //standard + supermarket specific added
         float squareFoot = this.getGrossFloorArea();
@@ -47,10 +47,8 @@ public class SupermarketReport extends EnergyReport {
         float numWorkersPer1000ft = this.getNumOfWorkersMainShift() / squareFootPerThousand;
         float numCommercialFreezerPerThousandFt = this.getNumOfOpenClosedFreezers() / squareFootPerThousand;
 
-        Property associatedProperty = repo.findById(this.getRelatedPropertyID()).orElse(null);
-        Integer[] cddhdd = EnergyReport.retrieveCDDHDD(associatedProperty.getZipcode(), startDate, endDate);
-        float cooled = cddhdd[0] * this.getPercentCooled();
-        float heated = cddhdd[1] * this.getPercentHeated();
+        float cooled = cdd * this.getPercentCooled();
+        float heated = hdd * this.getPercentHeated();
 
         predictedSourceEUI += (weeklyOperatingHours - 77.93f) * 1.222f;
         predictedSourceEUI += ((numWorkersPer1000ft - 0.8353f) * 39.28f)
@@ -59,17 +57,7 @@ public class SupermarketReport extends EnergyReport {
         predictedSourceEUI += (cooled - 5.606f) * 5.698f;
         predictedSourceEUI += (heated - 6.911f) * 6.493f;
 
-        //Energy Efficiency Ratio
-
-        List<EnergyMeter> meters = meterRepo.findByAssociatedReportIDAndDateBetween(this.getID(), startDate, endDate);
-        float sourceEUI = 0;
-        for (EnergyMeter meter : meters) {
-            sourceEUI += meter.getSourceEUI();
-        }
-        float EER = sourceEUI / predictedSourceEUI;
-        float score = EnergyStarLookupTable.getScore(EER, this);
-        setEnergyScore(score);
-        return score;
+        return predictedSourceEUI * this.getGrossFloorArea();
     }
 
     //Getters and Setters
