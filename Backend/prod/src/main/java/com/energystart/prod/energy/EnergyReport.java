@@ -13,16 +13,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.List;
 
-//NOTE: due to abstraction issues, this will not be abstract. Instead NEVER MAKE A REAL ENERGY REPORT OBJECT;
+//NOTE: due to abstraction issues, this will not be abstract. Instead, NEVER MAKE A REAL ENERGY REPORT OBJECT;
 //Only use its children
 
 @Document("EnergyReports")
@@ -64,7 +61,7 @@ public class EnergyReport {
         lowRise,
         midRise,
         highRise
-    };
+    }
     private int grossFloorArea;
     private int parkingSize;
     private int yearOfConstruction;
