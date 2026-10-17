@@ -2,6 +2,7 @@ package com.energystart.prod.model;
 
 import com.energystart.prod.energy.EnergyMeter;
 import com.energystart.prod.energy.EnergyReport;
+import com.energystart.prod.energy.EnergyStarLookupTable;
 import com.energystart.prod.energy.report_types.DataCenterReport;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.EnergyReportRepo;
@@ -24,7 +25,7 @@ public class Property {
     private String state;
     private Integer zipcode;
     private String notes;
-    private float energyScore;
+    private int energyScore;
     private EnergyMeterRepo energyMeterRepo;
     private EnergyReportRepo energyReportRepo;
 
@@ -53,6 +54,8 @@ public class Property {
     //Custom methods
     public void calculateEnergyScore(LocalDate startDate, LocalDate endDate) {
         float energyScore = -1f;
+        List<Float> individualKBtu = new ArrayList<>();
+        List<Float> weights = new ArrayList<>();
         float totalSourceKBtu = 0.0f;
         float totalPredictedKBtu = 0.0f;
         int totalsqft = 0;
@@ -62,13 +65,22 @@ public class Property {
         List<EnergyReport> relevantEnergyReports = energyReportRepo.findAllByRelatedPropertyID
                 (this.getId());
         for(EnergyReport report : relevantEnergyReports){
+            float value = 0;
             totalsqft += report.getGrossFloorArea();
             if(!(report instanceof DataCenterReport)){
-                totalPredictedKBtu += report.energyStarRegressionCalc(cddhdd[0], cddhdd[1]);
+                value = report.energyStarRegressionCalc(cddhdd[0], cddhdd[1]);
+                totalPredictedKBtu += value;
+                individualKBtu.add(value);
             }
             else{ //only triggers for our outlier: Data Centers
-                totalPredictedKBtu +=  report.energyStarRegressionCalc(startDate, endDate);
+                value = report.energyStarRegressionCalc(startDate, endDate);
+                totalPredictedKBtu += value;
+                individualKBtu.add(value);
             }
+        }
+
+        for (float value : individualKBtu) {
+            weights.add(value/totalPredictedKBtu);
         }
 
         //access energy meters and extract pertinent info
@@ -79,7 +91,7 @@ public class Property {
         }
 
         float EER = totalSourceKBtu / totalPredictedKBtu;
-        // this.energyScore = lookupTableWeights(EER, relevantEnergyReports)
+        this.setEnergyScore(EnergyStarLookupTable.getScore(EER, relevantEnergyReports, weights));
     }
 
     //Getters and Setters
@@ -144,7 +156,7 @@ public class Property {
         return energyScore;
     }
 
-    public void setEnergyScore(float energyScore) {
+    public void setEnergyScore(int energyScore) {
         this.energyScore = energyScore;
     }
 
