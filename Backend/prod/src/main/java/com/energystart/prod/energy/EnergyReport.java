@@ -79,21 +79,16 @@ public class EnergyReport {
         setYearOfConstruction(yearOfConstruction);
     }
 
-    public EnergyReport(String ID, String relatedPropertyID, float energyScore,
+    public EnergyReport(String ID, String relatedPropertyID,
                         int grossFloorArea, int parkingSize, int yearOfConstruction) {
         setID(ID);
         setRelatedPropertyID(relatedPropertyID);
-        setEnergyScore(energyScore);
         setGrossFloorArea(grossFloorArea);
         setParkingSize(parkingSize);
         setYearOfConstruction(yearOfConstruction);
     }
 
     //Custom Methods
-
-
-
-    //TODO: Calculate Energy Star Score
 
     //IMPORTANT: DO NOT USE THIS METHOD IN AN ENERGY REPORT, IT WILL BE OVERRIDDEN BY CHILD CLASSES
     public float energyStarRegressionCalc(float cdd, float hdd) {
@@ -103,8 +98,6 @@ public class EnergyReport {
     public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate) {
         return -1;
     }
-
-
 
 
     /**
@@ -228,7 +221,7 @@ public class EnergyReport {
     public void setRelatedPropertyID(String relatedPropertyID) {
         this.relatedPropertyID = relatedPropertyID;
     }
-    
+
     public int getGrossFloorArea() {
         return grossFloorArea;
     }
