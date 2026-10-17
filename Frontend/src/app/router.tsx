@@ -1,6 +1,6 @@
 import { QueryClient, useQueryClient } from "@tanstack/react-query"
 import { useMemo } from "react"
-import { createBrowserRouter } from "react-router"
+import { createBrowserRouter, Outlet } from "react-router"
 import { RouterProvider } from "react-router/dom"
 
 import { paths } from "@/config/paths"
@@ -62,7 +62,7 @@ export const createAppRouter = (queryClient: QueryClient) =>
             <ProtectedPropertyRoute
               fallback={
                 <SidebarLayout sidebar={<PropertySidebarSkeleton />}>
-                  <></>
+                  <Outlet />
                 </SidebarLayout>
               }
             >
@@ -70,6 +70,13 @@ export const createAppRouter = (queryClient: QueryClient) =>
             </ProtectedPropertyRoute>
           ),
           children: [
+            {
+              path: paths.app.property.overview.path,
+              lazy: () =>
+                import("./routes/app/property/overview").then(
+                  convert(queryClient)
+                ),
+            },
             {
               path: paths.app.property.buildings.path,
               lazy: () =>
