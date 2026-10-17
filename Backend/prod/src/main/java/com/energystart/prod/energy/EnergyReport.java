@@ -65,7 +65,6 @@ public class EnergyReport {
         midRise,
         highRise
     };
-    private float energyScore;
     private int grossFloorArea;
     private int parkingSize;
     private int yearOfConstruction;
@@ -229,15 +228,7 @@ public class EnergyReport {
     public void setRelatedPropertyID(String relatedPropertyID) {
         this.relatedPropertyID = relatedPropertyID;
     }
-
-    public float getEnergyScore() {
-        return energyScore;
-    }
-        //TODO: see if this is necessary since its calculated
-    public void setEnergyScore(float energyScore) {
-        this.energyScore = energyScore;
-    }
-
+    
     public int getGrossFloorArea() {
         return grossFloorArea;
     }
