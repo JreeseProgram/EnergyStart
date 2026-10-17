@@ -13,15 +13,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.List;
 
+//NOTE: due to abstraction issues, this will not be abstract. Instead, NEVER MAKE A REAL ENERGY REPORT OBJECT;
+//Only use its children
 
 @Document("EnergyReports")
 @JsonTypeInfo(
@@ -62,9 +61,7 @@ public class EnergyReport {
         lowRise,
         midRise,
         highRise
-    };
-    private List<EnergyMeter> energyMeters;
-    private float energyScore;
+    }
     private int grossFloorArea;
     private int parkingSize;
     private int yearOfConstruction;
@@ -79,12 +76,10 @@ public class EnergyReport {
         setYearOfConstruction(yearOfConstruction);
     }
 
-    public EnergyReport(String ID, String relatedPropertyID, List<EnergyMeter> energyMeters, float energyScore,
+    public EnergyReport(String ID, String relatedPropertyID,
                         int grossFloorArea, int parkingSize, int yearOfConstruction) {
         setID(ID);
         setRelatedPropertyID(relatedPropertyID);
-        setEnergyMeters(energyMeters);
-        setEnergyScore(energyScore);
         setGrossFloorArea(grossFloorArea);
         setParkingSize(parkingSize);
         setYearOfConstruction(yearOfConstruction);
@@ -92,14 +87,16 @@ public class EnergyReport {
 
     //Custom Methods
 
-    public void addEnergyMeter(EnergyMeter newMeter){
-        energyMeters.add(newMeter);
+    //IMPORTANT: DO NOT USE THIS METHOD IN AN ENERGY REPORT, IT WILL BE OVERRIDDEN BY CHILD CLASSES
+    public float energyStarRegressionCalc(float cdd, float hdd) {
+        return -1;
     }
 
-    //TODO: Calculate Energy Star Score
-    public float calcEnergyScore() {
-        return -1f;
+    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate) {
+        return -1;
     }
+
+
     /**
      * @param zipcode Provide the 5 digit zipcode for the request
      * @param startDate Start date for query (YYYY-MM-DD LocalDate)
@@ -220,22 +217,6 @@ public class EnergyReport {
 
     public void setRelatedPropertyID(String relatedPropertyID) {
         this.relatedPropertyID = relatedPropertyID;
-    }
-
-    public List<EnergyMeter> getEnergyMeters() {
-        return energyMeters;
-    }
-
-    public void setEnergyMeters(List<EnergyMeter> energyMeters) {
-        this.energyMeters = energyMeters;
-    }
-
-    public float getEnergyScore() {
-        return energyScore;
-    }
-        //TODO: see if this is necessary since its calculated
-    public void setEnergyScore(float energyScore) {
-        this.energyScore = energyScore;
     }
 
     public int getGrossFloorArea() {

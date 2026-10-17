@@ -1,14 +1,8 @@
 package com.energystart.prod.energy.report_types;
 
-import com.energystart.prod.energy.EnergyMeter;
 import com.energystart.prod.energy.EnergyReport;
-import com.energystart.prod.energy.EnergyStarLookupTable;
-import com.energystart.prod.model.Property;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.PropertyRepo;
-
-import java.time.LocalDate;
-import java.util.List;
 
 public class MedicalOfficeReport extends EnergyReport {
 
@@ -36,21 +30,17 @@ public class MedicalOfficeReport extends EnergyReport {
 
     //Custom Methods
 
-    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate) {
+    public float energyStarRegressionCalc(float cdd, float hdd) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 250.9f; //standard
         float squareFoot = this.getGrossFloorArea();
         float squareFootPerThousand = squareFoot / 1000;
-
         float numMRIPerThousandFt = this.getNumOfMRIMachines()/squareFootPerThousand;
         float numBedsPerThousandFt = this.getNumOfSurgicalBeds()/squareFootPerThousand;
         float numWorkersPerThousandFt = this.getNumOfWorkersMainShift()/squareFootPerThousand;
         float weeklyHours = this.getWeeklyOperatingHours();
-
-        Property associatedProperty = repo.findById(this.getRelatedPropertyID()).orElse(null);
-        Integer[] cddhdd = EnergyReport.retrieveCDDHDD(associatedProperty.getZipcode(), startDate, endDate);
-        float cooled = cddhdd[0];
-        float heated = cddhdd[1];
+        float cooled = cdd;
+        float heated = hdd;
 
         if(squareFoot > 100000) {squareFoot = 100000;}
 
@@ -62,17 +52,7 @@ public class MedicalOfficeReport extends EnergyReport {
         predictedSourceEUI += (cooled - 1754f) * 0.01926f;
         predictedSourceEUI += (heated - 3983f) * 0.004240f;
 
-        //Energy Efficiency Ratio
-
-        List<EnergyMeter> meters = meterRepo.findByAssociatedReportIDAndDateBetween(this.getID(), startDate, endDate);
-        float sourceEUI = 0;
-        for (EnergyMeter meter : meters) {
-            sourceEUI += meter.getSourceEUI();
-        }
-        float EER = sourceEUI / predictedSourceEUI;
-        float score = EnergyStarLookupTable.getScore(EER, this);
-        setEnergyScore(score);
-        return score;
+        return predictedSourceEUI * this.getGrossFloorArea();
     }
 
     //Getters and Setters
