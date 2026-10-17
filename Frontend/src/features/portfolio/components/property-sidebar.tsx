@@ -11,7 +11,6 @@ import {
 import { PropertySwitcherCell } from "@/features/portfolio/cells/properties-switcher.cell"
 import { Navigate, useParams } from "react-router"
 import { paths } from "@/config/paths"
-import { PropertySwitcherSkeleton } from "@/features/portfolio/components/property-switcher"
 
 export function PropertySidebar({
   ...props
@@ -34,7 +33,7 @@ export function PropertySidebarSkeleton() {
   return (
     <Sidebar collapsible="offcanvas">
       <SidebarHeader>
-        <PropertySwitcherSkeleton />
+        <PropertySwitcherCell />
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
