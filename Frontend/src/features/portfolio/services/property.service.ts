@@ -6,7 +6,7 @@ import z from "zod"
 
 export interface PropertyService {
   getProperties: () => Promise<Property[]>
-  getProperty: (input: GetPropertyInput) => Promise<Property>
+  getProperty: (input: GetPropertyInput) => Promise<Property | null>
   createProperty: (input: CreatePropertyInput) => Promise<Property>
   updateProperty: (input: UpdatePropertyInput) => Promise<Property>
 }

@@ -89,8 +89,7 @@ export function usePropertyService(): PropertyService {
       const property = properties.current.find(
         (property) => property.id === propertyId
       )
-      if (!property) throw new Error(`Building ${propertyId} not found`)
-      return property
+      return property ?? null
     },
     updateProperty: async (input) => {
       const { propertyId, ...fields } = UpdatePropertyInput.parse(input)

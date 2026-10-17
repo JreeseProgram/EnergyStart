@@ -1,6 +1,6 @@
 import { QueryClient, useQueryClient } from "@tanstack/react-query"
 import { useMemo } from "react"
-import { createBrowserRouter } from "react-router"
+import { createBrowserRouter, Outlet } from "react-router"
 import { RouterProvider } from "react-router/dom"
 
 import { paths } from "@/config/paths"
@@ -10,6 +10,10 @@ import {
   ErrorBoundary as AppRootErrorBoundary,
 } from "./routes/app/root"
 import { ProtectedRoute } from "@/features/auth/components/protected-route"
+import { ProtectedPropertyRoute } from "@/features/portfolio/components/protected-property-route"
+import PropertyRoute from "./routes/app/property/root"
+import { SidebarLayout } from "@/components/layouts/sidebar-layout"
+import { PropertySidebarSkeleton } from "@/features/portfolio/components/property-sidebar"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const convert = (queryClient: QueryClient) => (m: any) => {
@@ -54,9 +58,25 @@ export const createAppRouter = (queryClient: QueryClient) =>
         },
         {
           path: paths.app.property.root.path,
-          lazy: () =>
-            import("./routes/app/property/root").then(convert(queryClient)),
+          element: (
+            <ProtectedPropertyRoute
+              fallback={
+                <SidebarLayout sidebar={<PropertySidebarSkeleton />}>
+                  <Outlet />
+                </SidebarLayout>
+              }
+            >
+              <PropertyRoute />
+            </ProtectedPropertyRoute>
+          ),
           children: [
+            {
+              path: paths.app.property.overview.path,
+              lazy: () =>
+                import("./routes/app/property/overview").then(
+                  convert(queryClient)
+                ),
+            },
             {
               path: paths.app.property.buildings.path,
               lazy: () =>
