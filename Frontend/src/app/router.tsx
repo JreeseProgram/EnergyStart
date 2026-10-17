@@ -10,6 +10,10 @@ import {
   ErrorBoundary as AppRootErrorBoundary,
 } from "./routes/app/root"
 import { ProtectedRoute } from "@/features/auth/components/protected-route"
+import { ProtectedPropertyRoute } from "@/features/portfolio/components/protected-property-route"
+import PropertyRoute from "./routes/app/property/root"
+import { SidebarLayout } from "@/components/layouts/sidebar-layout"
+import { PropertySidebarSkeleton } from "@/features/portfolio/components/property-sidebar"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const convert = (queryClient: QueryClient) => (m: any) => {
@@ -54,8 +58,17 @@ export const createAppRouter = (queryClient: QueryClient) =>
         },
         {
           path: paths.app.property.root.path,
-          lazy: () =>
-            import("./routes/app/property/root").then(convert(queryClient)),
+          element: (
+            <ProtectedPropertyRoute
+              fallback={
+                <SidebarLayout sidebar={<PropertySidebarSkeleton />}>
+                  <></>
+                </SidebarLayout>
+              }
+            >
+              <PropertyRoute />
+            </ProtectedPropertyRoute>
+          ),
           children: [
             {
               path: paths.app.property.buildings.path,
