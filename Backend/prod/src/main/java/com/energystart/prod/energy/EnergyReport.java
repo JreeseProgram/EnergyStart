@@ -3,19 +3,25 @@ package com.energystart.prod.energy;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.energystart.prod.energy.report_types.*;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
+
 
 @Document("EnergyReports")
 @JsonTypeInfo(
@@ -47,37 +53,34 @@ import java.util.List;
 })
 public class EnergyReport {
 
+
     @Id
     private String ID;
     private String relatedPropertyID;
-
-    // Low-rise: 1–4 stories; mid-rise: 5–9; high-rise: 10 or more.
+    //low-rise stories 1-4; mid-rise 5-9; high-rise 10+
     public enum BUILDING_HEIGHT_TYPES {
         lowRise,
         midRise,
         highRise
-    }
-
+    };
     private List<EnergyMeter> energyMeters;
     private float energyScore;
     private int grossFloorArea;
     private int parkingSize;
     private int yearOfConstruction;
 
-    public EnergyReport() {
-    }
+    //Constructors
+    public EnergyReport() {}
 
-    public EnergyReport(
-            int grossFloorArea, int parkingSize, int yearOfConstruction) {
+    //NOTE: This is the main constructor for this class
+    public EnergyReport(int grossFloorArea, int parkingSize, int yearOfConstruction) {
         setGrossFloorArea(grossFloorArea);
         setParkingSize(parkingSize);
         setYearOfConstruction(yearOfConstruction);
     }
 
-    public EnergyReport(
-            String ID, String relatedPropertyID,
-            List<EnergyMeter> energyMeters, float energyScore,
-            int grossFloorArea, int parkingSize, int yearOfConstruction) {
+    public EnergyReport(String ID, String relatedPropertyID, List<EnergyMeter> energyMeters, float energyScore,
+                        int grossFloorArea, int parkingSize, int yearOfConstruction) {
         setID(ID);
         setRelatedPropertyID(relatedPropertyID);
         setEnergyMeters(energyMeters);
@@ -87,32 +90,63 @@ public class EnergyReport {
         setYearOfConstruction(yearOfConstruction);
     }
 
-    public void addEnergyMeter(EnergyMeter newMeter) {
+    //Custom Methods
+
+    public void addEnergyMeter(EnergyMeter newMeter){
         energyMeters.add(newMeter);
     }
 
+    //TODO: Calculate Energy Star Score
     public float calcEnergyScore() {
         return -1f;
     }
-
     /**
-     * Retrieves temperatures for the ZIP code and requested dates.
-     * Returns CDD at index 0 and HDD at index 1, or {-1, -1} on failure.
-     */
-    public static Integer[] retrieveCDDHDD(
-            int zipcode, LocalDate startDate, LocalDate endDate) {
+     * @param zipcode Provide the 5 digit zipcode for the request
+     * @param startDate Start date for query (YYYY-MM-DD LocalDate)
+     * @param endDate End date for query (YYYY-MM-DD LocalDate)
+     * @return Index 0 is CDD, Index 1 is HDD
+    */
+    public static Integer[] retrieveCDDHDD(int zipcode, LocalDate startDate, LocalDate endDate) {
+        Integer[] result = new Integer[] {-1,-1};
         try {
-            JsonObject zipJson = readJson(
-                    "https://api.zippopotam.us/us/" + zipcode);
+            double cdd = 0.0;
+            double hdd = 0.0;
+            double latitude = 0.0;
+            double longitude = 0.0;
 
-            JsonObject place = zipJson.getAsJsonArray("places")
-                    .get(0).getAsJsonObject();
+            //Must convert Zipcode to Coordinates for open-mateo
+            //Can be easily updated via country code if scope changes
+            String zipURL = "https://api.zippopotam.us/us/" + zipcode;
+            URL zipContainer = URI.create(zipURL).toURL();
+            HttpURLConnection zipCon = (HttpURLConnection) zipContainer.openConnection();
+            zipCon.setRequestMethod("GET");
 
-            double longitude = place.get("longitude").getAsDouble();
-            double latitude = place.get("latitude").getAsDouble();
+            if(zipCon.getResponseCode() != 200) {
+                System.out.println("Zip code retrieval failed: "
+                        + zipCon.getResponseMessage());
+                return result;
+            }
 
-            String weatherUrl =
-                    "https://archive-api.open-meteo.com/v1/archive"
+            BufferedReader zipReader = new BufferedReader(
+                    new InputStreamReader(zipCon.getInputStream(), StandardCharsets.UTF_8));
+            Gson gson = new Gson();
+            JsonObject zipJson = gson.fromJson(zipReader, JsonObject.class);
+            zipReader.close();
+            zipCon.disconnect();
+
+            longitude = zipJson.getAsJsonArray("places")
+                    .get(0)
+                    .getAsJsonObject()
+                    .get("longitude")
+                    .getAsDouble();
+            latitude = zipJson.getAsJsonArray("places")
+                    .get(0)
+                    .getAsJsonObject()
+                    .get("latitude")
+                    .getAsDouble();
+
+            //Structured URL for temperature data
+            String queryURL = "https://archive-api.open-meteo.com/v1/archive"
                     + "?latitude=" + latitude
                     + "&longitude=" + longitude
                     + "&start_date=" + startDate
@@ -120,85 +154,57 @@ public class EnergyReport {
                     + "&timezone=auto"
                     + "&daily=temperature_2m_max,temperature_2m_min"
                     + "&temperature_unit=fahrenheit";
+            //Connect and Retrieve info
+            URL url = URI.create(queryURL).toURL();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
 
-            JsonObject daily = readJson(weatherUrl)
-                    .getAsJsonObject("daily");
-
-            return calculateDegreeDays(
-                    daily.getAsJsonArray("temperature_2m_max"),
-                    daily.getAsJsonArray("temperature_2m_min"));
-
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return new Integer[] {-1, -1};
-        }
-    }
-
-    /**
-     * Calculates degree days from daily Fahrenheit temperatures.
-     * Keeping this separate lets tests use fixed data without internet access.
-     */
-    public static Integer[] calculateDegreeDays(
-            JsonArray maxTemps, JsonArray minTemps) {
-
-        if (maxTemps == null || minTemps == null
-                || maxTemps.size() != minTemps.size()) {
-            throw new IllegalArgumentException(
-                    "Maximum and minimum temperatures must have matching lengths.");
-        }
-
-        double cdd = 0.0;
-        double hdd = 0.0;
-
-        for (int i = 0; i < maxTemps.size(); i++) {
-            if (maxTemps.get(i).isJsonNull()
-                    || minTemps.get(i).isJsonNull()) {
-                continue;
+            if(connection.getResponseCode() != 200){
+                System.out.println("Unexpected Response code: " + connection.getResponseMessage());
+                return result;
             }
 
-            double meanTemp = (
-                    maxTemps.get(i).getAsDouble()
-                    + minTemps.get(i).getAsDouble()) / 2.0;
+            BufferedReader weatherReader = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
 
-            if (meanTemp > 65.0) {
-                cdd += meanTemp - 65.0;
-            } else {
-                hdd += 65.0 - meanTemp;
-            }
-        }
-
-        // Preserve the existing behavior: round after summing all days.
-        return new Integer[] {
-                (int) Math.round(cdd),
-                (int) Math.round(hdd)
-        };
-    }
-
-    private static JsonObject readJson(String url) throws Exception {
-        HttpURLConnection connection =
-                (HttpURLConnection) URI.create(url).toURL().openConnection();
-
-        connection.setRequestMethod("GET");
-        connection.setConnectTimeout(5000);
-        connection.setReadTimeout(10000);
-
-        try {
-            if (connection.getResponseCode() != 200) {
-                throw new java.io.IOException(
-                        "Unexpected response code: "
-                                + connection.getResponseCode());
-            }
-
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(
-                            connection.getInputStream(),
-                            StandardCharsets.UTF_8))) {
-                return new Gson().fromJson(reader, JsonObject.class);
-            }
-        } finally {
+            JsonObject weatherJson = gson.fromJson(weatherReader, JsonObject.class);
+            weatherReader.close();
             connection.disconnect();
+
+            //Extract Data and compute a mean for each day
+            JsonObject dailyWeather = weatherJson.getAsJsonObject("daily");
+            JsonArray maxTemps = dailyWeather.getAsJsonArray("temperature_2m_max");
+            JsonArray minTemps = dailyWeather.getAsJsonArray("temperature_2m_min");
+
+            for (int i = 0; i < maxTemps.size(); i++) {
+                if(maxTemps.get(i).isJsonNull() || minTemps.get(i).isJsonNull()) {
+                    continue;
+                }
+                double maxTemp = maxTemps.get(i).getAsDouble();
+                double minTemp = minTemps.get(i).getAsDouble();
+
+                double meanTemp = (maxTemp + minTemp) / 2;
+
+                if(meanTemp > 65.0) {
+                    cdd += (meanTemp - 65.0);
+                } else {
+                    hdd += (65.0 - meanTemp);
+                }
+
+            }
+
+            result[0] = (int) Math.round(cdd);
+            result[1] = (int) Math.round(hdd);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return result;
         }
+        return result;
     }
+
+    //Getters and Setters
+
 
     public String getID() {
         return ID;
@@ -227,7 +233,7 @@ public class EnergyReport {
     public float getEnergyScore() {
         return energyScore;
     }
-
+        //TODO: see if this is necessary since its calculated
     public void setEnergyScore(float energyScore) {
         this.energyScore = energyScore;
     }
