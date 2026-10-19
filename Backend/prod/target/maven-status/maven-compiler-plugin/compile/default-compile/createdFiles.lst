@@ -25,6 +25,7 @@ com\energystart\prod\service\UserService.class
 com\energystart\prod\energy\EnergyMeter$TYPE_OF_MEASURE.class
 com\energystart\prod\controller\UserController.class
 com\energystart\prod\controller\AuthController.class
+com\energystart\prod\repos\UserRepo.class
 com\energystart\prod\energy\EnergyStarLookupTable$Range.class
 com\energystart\prod\energy\EnergyMeter$key.class
 com\energystart\prod\energy\EnergyMeter$TYPE_OF_METER.class
