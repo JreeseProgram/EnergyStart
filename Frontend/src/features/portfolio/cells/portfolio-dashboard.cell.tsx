@@ -1,3 +1,5 @@
+import { usePortfolioPerformance } from "@/features/portfolio/api/get-portfolio-performance.api"
+import type { Property } from "@/features/portfolio/models/property.models"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useProperties } from "@/features/portfolio/api/get-properties.api"
@@ -37,6 +39,41 @@ export function PortfolioDashboardCell() {
       </PropertiesListEmpty>
     ),
     isEmpty: ({ data }) => data.length === 0,
-    Success: ({ data }) => <PortfolioDashboard properties={data} />,
+    Success: ({ data }) => (
+      <PortfolioPerformanceCell
+        key={data
+          .map((property) => property.id)
+          .sort()
+          .join(",")}
+        properties={data}
+      />
+    ),
+  })
+}
+
+function PortfolioPerformanceCell({ properties }: { properties: Property[] }) {
+  const query = usePortfolioPerformance({
+    input: {
+      propertyIds: properties.map((property) => property.id),
+      asOf: new Date().toISOString().slice(0, 10),
+    },
+  })
+  return createCell(query, {
+    Loading: () => (
+      <div role="status" aria-label="Loading portfolio performance">
+        <Skeleton className="h-96 rounded-2xl" />
+      </div>
+    ),
+    Failure: ({ ctx }) => (
+      <div role="alert" className="flex flex-col items-start gap-3">
+        <p>Unable to load portfolio performance. Please try again.</p>
+        <Button variant="outline" onClick={() => void ctx.refetch()}>
+          Retry
+        </Button>
+      </div>
+    ),
+    Success: ({ data }) => (
+      <PortfolioDashboard properties={properties} performance={data} />
+    ),
   })
 }

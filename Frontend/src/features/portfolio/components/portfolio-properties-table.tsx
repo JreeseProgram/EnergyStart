@@ -1,3 +1,4 @@
+import type { PropertyPerformanceMetrics } from "@/features/portfolio/utils/get-portfolio-performance"
 import { useId, useState } from "react"
 import { Link } from "react-router"
 import {
@@ -44,8 +45,10 @@ const pageSizes = [5, 10, 20, 50].map((size) => ({
 
 export function PortfolioPropertiesTable({
   properties,
+  metrics,
 }: {
   properties: Property[]
+  metrics?: PropertyPerformanceMetrics
 }) {
   const [pagination, setPagination] = useState({ page: 0, size: 10 })
   const pageSizeId = useId()
@@ -79,7 +82,8 @@ export function PortfolioPropertiesTable({
       <CardContent>
         <Table>
           <TableCaption className="sr-only">
-            Properties in your portfolio. EUI values are not available yet.
+            Properties in your portfolio. EUI values cover the selected period.
+            Missing values mean no data is available.
           </TableCaption>
           <TableHeader>
             <TableRow>
@@ -117,13 +121,22 @@ export function PortfolioPropertiesTable({
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
-                  {property.energyStarScore}
+                  {metrics
+                    ? (metrics[property.id]?.energyStarScore?.toLocaleString(
+                        "en-US",
+                        { maximumFractionDigits: 1 }
+                      ) ?? "—")
+                    : property.energyStarScore}
                 </TableCell>
                 <TableCell className="text-right text-muted-foreground">
-                  <span aria-label="Not available">—</span>
+                  {metrics?.[property.id]?.siteEui?.toLocaleString("en-US", {
+                    maximumFractionDigits: 1,
+                  }) ?? <span aria-label="Not available">—</span>}
                 </TableCell>
                 <TableCell className="text-right text-muted-foreground">
-                  <span aria-label="Not available">—</span>
+                  {metrics?.[property.id]?.sourceEui?.toLocaleString("en-US", {
+                    maximumFractionDigits: 1,
+                  }) ?? <span aria-label="Not available">—</span>}
                 </TableCell>
               </TableRow>
             ))}
