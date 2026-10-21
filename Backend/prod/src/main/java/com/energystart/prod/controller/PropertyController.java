@@ -1,9 +1,8 @@
+
 package com.energystart.prod.controller;
 
 import com.energystart.prod.model.Property;
 import com.energystart.prod.service.PropertyService;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,51 +13,43 @@ public class PropertyController {
 
     private final PropertyService propertyService;
 
+    // Temporary development identity.
+    // Replace with authenticated user identity before deployment.
+    private static final String TEST_USER_ID = "user_localtest";
+
     public PropertyController(PropertyService propertyService) {
         this.propertyService = propertyService;
     }
 
     @PostMapping
-    public Property createProperty(
-            @RequestBody Property property,
-            @AuthenticationPrincipal Jwt jwt) {
-
-        return propertyService.addProperty(property, jwt.getSubject());
+    public Property createProperty(@RequestBody Property property) {
+        return propertyService.addProperty(property, TEST_USER_ID);
     }
 
     @GetMapping
-    public List<Property> getAllProperties(
-            @AuthenticationPrincipal Jwt jwt) {
-
-        return propertyService.getAllProperties(jwt.getSubject());
+    public List<Property> getAllProperties() {
+        return propertyService.getAllProperties(TEST_USER_ID);
     }
 
     @GetMapping("/{id}")
-    public Property getPropertyById(
-            @PathVariable String id,
-            @AuthenticationPrincipal Jwt jwt) {
-
-        return propertyService.getPropertyById(id, jwt.getSubject());
+    public Property getPropertyById(@PathVariable String id) {
+        return propertyService.getPropertyById(id, TEST_USER_ID);
     }
 
     @PutMapping("/{id}")
     public Property updateProperty(
             @PathVariable String id,
-            @RequestBody Property property,
-            @AuthenticationPrincipal Jwt jwt) {
+            @RequestBody Property property) {
 
         return propertyService.updateProperty(
                 id,
                 property,
-                jwt.getSubject()
+                TEST_USER_ID
         );
     }
 
     @DeleteMapping("/{id}")
-    public Property deleteProperty(
-            @PathVariable String id,
-            @AuthenticationPrincipal Jwt jwt) {
-
-        return propertyService.deleteProperty(id, jwt.getSubject());
+    public Property deleteProperty(@PathVariable String id) {
+        return propertyService.deleteProperty(id, TEST_USER_ID);
     }
 }

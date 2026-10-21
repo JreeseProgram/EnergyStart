@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.energystart.prod.UserControllerTests
--------------------------------------------------------------------------------
-Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.10 s -- in com.energystart.prod.UserControllerTests
