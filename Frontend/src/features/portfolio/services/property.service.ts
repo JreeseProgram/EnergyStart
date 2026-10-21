@@ -1,5 +1,6 @@
 import {
-  Property,
+  type Property,
+  PropertyType,
   PropertyId,
 } from "@/features/portfolio/models/property.models"
 import z from "zod"
@@ -17,14 +18,10 @@ export const GetPropertyInput = z.object({
 })
 
 export type CreatePropertyInput = z.infer<typeof CreatePropertyInput>
-export const CreatePropertyInput = Property.omit({
-  id: true,
-  createdAt: true,
-  energyStarScore: true,
-  owner: true,
-  totalFloorArea: true,
-  buildingCount: true,
-}).extend({
+export const CreatePropertyInput = z.object({
+  propertyType: PropertyType,
+  notes: z.string().optional(),
+  humanReadablePropertyId: z.string().optional(),
   name: z
     .string("Enter the property name")
     .trim()

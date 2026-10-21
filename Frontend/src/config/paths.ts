@@ -22,9 +22,9 @@ export const paths = {
         path: "properties/:propertyId",
         getHref: (id: string) => `/app/properties/${id}`,
       },
-      buildings: {
-        path: "buildings",
-        getHref: (id: string) => `/app/properties/${id}/buildings`,
+      buildingUses: {
+        path: "building-uses",
+        getHref: (id: string) => `/app/properties/${id}/building-uses`,
       },
       energyMeters: {
         path: "energy-meters",

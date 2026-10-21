@@ -58,9 +58,9 @@ export const createAppRouter = (queryClient: QueryClient) =>
             import("./routes/app/property/root").then(convert(queryClient)),
           children: [
             {
-              path: paths.app.property.buildings.path,
+              path: paths.app.property.buildingUses.path,
               lazy: () =>
-                import("./routes/app/property/buildings").then(
+                import("./routes/app/property/building-uses").then(
                   convert(queryClient)
                 ),
             },

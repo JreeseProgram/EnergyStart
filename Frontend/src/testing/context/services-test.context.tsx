@@ -3,24 +3,24 @@ import {
   type ServicesProviderProps,
 } from "@/context/services.context"
 import { useAuthService } from "@/features/auth/testing/services/auth.service"
-import { useBuildingService } from "@/features/portfolio/testing/services/building.service"
-import { useEnergyMeterService } from "@/features/portfolio/testing/services/energy-meter.service"
-import { usePropertyService } from "@/features/portfolio/testing/services/property.service"
+import { usePropertyTestService } from "@/features/portfolio/testing/services/property.service"
+import { useBuildingUseTestService } from "@/features/portfolio/testing/services/building-use.service"
+import { useEnergyMeterTestService } from "@/features/portfolio/testing/services/energy-meter.service"
 
 export function ServicesProvider(
   props: Omit<ServicesProviderProps, "services">
 ) {
   const authService = useAuthService()
-  const propertyService = usePropertyService()
-  const buildingService = useBuildingService()
-  const energyMeterService = useEnergyMeterService()
+  const propertyService = usePropertyTestService()
+  const buildingUseService = useBuildingUseTestService(propertyService)
+  const energyMeterService = useEnergyMeterTestService(propertyService)
 
   return (
     <BaseServicesProvider
       services={{
         authService,
         propertyService,
-        buildingService,
+        buildingUseService,
         energyMeterService,
         // ... additional services go here
       }}

@@ -1,19 +1,15 @@
-import { testUser } from "@/features/auth/testing/services/auth.service"
+import { useState } from "react"
+import z from "zod"
+import { delay } from "@/utils/delay"
+import { Property, PropertyType } from "../../models/property.models"
 import {
-  Property,
-  PropertyId,
-  PropertyType,
-} from "@/features/portfolio/models/property.models"
-import {
-  type PropertyService,
   CreatePropertyInput,
   UpdatePropertyInput,
-} from "@/features/portfolio/services/property.service"
-import { delay } from "@/utils/delay"
-import React from "react"
-import z from "zod"
+  type PropertyService,
+} from "../../services/property.service"
+import { testUser } from "@/features/auth/testing/services/auth.service"
 
-export const defaultProperties = [
+export const defaultProperties = z.array(Property).parse([
   {
     id: "a0ed477e-df48-4e5a-9c79-2323c5df5301",
     createdAt: new Date().toISOString(),
@@ -25,6 +21,14 @@ export const defaultProperties = [
     streetAddress: "123 Address",
     zip: "12345",
     energyStarScore: 86,
+    grossFloorArea: 125000,
+    owner: testUser,
+    reportingYear: "2025",
+    auditComplianceStatus: "NOT_PARTICIPATING",
+    energyUse: 6875000,
+    siteEui: 55,
+    sourceEui: 121,
+    annualGHG: 420,
   },
 
   {
@@ -38,6 +42,14 @@ export const defaultProperties = [
     streetAddress: "123 Address",
     zip: "12345",
     energyStarScore: 50,
+    grossFloorArea: 33000,
+    owner: testUser,
+    reportingYear: "2025",
+    auditComplianceStatus: "NOT_PARTICIPATING",
+    energyUse: 2720000,
+    siteEui: 85,
+    sourceEui: 187,
+    annualGHG: 180,
   },
 
   {
@@ -51,6 +63,14 @@ export const defaultProperties = [
     streetAddress: "123 Address",
     zip: "12345",
     energyStarScore: 91,
+    grossFloorArea: 98000,
+    owner: testUser,
+    reportingYear: "2025",
+    auditComplianceStatus: "NOT_PARTICIPATING",
+    energyUse: 3920000,
+    siteEui: 40,
+    sourceEui: 88,
+    annualGHG: 240,
   },
 
   {
@@ -64,58 +84,63 @@ export const defaultProperties = [
     streetAddress: "123 Address",
     zip: "12345",
     energyStarScore: 24,
+    grossFloorArea: 0,
+    owner: testUser,
+    reportingYear: "2025",
+    auditComplianceStatus: "NOT_PARTICIPATING",
   },
-]
+])
 
 const SERVER_DELAY = 300
 
-export function usePropertyService(): PropertyService {
-  const properties = React.useRef<Property[]>(
-    z.array(Property).parse(
-      defaultProperties.map((prop) => ({
-        ...prop,
-        owner: testUser,
-      }))
-    )
+export function usePropertyTestService(): PropertyService {
+  const [properties] = useState(
+    () =>
+      new Map(
+        defaultProperties.map((property) => [
+          property.id,
+          Property.parse(property),
+        ])
+      )
   )
-
   return {
     getProperties: async () => {
       await delay(SERVER_DELAY)
-      return properties.current
+      return Array.from(properties.values()).map((property) =>
+        Property.parse(property)
+      )
     },
     getProperty: async ({ propertyId }) => {
       await delay(SERVER_DELAY)
-      const property = properties.current.find(
-        (property) => property.id === propertyId
-      )
-      if (!property) throw new Error(`Building ${propertyId} not found`)
-      return property
-    },
-    updateProperty: async (input) => {
-      const { propertyId, ...fields } = UpdatePropertyInput.parse(input)
-      await delay(SERVER_DELAY)
-      const existing = properties.current.find(
-        (property) => property.id === propertyId
-      )
-      if (!existing) throw new Error(`Property ${propertyId} not found`)
-      const updated = Property.parse({ ...existing, ...fields })
-      properties.current = properties.current.map((property) =>
-        property.id === propertyId ? updated : property
-      )
-      return updated
+      const property = properties.get(propertyId)
+      if (!property) throw new Error(`Property ${propertyId} not found`)
+      return Property.parse(property)
     },
     createProperty: async (input) => {
-      const fields = CreatePropertyInput.parse(input)
       await delay(SERVER_DELAY)
       const property = Property.parse({
-        id: PropertyId.parse(crypto.randomUUID()),
+        ...CreatePropertyInput.parse(input),
+        id: crypto.randomUUID(),
         createdAt: new Date().toISOString(),
         owner: testUser,
+        reportingYear: String(new Date().getFullYear()),
+        auditComplianceStatus: "NOT_PARTICIPATING",
+        grossFloorArea: 0,
+      })
+      properties.set(property.id, property)
+      return Property.parse(property)
+    },
+    updateProperty: async (input) => {
+      await delay(SERVER_DELAY)
+      const { propertyId, ...fields } = UpdatePropertyInput.parse(input)
+      const existing = properties.get(propertyId)
+      if (!existing) throw new Error(`Property ${propertyId} not found`)
+      const property = Property.parse({
+        ...existing,
         ...fields,
       })
-      properties.current = [...properties.current, property]
-      return property
+      properties.set(property.id, property)
+      return Property.parse(property)
     },
   }
 }

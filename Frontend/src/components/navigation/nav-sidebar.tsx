@@ -31,8 +31,8 @@ export function NavSidebar({ propertyId }: { propertyId: string }) {
       icon: <Home />,
     },
     {
-      title: "Buildings",
-      url: paths.app.property.buildings.getHref(propertyId),
+      title: "Building Uses",
+      url: paths.app.property.buildingUses.getHref(propertyId),
       icon: <Building2 />,
     },
     {

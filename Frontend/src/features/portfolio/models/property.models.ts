@@ -32,6 +32,13 @@ export const PropertyType = z.enum(
   "Select a property type"
 )
 
+export type AuditComplianceStatus = z.infer<typeof AuditComplianceStatus>
+export const AuditComplianceStatus = z.enum([
+  "PARTICIPATING",
+  "NOT_PARTICIPATING",
+  "APPROVED_FOR_EXEMPTION",
+] as const)
+
 export type Property = z.infer<typeof Property>
 export const Property = BaseEntity(PropertyId).extend({
   humanReadablePropertyId: z.string().optional(),
@@ -44,6 +51,13 @@ export const Property = BaseEntity(PropertyId).extend({
   state: z.string("Enter the city the property is located in"),
   streetAddress: z.string("Enter a the property street address"),
   zip: z.string("Enter the property zip code"),
-  buildingCount: z.number().optional().default(0),
-  totalFloorArea: z.number().optional().default(0),
+  auditComplianceStatus:
+    AuditComplianceStatus.optional().default("NOT_PARTICIPATING"),
+  reportingYear: z.string(),
+  siteEui: z.number().optional(),
+  sourceEui: z.number().optional(),
+  annualGHG: z.number().optional(), // Annual Greenhouse Gas Emissions
+  energyUse: z.number().optional(),
+  // Read-only summary supplied by the service/backend, never a metadata input.
+  grossFloorArea: z.number().nonnegative(),
 })
