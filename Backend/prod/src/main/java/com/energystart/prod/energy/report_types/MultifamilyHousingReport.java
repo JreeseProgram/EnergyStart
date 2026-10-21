@@ -40,13 +40,14 @@ public class MultifamilyHousingReport extends EnergyReport {
         float squareFootPerThousand = squareFoot / 1000;
         float unitsPerThousandFt = this.getNumOfResidentialUnits() / squareFootPerThousand;
         float bedroomsPerUnit = (float) this.getNumOfBedrooms() / this.getNumOfResidentialUnits();
-        float hasLowRise = 0f;
+        float lowRisePercent = (float) this.getLowRiseUnits()
+                / (float) (this.getLowRiseUnits() + this.getMidRiseUnits() + this.getHighRiseUnits());
         float cooled = cdd;
         float heated = hdd;
 
         predictedSourceEUI += (unitsPerThousandFt - 1.215f) * 48.01f;
         predictedSourceEUI += (bedroomsPerUnit - 1.238f) * 22.64f;
-        predictedSourceEUI += hasLowRise;
+        predictedSourceEUI += lowRisePercent * -19.00f;
         predictedSourceEUI += (cooled - 1364f) * 0.01406f;
         predictedSourceEUI += (heated - 4233f) * 0.008989f;
 
