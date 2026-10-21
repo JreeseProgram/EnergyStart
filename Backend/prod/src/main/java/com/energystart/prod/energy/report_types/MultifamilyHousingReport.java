@@ -5,8 +5,11 @@ import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.PropertyRepo;
 
 public class MultifamilyHousingReport extends EnergyReport {
+    //low-rise stories 1-4; mid-rise 5-9; high-rise 10+
 
-    private BUILDING_HEIGHT_TYPES BuildingType;
+    private int lowRiseUnits; //1-4 stories
+    private int midRiseUnits; //5-9 stories
+    private int highRiseUnits; //10+ stories
     private int numOfBedrooms;
     private int numOfResidentialUnits;
 
@@ -51,12 +54,29 @@ public class MultifamilyHousingReport extends EnergyReport {
 
     //Getters and Setters
 
-    public BUILDING_HEIGHT_TYPES getBuildingType() {
-        return BuildingType;
+
+    public int getLowRiseUnits() {
+        return lowRiseUnits;
     }
 
-    public void setBuildingType(BUILDING_HEIGHT_TYPES buildingType) {
-        BuildingType = buildingType;
+    public void setLowRiseUnits(int lowRiseUnits) {
+        this.lowRiseUnits = lowRiseUnits;
+    }
+
+    public int getMidRiseUnits() {
+        return midRiseUnits;
+    }
+
+    public void setMidRiseUnits(int midRiseUnits) {
+        this.midRiseUnits = midRiseUnits;
+    }
+
+    public int getHighRiseUnits() {
+        return highRiseUnits;
+    }
+
+    public void setHighRiseUnits(int highRiseUnits) {
+        this.highRiseUnits = highRiseUnits;
     }
 
     public int getNumOfBedrooms() {
