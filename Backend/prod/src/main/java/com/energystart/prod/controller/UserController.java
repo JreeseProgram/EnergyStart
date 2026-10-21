@@ -3,6 +3,7 @@ package com.energystart.prod.controller;
 import com.energystart.prod.model.User;
 import com.energystart.prod.service.UserService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -26,11 +27,15 @@ public class UserController {
      *
      * Creates a new user.
      */
-    @PostMapping
-    public User createUser(@RequestBody User user) {
 
-        return userService.addUser(user);
+    @PostMapping
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+
+        User createdUser = userService.addUser(user);
+
+        return ResponseEntity.status(201).body(createdUser);
     }
+
 
 
     // ============================================================
@@ -58,11 +63,19 @@ public class UserController {
      *
      * Retrieves a single user by ID.
      */
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable String id) {
 
-        return userService.getUserById(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable String id) {
+
+        User user = userService.getUserById(id);
+
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(user);
     }
+
 
 
     // ============================================================
@@ -74,13 +87,21 @@ public class UserController {
      *
      * Updates an existing user.
      */
+
     @PutMapping("/{id}")
-    public User updateUser(
+    public ResponseEntity<User> updateUser(
             @PathVariable String id,
             @RequestBody User user) {
 
-        return userService.updateUser(id, user);
+        User updatedUser = userService.updateUser(id, user);
+
+        if (updatedUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(updatedUser);
     }
+
 
 
     // ============================================================
@@ -92,9 +113,17 @@ public class UserController {
      *
      * Deletes an existing user.
      */
-    @DeleteMapping("/{id}")
-    public User deleteUser(@PathVariable String id) {
 
-        return userService.deleteUser(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<User> deleteUser(@PathVariable String id) {
+
+        User deletedUser = userService.deleteUser(id);
+
+        if (deletedUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(deletedUser);
     }
+
 }
