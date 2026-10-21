@@ -1,3 +1,4 @@
+import { usePortfolioPerformanceService } from "@/features/portfolio/testing/services/portfolio-performance.service"
 import {
   BaseServicesProvider,
   type ServicesProviderProps,
@@ -14,6 +15,7 @@ export function ServicesProvider(
   const propertyService = usePropertyService()
   const buildingService = useBuildingService()
   const energyMeterService = useEnergyMeterService()
+  const portfolioPerformanceService = usePortfolioPerformanceService()
 
   return (
     <BaseServicesProvider
@@ -22,6 +24,7 @@ export function ServicesProvider(
         propertyService,
         buildingService,
         energyMeterService,
+        portfolioPerformanceService,
         // ... additional services go here
       }}
       {...props}

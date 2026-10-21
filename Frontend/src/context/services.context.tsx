@@ -1,3 +1,5 @@
+import type { PortfolioPerformanceService } from "@/features/portfolio/services/portfolio-performance.service"
+import { usePortfolioPerformanceService } from "@/features/portfolio/testing/services/portfolio-performance.service"
 import * as React from "react"
 import type { AuthService } from "@/features/auth/services/auth.service"
 import { useAuthService } from "@/features/auth/infrastructure/auth.service"
@@ -13,6 +15,7 @@ export type Services = {
   propertyService: PropertyService
   buildingService: BuildingService
   energyMeterService: EnergyMeterService
+  portfolioPerformanceService: PortfolioPerformanceService
   // ... additional service types go here
 }
 
@@ -43,6 +46,7 @@ export function ServicesProvider(
   const propertyService = usePropertyService()
   const buildingService = useBuildingService()
   const energyMeterService = useEnergyMeterService()
+  const portfolioPerformanceService = usePortfolioPerformanceService()
 
   return (
     <BaseServicesProvider
@@ -51,6 +55,7 @@ export function ServicesProvider(
         propertyService,
         buildingService,
         energyMeterService,
+        portfolioPerformanceService,
         // ... additional services go here
       }}
       {...props}
