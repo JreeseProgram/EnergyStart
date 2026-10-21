@@ -21,11 +21,13 @@ public class MultifamilyHousingReport extends EnergyReport {
     public MultifamilyHousingReport() {}
 
     public MultifamilyHousingReport(int grossFloorArea, int parkingSize, int yearOfConstruction,
-                                    BUILDING_HEIGHT_TYPES buildingType, int numOfBedrooms,
+                                    int lowRiseUnits, int midRiseUnits, int highRiseUnits, int numOfBedrooms,
                                     int numOfResidentialUnits) {
         super(grossFloorArea, parkingSize, yearOfConstruction);
 
-        setBuildingType(buildingType);
+        setLowRiseUnits(lowRiseUnits);
+        setMidRiseUnits(midRiseUnits);
+        setHighRiseUnits(highRiseUnits);
         setNumOfBedrooms(numOfBedrooms);
         setNumOfResidentialUnits(numOfResidentialUnits);
     }
@@ -38,7 +40,7 @@ public class MultifamilyHousingReport extends EnergyReport {
         float squareFootPerThousand = squareFoot / 1000;
         float unitsPerThousandFt = this.getNumOfResidentialUnits() / squareFootPerThousand;
         float bedroomsPerUnit = (float) this.getNumOfBedrooms() / this.getNumOfResidentialUnits();
-        float hasLowRise = (getBuildingType().equals(BUILDING_HEIGHT_TYPES.lowRise)) ? 0.6667f : 0f;
+        float hasLowRise = 0f;
         float cooled = cdd;
         float heated = hdd;
 
