@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { PROPERTY_TYPES } from "@/features/portfolio/utils/form-constants"
 
 import {
   DropdownMenu,
@@ -16,7 +16,7 @@ import {
 import { ChevronsUpDownIcon, CheckIcon, MapPinned } from "lucide-react"
 import type { Property } from "@/features/portfolio/models/property.models"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useNavigate } from "react-router"
+import { useLocation, useMatch, useNavigate } from "react-router"
 import { paths } from "@/config/paths"
 
 export function PropertySwitcher({
@@ -26,9 +26,24 @@ export function PropertySwitcher({
   properties: Property[]
   defaultProperty: Property
 }) {
-  const [selectedProperty, setSelectedProperty] =
-    React.useState<Property>(defaultProperty)
+  const selectedProperty = defaultProperty
   const navigate = useNavigate()
+  const location = useLocation()
+  const propertyMatch = useMatch(
+    `${paths.app.property.root.getHref(":propertyId")}/*`
+  )
+
+  function handleClick(property: Property) {
+    const page = propertyMatch?.params["*"]
+    const propertyPath = paths.app.property.root.getHref(property.id)
+
+    navigate({
+      pathname: page ? `${propertyPath}/${page}` : propertyPath,
+      search: location.search,
+      hash: location.hash,
+    })
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -47,9 +62,14 @@ export function PropertySwitcher({
             </div>
             <div className="flex flex-col gap-0.5 leading-none">
               <span className="font-medium">{selectedProperty.name}</span>
-              {/* TODO: need to update to be dynamic */}
+
               <span className="text-xs text-muted-foreground">
-                Office • Orlando, FL
+                {
+                  PROPERTY_TYPES.find(
+                    (type) => type.value === selectedProperty.propertyType
+                  )?.label
+                }{" "}
+                {" • "} {selectedProperty.city}, {selectedProperty.state}
               </span>
             </div>
             <ChevronsUpDownIcon className="ml-auto" />
@@ -58,10 +78,7 @@ export function PropertySwitcher({
             {properties.map((property) => (
               <DropdownMenuItem
                 key={`property_switcher_item_${property.id}`}
-                onClick={() => {
-                  setSelectedProperty(property)
-                  navigate(paths.app.property.root.getHref(property.id))
-                }}
+                onClick={() => handleClick(property)}
               >
                 {property.name}{" "}
                 {property.id === selectedProperty.id && (

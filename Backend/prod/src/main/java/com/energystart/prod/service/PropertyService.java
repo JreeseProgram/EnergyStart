@@ -41,10 +41,10 @@ public class PropertyService {
     public List<Property> getAllProperties(String userId) {
         requireUser(userId);
 
-        // Changed to query only accessible properties directly from MongoDB.
-        // This replaces the original findAll() and Java filtering approach.
-        return propertyRepo.findByAuthorizedUserIdsContaining(userId)
-                .stream()
+        // Keep the existing list behavior: show only accessible properties.
+        return propertyRepo.findAll().stream()
+                .filter(property ->
+                        property.getAuthorizedUserIds().contains(userId))
                 .map(this::copy)
                 .toList();
     }

@@ -1,14 +1,8 @@
 package com.energystart.prod.energy.report_types;
 
-import com.energystart.prod.energy.EnergyMeter;
 import com.energystart.prod.energy.EnergyReport;
-import com.energystart.prod.energy.EnergyStarLookupTable;
-import com.energystart.prod.model.Property;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.PropertyRepo;
-
-import java.time.LocalDate;
-import java.util.List;
 
 public class SeniorLivingCommunityReport extends EnergyReport {
 
@@ -55,12 +49,11 @@ public class SeniorLivingCommunityReport extends EnergyReport {
     //Custom Methods
 
 
-    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate) {
+    public float energyStarRegressionCalc(float cdd, float hdd) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 219.4f; //standard
         float squareFoot = this.getGrossFloorArea();
         float squareFootPerThousand = squareFoot / 1000;
-
         float numUnitsPerThousandFt = this.getNumOfResidentialUnits() / squareFootPerThousand;
         float percentCapacity = (float) this.getAvgNumResidents() / this.getMaxResidentCapacity();
         float numLiftsPerThousandFt = this.getNumOfResidentialLifts() / squareFootPerThousand;
@@ -69,11 +62,8 @@ public class SeniorLivingCommunityReport extends EnergyReport {
         float numCommRefrigerationPerThousandFt = this.getNumCommercialFreezer() / squareFootPerThousand;
         float numCommWashingMachinePerThousandFt = this.getNumOfCommercialWashingMachines() / squareFootPerThousand;
         float numResidentWashingMachinePerThousandFt = this.getNumOfResidentialWashingMachines() / squareFootPerThousand;
-
-        Property associatedProperty = repo.findById(this.getRelatedPropertyID()).orElse(null);
-        Integer[] cddhdd = EnergyReport.retrieveCDDHDD(associatedProperty.getZipcode(), startDate, endDate);
-        float cooled = cddhdd[0] * this.getPercentCooled();
-        float heated = cddhdd[1] * this.getPercentHeated();
+        float cooled = cdd * this.getPercentCooled();
+        float heated = hdd * this.getPercentHeated();
 
         if(numResidentWashingMachinePerThousandFt > 0.16f){numResidentWashingMachinePerThousandFt = 0.16f;}
 
@@ -88,17 +78,7 @@ public class SeniorLivingCommunityReport extends EnergyReport {
         predictedSourceEUI += (cooled - 1184f) * 0.01456f;
         predictedSourceEUI += (heated - 4524f) * 0.005431f;
 
-        //Energy Efficiency Ratio
-
-        List<EnergyMeter> meters = meterRepo.findByAssociatedReportIDAndDateBetween(this.getID(), startDate, endDate);
-        float sourceEUI = 0;
-        for (EnergyMeter meter : meters) {
-            sourceEUI += meter.getSourceEUI();
-        }
-        float EER = sourceEUI / predictedSourceEUI;
-        float score = EnergyStarLookupTable.getScore(EER, this);
-        setEnergyScore(score);
-        return score;
+        return predictedSourceEUI * this.getGrossFloorArea();
     }
 
     //Getters and Setters

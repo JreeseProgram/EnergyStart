@@ -1,4 +1,4 @@
-import { BuildingId } from "@/features/portfolio/models/building.models"
+import { PropertyId } from "@/features/portfolio/models/property.models"
 import { BaseEntity } from "@/models/shared.models"
 import z from "zod"
 
@@ -60,7 +60,7 @@ export const UnitOfMeasure = z.enum(
 
 export type EnergyMeter = z.infer<typeof EnergyMeter>
 export const EnergyMeter = BaseEntity(EnergyMeterId).extend({
-  buildingId: BuildingId,
+  propertyId: PropertyId,
   date: z.iso.datetime().optional().default(new Date().toISOString()),
   meterId: z.string().optional(),
   meterType: EnergyMeterType,

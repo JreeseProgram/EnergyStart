@@ -2,7 +2,6 @@ package com.energystart.prod.energy.report_types;
 
 import com.energystart.prod.energy.EnergyMeter;
 import com.energystart.prod.energy.EnergyReport;
-import com.energystart.prod.energy.EnergyStarLookupTable;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.PropertyRepo;
 
@@ -27,7 +26,7 @@ public class DataCenterReport extends EnergyReport {
 
     public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate){
         float predictedPUE = 1.924f;
-        List<EnergyMeter> meters = meterRepo.findByAssociatedReportIDAndDateBetween(this.getID(),startDate,endDate);
+        List<EnergyMeter> meters = meterRepo.findByAssociatedPropertyIDAndDateBetween(this.getRelatedPropertyID(),startDate,endDate);
         float sourceKBtu = 0;
         for(EnergyMeter meter: meters){
             //Keeps Multipliers but reverts floor area calculations
@@ -37,10 +36,9 @@ public class DataCenterReport extends EnergyReport {
         float sourceITUsage = getAnnualITEnergy() * 3.412f * 2.80f;
         float realPUE = sourceKBtu/sourceITUsage;
         predictedPUE += (realPUE - 0.2091f) * (-0.9506f);
-        float EER = realPUE / predictedPUE;
-        float score = EnergyStarLookupTable.getScore(EER, this);
-        setEnergyScore(score);
-        return score;    }
+
+        return predictedPUE * sourceITUsage; // converts this to predicted kBtu
+    }
 
     //Setters and Getters
     public float getAnnualITEnergy() {

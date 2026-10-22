@@ -2,7 +2,12 @@ package com.energystart.prod.energy;
 
 import com.energystart.prod.energy.report_types.*;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 //All Scores derrived from here:
 // https://www.energystar.gov/buildings/benchmark/understand-metrics/score-details
 public class EnergyStarLookupTable {
@@ -1433,127 +1438,96 @@ public class EnergyStarLookupTable {
 
     );
 
+//Cursed Mega for loop of confusion
+//
+//    first for loop looks from the highest score down, second checks through each "use",
+//    third finds the correct score relative to our current initial score loop,
+//    then it multiplies it by the weight. Once all are done we check if the Energy efficiency ratio
+//    is less than the score, meaning we found the highest possible value
+//
     /**
      *
      * @param EER The Energy Efficiency Ratio
-     * @param report A type of energy report or child of
+     * @param reports A list of energy report or child of
+     * @param weights A list of Float used to apply a proportional weight to the score
      * @return energy star score as a float
      */
-    public static float getScore(float EER, EnergyReport report){
-        float result = -1f;
+    public static int getScore(float EER, List<EnergyReport> reports, List<Float> weights) {
+        float result = -1;
+        List<List<Range>> allRanges = getListOfReportRange(reports);
 
-        //CategoryA Test
-        if(report instanceof BankBranchReport
-                || report instanceof FinancialOfficeReport
-                || report instanceof OfficeReport
-                || report instanceof CourtHouseReport){
-            for (Range r : CategoryAScore){
-                if(EER >= r.min && EER < r.max){
-                    result = r.score;
+        //Find Highest possible score
+        for (int score = 100; score >=1; score--) {
+            float blendedMaxScore = 0.0f;
+            float targetScore = score / 100f;
+            //Look into each range and get current value
+            for (int i=0; i <allRanges.size(); i++) {
+                List<Range> currentRanges = allRanges.get(i);
+                float currentWeight = weights.get(i);
+                float maxThreshold = Float.MAX_VALUE;
+                //Check if the current range is the desired range.
+                for(Range r : currentRanges) {
+                    //Floating point safety to ensure no false negatives
+                    if (Math.abs(r.score - targetScore) < 0.001f){
+                        maxThreshold = r.max;
+                        break;
+                    }
                 }
-            }
-        }
-        //CategoryB Test
-        else if(report instanceof ConvenienceStoreReport){
-            for (Range r : CategoryBScore){
-                if(EER >= r.min && EER < r.max){
-                    result = r.score;
-                }
-            }
-        }
-        //CategoryC Test
-        else if(report instanceof DataCenterReport){
-            for (Range r : CategoryCScore){
-                if(EER >= r.min && EER < r.max){
-                    result = r.score;
-                }
-            }
-        }
-        //CategoryD Test
-        else if(report instanceof DistributionCenterReport
-                || report instanceof WarehouseReport
-                || report instanceof WarehouseRefrigeratedReport){
-            for (Range r : CategoryDScore){
-                if(EER >= r.min && EER < r.max){
-                    result = r.score;
-                }
-            }
-        }
-        //CategoryE Test
-        else if(report instanceof HospitalReport){
-            for (Range r : CategoryEScore){
-                if(EER >= r.min && EER < r.max){
-                    result = r.score;
-                }
-            }
-        }
-        //CategoryF Test
-        else if(report instanceof HotelReport){
-            for (Range r : CategoryFScore){
-                if(EER >= r.min && EER < r.max){
-                    result = r.score;
-                }
-            }
-        }
-        //CategoryG Test
-        else if(report instanceof MedicalOfficeReport){
-            for (Range r : CategoryGScore){
-                if(EER >= r.min && EER < r.max){
-                    result = r.score;
-                }
-            }
-        }
-        //CategoryH Test
-        else if (report instanceof MultifamilyHousingReport) {
-            for (Range r : CategoryHScore){
-                if(EER >= r.min && EER < r.max){
-                    result = r.score;
-                }
-            }
-        }
-        //CategoryI Test
-        else if(report instanceof RetailStoreReport
-                || report instanceof SupermarketReport
-                || report instanceof WholesaleClubReport){
-            for (Range r : CategoryIScore){
-                if(EER >= r.min && EER < r.max){
-                    result = r.score;
-                }
-            }
-        }
-        //CategoryJ Test
-        else if(report instanceof SchoolReport){
-            for(Range r : CategoryJScore){
-                if(EER >= r.min && EER < r.max){
-                    result = r.score;
-                }
-            }
-        }
-        //CategoryK Test
-        else if(report instanceof SeniorLivingCommunityReport){
-            for (Range r : CategoryKScore){
-                if(EER >= r.min && EER < r.max){
-                    result = r.score;
-                }
-            }
-        }
-        //CategoryL Test
-        else if(report instanceof VehicleDealershipReport){
-            for(Range r: CategoryLScore){
-                if(EER >= r.min && EER < r.max){
-                    result = r.score;
-                }
-            }
-        }
-        else if(report instanceof WorshipFacilityReport){
-            for(Range r : CategoryMScore){
-                if(EER >= r.min && EER < r.max){
-                    result = r.score;
-                }
-            }
-        }
 
-
-        return result;
+                blendedMaxScore += (maxThreshold * currentWeight);
+            }
+            if(EER < blendedMaxScore){
+                return score;
+            }
+        }
+        //worst possible score incase not found
+        return 1;
     }
+
+    private static List<List<Range>> getListOfReportRange(List<EnergyReport> reports){
+        List<List<Range>> list = new ArrayList<>();
+
+        for(EnergyReport report : reports){
+
+            //CategoryA Test
+            switch (report.getClass().getSimpleName()) {
+                case "BankBranchReport",
+                     "FinancialOfficeReport",
+                     "OfficeReport",
+                     "CourtHouseReport"->
+                        list.add(CategoryAScore);
+                case "ConvenienceStoreReport" ->
+                        list.add(CategoryBScore);
+                case "DataCenterReport" ->
+                        list.add(CategoryCScore);
+                case "DistributionCenterReport",
+                     "WarehouseReport",
+                     "WarehouseRefrigeratedReport" ->
+                        list.add(CategoryDScore);
+                case "HospitalReport" ->
+                        list.add(CategoryEScore);
+                case "HotelReport" ->
+                        list.add(CategoryFScore);
+                case "MedicalOfficeReport" ->
+                        list.add(CategoryGScore);
+                case "MultifamilyHousingReport"->
+                        list.add(CategoryHScore);
+                case "RetailStoreReport",
+                     "SupermarketReport",
+                     "WholesaleClubReport" ->
+                        list.add(CategoryIScore);
+                case "SchoolReport" ->
+                        list.add(CategoryJScore);
+                case "SeniorLivingCommunityReport" ->
+                        list.add(CategoryKScore);
+                case "VehicleDealershipReport" ->
+                        list.add(CategoryLScore);
+                case "WorshipFacilityReport" ->
+                        list.add(CategoryMScore);
+            }
+        }
+        return list;
+    }
+
+
 }
