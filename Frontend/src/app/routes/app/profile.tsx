@@ -18,7 +18,7 @@ const ProfileRoute = () => {
   if (!user.data) return null
 
   return (
-    <ContentLayout title="Profile">
+    <ContentLayout seo={{ title: "Profile" }}>
       <div className="overflow-hidden p-6 shadow sm:rounded-lg">
         <div className="py-5">
           <div className="flex justify-between">

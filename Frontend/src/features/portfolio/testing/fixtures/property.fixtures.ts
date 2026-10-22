@@ -1,4 +1,5 @@
 import { PropertyType } from "@/features/portfolio/models/property.models"
+import { testPortfolioUser } from "@/features/portfolio/testing/fixtures/user.fixtures"
 
 export const defaultProperties = [
   {
@@ -12,6 +13,14 @@ export const defaultProperties = [
     streetAddress: "123 Address",
     zip: "12345",
     energyStarScore: 86,
+    grossFloorArea: 125000,
+    owner: testPortfolioUser,
+    reportingYear: "2025",
+    auditComplianceStatus: "NOT_PARTICIPATING",
+    energyUse: 6875000,
+    siteEui: 55,
+    sourceEui: 121,
+    annualGHG: 420,
   },
 
   {
@@ -25,6 +34,14 @@ export const defaultProperties = [
     streetAddress: "123 Address",
     zip: "12345",
     energyStarScore: 50,
+    grossFloorArea: 33000,
+    owner: testPortfolioUser,
+    reportingYear: "2025",
+    auditComplianceStatus: "NOT_PARTICIPATING",
+    energyUse: 2720000,
+    siteEui: 85,
+    sourceEui: 187,
+    annualGHG: 180,
   },
 
   {
@@ -38,6 +55,14 @@ export const defaultProperties = [
     streetAddress: "123 Address",
     zip: "12345",
     energyStarScore: 91,
+    grossFloorArea: 98000,
+    owner: testPortfolioUser,
+    reportingYear: "2025",
+    auditComplianceStatus: "NOT_PARTICIPATING",
+    energyUse: 3920000,
+    siteEui: 40,
+    sourceEui: 88,
+    annualGHG: 240,
   },
 
   {
@@ -51,5 +76,9 @@ export const defaultProperties = [
     streetAddress: "123 Address",
     zip: "12345",
     energyStarScore: 24,
+    grossFloorArea: 0,
+    owner: testPortfolioUser,
+    reportingYear: "2025",
+    auditComplianceStatus: "NOT_PARTICIPATING",
   },
 ]

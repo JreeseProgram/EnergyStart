@@ -1,17 +1,17 @@
+import { usePropertyTestService } from "@/features/portfolio/testing/services/property.service"
+import { useBuildingUseTestService } from "@/features/portfolio/testing/services/building-use.service"
+import { useEnergyMeterTestService } from "@/features/portfolio/testing/services/energy-meter.service"
 import * as React from "react"
 import type { AuthService } from "@/features/auth/services/auth.service"
 import { useAuthService } from "@/features/auth/infrastructure/auth.service"
 import type { PropertyService } from "@/features/portfolio/services/property.service"
-import type { BuildingService } from "@/features/portfolio/services/building.service"
+import type { BuildingUseService } from "@/features/portfolio/services/building-use.service"
 import type { EnergyMeterService } from "@/features/portfolio/services/energy-meter.service"
-import { usePropertyService } from "@/features/portfolio/testing/services/property.service"
-import { useBuildingService } from "@/features/portfolio/testing/services/building.service"
-import { useEnergyMeterService } from "@/features/portfolio/testing/services/energy-meter.service"
 
 export type Services = {
   authService: AuthService
   propertyService: PropertyService
-  buildingService: BuildingService
+  buildingUseService: BuildingUseService
   energyMeterService: EnergyMeterService
   // ... additional service types go here
 }
@@ -40,16 +40,16 @@ export function ServicesProvider(
   props: Omit<ServicesProviderProps, "services">
 ) {
   const authService = useAuthService()
-  const propertyService = usePropertyService()
-  const buildingService = useBuildingService()
-  const energyMeterService = useEnergyMeterService()
+  const propertyService = usePropertyTestService()
+  const buildingUseService = useBuildingUseTestService(propertyService)
+  const energyMeterService = useEnergyMeterTestService(propertyService)
 
   return (
     <BaseServicesProvider
       services={{
         authService,
         propertyService,
-        buildingService,
+        buildingUseService,
         energyMeterService,
         // ... additional services go here
       }}

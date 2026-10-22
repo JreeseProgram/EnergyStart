@@ -1,10 +1,10 @@
 import { ContentLayout } from "@/components/layouts/content-layout"
 import { paths } from "@/config/paths"
-import { PropertyBuildingsCell } from "@/features/portfolio/cells/property-buildings.cell"
+import { PropertyBuildingUsesCell } from "@/features/portfolio/cells/property-building-uses.cell"
 import { usePropertyId } from "@/features/portfolio/hooks/use-property-id"
 import { Navigate } from "react-router"
 
-const PropertyBuildingsRoute = () => {
+const PropertyBuildingUsesRoute = () => {
   const propertyId = usePropertyId()
 
   if (!propertyId) {
@@ -12,10 +12,10 @@ const PropertyBuildingsRoute = () => {
   }
 
   return (
-    <ContentLayout title="Buildings">
-      <PropertyBuildingsCell propertyId={propertyId} />
+    <ContentLayout seo={{ title: "Building Uses" }}>
+      <PropertyBuildingUsesCell propertyId={propertyId} />
     </ContentLayout>
   )
 }
 
-export default PropertyBuildingsRoute
+export default PropertyBuildingUsesRoute

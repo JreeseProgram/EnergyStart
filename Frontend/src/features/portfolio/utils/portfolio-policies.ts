@@ -8,7 +8,4 @@ export const PORTFOLIO_POLICIES = {
   "property:view": ownsProperty,
   "property:edit": ownsProperty,
   "property:delete": ownsProperty,
-  "building:view": ownsProperty,
-  "building:edit": ownsProperty,
-  "building:delete": ownsProperty,
 }

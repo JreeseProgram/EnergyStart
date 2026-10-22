@@ -27,7 +27,6 @@ const convert = (queryClient: QueryClient) => (m: any) => {
   }
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const createAppRouter = (queryClient: QueryClient) =>
   createBrowserRouter([
     {
@@ -75,9 +74,9 @@ export const createAppRouter = (queryClient: QueryClient) =>
                 ),
             },
             {
-              path: paths.app.property.buildings.path,
+              path: paths.app.property.buildingUses.path,
               lazy: () =>
-                import("./routes/app/property/buildings").then(
+                import("./routes/app/property/building-uses").then(
                   convert(queryClient)
                 ),
             },

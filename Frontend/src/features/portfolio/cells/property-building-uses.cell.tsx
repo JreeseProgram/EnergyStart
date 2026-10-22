@@ -4,7 +4,7 @@ import { Link } from "@/components/ui/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { paths } from "@/config/paths"
 import { useProperty } from "@/features/portfolio/api/get-property.api"
-import { PropertyBuildings } from "@/features/portfolio/components/property-buildings"
+import { PropertyBuildingUses } from "@/features/portfolio/components/property-building-uses"
 import {
   PropertyHeader,
   PropertyHeaderSkeleton,
@@ -12,7 +12,7 @@ import {
 import type { PropertyId } from "@/features/portfolio/models/property.models"
 import { createCell } from "@/lib/react-query"
 
-export function PropertyBuildingsCell({
+export function PropertyBuildingUsesCell({
   propertyId,
 }: {
   propertyId: PropertyId
@@ -53,8 +53,8 @@ export function PropertyBuildingsCell({
       return (
         <>
           <PropertyHeader property={property} />
-          <ContentHeader title={"Buildings"} />
-          <PropertyBuildings property={property} />
+          <ContentHeader title={"Building uses"} />
+          <PropertyBuildingUses property={property} />
         </>
       )
     },

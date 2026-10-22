@@ -1,7 +1,4 @@
-import {
-  Property,
-  PropertyId,
-} from "@/features/portfolio/models/property.models"
+import { Property } from "@/features/portfolio/models/property.models"
 import {
   type PropertyService,
   CreatePropertyInput,
@@ -15,7 +12,7 @@ import z from "zod"
 
 const SERVER_DELAY = 300
 
-export function usePropertyService(): PropertyService {
+export function usePropertyTestService(): PropertyService {
   const properties = React.useRef<Property[]>(
     z.array(Property).parse(
       defaultProperties.map((prop) => ({
@@ -24,11 +21,10 @@ export function usePropertyService(): PropertyService {
       }))
     )
   )
-
   return {
     getProperties: async () => {
       await delay(SERVER_DELAY)
-      return properties.current
+      return properties.current.map((property) => Property.parse(property))
     },
     getProperty: async ({ propertyId }) => {
       await delay(SERVER_DELAY)
@@ -51,16 +47,18 @@ export function usePropertyService(): PropertyService {
       return updated
     },
     createProperty: async (input) => {
-      const fields = CreatePropertyInput.parse(input)
       await delay(SERVER_DELAY)
       const property = Property.parse({
-        id: PropertyId.parse(crypto.randomUUID()),
+        ...CreatePropertyInput.parse(input),
+        id: crypto.randomUUID(),
         createdAt: new Date().toISOString(),
         owner: testPortfolioUser,
-        ...fields,
+        reportingYear: String(new Date().getFullYear()),
+        auditComplianceStatus: "NOT_PARTICIPATING",
+        grossFloorArea: 0,
       })
       properties.current = [...properties.current, property]
-      return property
+      return Property.parse(property)
     },
   }
 }
