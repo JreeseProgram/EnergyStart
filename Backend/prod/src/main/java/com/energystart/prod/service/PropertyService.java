@@ -1,4 +1,3 @@
-
 package com.energystart.prod.service;
 
 import com.energystart.prod.model.Property;
@@ -15,12 +14,11 @@ public class PropertyService {
 
     private final PropertyRepo propertyRepo;
 
-    // Constructor injection for MongoDB repository.
     public PropertyService(PropertyRepo propertyRepo) {
         this.propertyRepo = propertyRepo;
     }
 
-    // CREATE
+    // CREATE: the authenticated creator receives access, regardless of submitted permissions.
     public Property addProperty(Property request, String userId) {
         requireUser(userId);
 
@@ -33,19 +31,13 @@ public class PropertyService {
                 request.getZipcode(),
                 request.getNotes()
         );
-
-        // Grant access to the authenticated creator.
-        // Do not trust permissions submitted in the request.
         property.setAuthorizedUserIds(List.of(userId));
-
-        Property saved = propertyRepo.save(property);
-        return copy(saved);
+        return copy(propertyRepo.save(property));
     }
 
-    // READ ALL - only properties authorized for this user.
+    // READ ALL: query only properties that the authenticated user can access.
     public List<Property> getAllProperties(String userId) {
         requireUser(userId);
-
         return propertyRepo.findByAuthorizedUserIdsContaining(userId)
                 .stream()
                 .map(this::copy)
@@ -57,53 +49,44 @@ public class PropertyService {
         return copy(requireAccess(id, userId));
     }
 
-    // UPDATE
-    public Property updateProperty(
-            String id, Property request, String userId) {
-
+    // UPDATE: never allow the request to replace the stored ID or access list.
+    public Property updateProperty(String id, Property request, String userId) {
         Property existing = requireAccess(id, userId);
 
-        existing.setHumanReadablePropertyId(
-                request.getHumanReadablePropertyId());
+        existing.setHumanReadablePropertyId(request.getHumanReadablePropertyId());
         existing.setStreetAddress(request.getStreetAddress());
         existing.setCity(request.getCity());
         existing.setState(request.getState());
         existing.setZipcode(request.getZipcode());
         existing.setNotes(request.getNotes());
 
-        // Preserve the existing ID and access permissions.
-        Property saved = propertyRepo.save(existing);
-        return copy(saved);
+        return copy(propertyRepo.save(existing));
     }
 
     // DELETE
     public Property deleteProperty(String id, String userId) {
         Property existing = requireAccess(id, userId);
-
         propertyRepo.delete(existing);
-
         return copy(existing);
     }
 
-    // Check property access.
+    // Check both the property ID and authorized user in the repository query.
     private Property requireAccess(String id, String userId) {
         requireUser(userId);
 
-        Property property = propertyRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Property not found."));
-
-        if (!property.getAuthorizedUserIds().contains(userId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "You do not have access to this property.");
-        }
-
-        return property;
+        return propertyRepo.findByIdAndAuthorizedUserIdsContaining(id, userId)
+                .orElseThrow(() -> {
+                    if (propertyRepo.existsById(id)) {
+                        return new ResponseStatusException(
+                                HttpStatus.FORBIDDEN,
+                                "You do not have access to this property.");
+                    }
+                    return new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Property not found.");
+                });
     }
 
-    // Require an authenticated user ID.
     private void requireUser(String userId) {
         if (userId == null || userId.isBlank()) {
             throw new ResponseStatusException(
@@ -112,7 +95,7 @@ public class PropertyService {
         }
     }
 
-    // Return a separate copy of the property.
+    // Return a separate object rather than exposing the repository entity directly.
     private Property copy(Property original) {
         Property result = new Property(
                 original.getId(),
@@ -123,8 +106,9 @@ public class PropertyService {
                 original.getZipcode(),
                 original.getNotes()
         );
-
-        result.setAuthorizedUserIds(original.getAuthorizedUserIds());
+        result.setAuthorizedUserIds(original.getAuthorizedUserIds() == null
+                ? List.of()
+                : List.copyOf(original.getAuthorizedUserIds()));
         return result;
     }
 }

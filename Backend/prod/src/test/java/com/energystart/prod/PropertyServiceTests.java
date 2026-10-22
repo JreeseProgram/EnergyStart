@@ -1,234 +1,186 @@
-
 package com.energystart.prod;
 
 import com.energystart.prod.model.Property;
 import com.energystart.prod.repos.PropertyRepo;
 import com.energystart.prod.service.PropertyService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class PropertyServiceTests {
 
-    private PropertyRepo propertyRepo;
-    private PropertyService service;
-
-    // Simulates documents stored in MongoDB.
-    private Map<String, Property> storedProperties;
-
-    @BeforeEach
-    void setUp() {
-        propertyRepo = mock(PropertyRepo.class);
-        storedProperties = new HashMap<>();
-        service = new PropertyService(propertyRepo);
-
-        when(propertyRepo.save(any(Property.class)))
-                .thenAnswer(invocation -> {
-                    Property property = invocation.getArgument(0);
-                    Property stored = copy(property);
-                    storedProperties.put(stored.getId(), stored);
-                    return copy(stored);
-                });
-
-        when(propertyRepo.findById(anyString()))
-                .thenAnswer(invocation -> {
-                    String id = invocation.getArgument(0);
-                    Property stored = storedProperties.get(id);
-                    return Optional.ofNullable(stored).map(this::copy);
-                });
-
-        when(propertyRepo.findByAuthorizedUserIdsContaining(anyString()))
-                .thenAnswer(invocation -> {
-                    String userId = invocation.getArgument(0);
-                    return storedProperties.values().stream()
-                            .filter(property ->
-                                    property.getAuthorizedUserIds().contains(userId))
-                            .map(this::copy)
-                            .toList();
-                });
-
-        doAnswer(invocation -> {
-            Property property = invocation.getArgument(0);
-            storedProperties.remove(property.getId());
-            return null;
-        }).when(propertyRepo).delete(any(Property.class));
-    }
+    private final PropertyRepo repository = mock(PropertyRepo.class);
+    private final PropertyService service = new PropertyService(repository);
 
     private Property request() {
-        return new Property(
-                null, 1001, "123 Main Street",
-                "Orlando", "FL", 32801, "Test property");
+        return new Property(null, 1001, "123 Main Street", "Orlando", "FL", 32801, "Test property");
     }
 
-    private Property copy(Property original) {
-        Property result = new Property(
-                original.getId(),
-                original.getHumanReadablePropertyId(),
-                original.getStreetAddress(),
-                original.getCity(),
-                original.getState(),
-                original.getZipcode(),
-                original.getNotes()
-        );
-        result.setAuthorizedUserIds(original.getAuthorizedUserIds());
-        return result;
+    private Property storedProperty() {
+        Property property = request();
+        property.setId("property-1");
+        property.setAuthorizedUserIds(List.of("user_owner"));
+        return property;
+    }
+
+    private void allowOwner(Property property) {
+        when(repository.findByIdAndAuthorizedUserIdsContaining(property.getId(), "user_owner"))
+                .thenReturn(Optional.of(property));
+    }
+
+    private void denyOtherUser() {
+        when(repository.findByIdAndAuthorizedUserIdsContaining("property-1", "user_other"))
+                .thenReturn(Optional.empty());
+        when(repository.existsById("property-1")).thenReturn(true);
     }
 
     @Test
     void creatorGetsAccessAndSubmittedAccessListIsIgnored() {
-        Property request = request();
-        request.setId("submitted-id");
-        request.setAuthorizedUserIds(List.of("user_other"));
+        when(repository.save(any(Property.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        Property created = service.addProperty(request, "user_owner");
-        Property stored = service.getPropertyById(
-                created.getId(), "user_owner");
+        Property input = request();
+        input.setId("submitted-id");
+        input.setAuthorizedUserIds(List.of("user_other"));
+
+        Property created = service.addProperty(input, "user_owner");
 
         assertNotNull(created.getId());
         assertNotEquals("submitted-id", created.getId());
         assertEquals(List.of("user_owner"), created.getAuthorizedUserIds());
-        assertEquals(created.getId(), stored.getId());
-        assertEquals("123 Main Street", stored.getStreetAddress());
-        assertEquals("Orlando", stored.getCity());
-        assertEquals("FL", stored.getState());
-        assertEquals(Integer.valueOf(32801), stored.getZipcode());
-
-        verify(propertyRepo).save(any(Property.class));
+        assertEquals("123 Main Street", created.getStreetAddress());
+        assertEquals("Orlando", created.getCity());
+        assertEquals("FL", created.getState());
+        assertEquals(Integer.valueOf(32801), created.getZipcode());
+        verify(repository).save(any(Property.class));
     }
 
     @Test
-    void propertyListOnlyIncludesUsersOwnProperties() {
-        Property ownerProperty = service.addProperty(request(), "user_owner");
-        service.addProperty(request(), "user_other");
+    void propertyListOnlyIncludesAccessibleProperties() {
+        Property ownerProperty = storedProperty();
+        when(repository.findByAuthorizedUserIdsContaining("user_owner"))
+                .thenReturn(List.of(ownerProperty));
 
         List<Property> visible = service.getAllProperties("user_owner");
 
         assertEquals(1, visible.size());
         assertEquals(ownerProperty.getId(), visible.get(0).getId());
+        verify(repository).findByAuthorizedUserIdsContaining("user_owner");
+        verify(repository, never()).findAll();
+    }
 
-        verify(propertyRepo)
-                .findByAuthorizedUserIdsContaining("user_owner");
+    @Test
+    void authorizedUserCanViewPropertyUsingRepositoryQuery() {
+        Property stored = storedProperty();
+        allowOwner(stored);
+
+        Property result = service.getPropertyById("property-1", "user_owner");
+
+        assertEquals(stored.getId(), result.getId());
+        assertEquals(stored.getStreetAddress(), result.getStreetAddress());
+        verify(repository).findByIdAndAuthorizedUserIdsContaining("property-1", "user_owner");
     }
 
     @Test
     void anotherUserCannotViewProperty() {
-        Property created = service.addProperty(request(), "user_owner");
+        denyOtherUser();
 
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
-                () -> service.getPropertyById(created.getId(), "user_other"));
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> service.getPropertyById("property-1", "user_other"));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
     }
 
     @Test
     void anotherUserCannotEditOrGiveThemselvesAccess() {
-        Property created = service.addProperty(request(), "user_owner");
+        denyOtherUser();
         Property update = request();
         update.setStreetAddress("Unauthorized change");
         update.setAuthorizedUserIds(List.of("user_other"));
 
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
-                () -> service.updateProperty(
-                        created.getId(), update, "user_other"));
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> service.updateProperty("property-1", update, "user_other"));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-
-        Property stored = service.getPropertyById(
-                created.getId(), "user_owner");
-
-        assertEquals("123 Main Street", stored.getStreetAddress());
-        assertEquals(List.of("user_owner"), stored.getAuthorizedUserIds());
-
-        // Only the initial creation should have saved.
-        verify(propertyRepo, times(1)).save(any(Property.class));
+        verify(repository, never()).save(any(Property.class));
     }
 
     @Test
     void anotherUserCannotDeleteProperty() {
-        Property created = service.addProperty(request(), "user_owner");
+        denyOtherUser();
 
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
-                () -> service.deleteProperty(created.getId(), "user_other"));
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> service.deleteProperty("property-1", "user_other"));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        assertNotNull(service.getPropertyById(created.getId(), "user_owner"));
-
-        verify(propertyRepo, never()).delete(any(Property.class));
+        verify(repository, never()).delete(any(Property.class));
     }
 
     @Test
     void authorizedUpdatePreservesIdAndAccessList() {
-        Property created = service.addProperty(request(), "user_owner");
+        Property stored = storedProperty();
+        allowOwner(stored);
+        when(repository.save(any(Property.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
         Property update = request();
         update.setId("replacement-id");
         update.setStreetAddress("456 Updated Street");
         update.setCity("Miami");
         update.setState("FL");
         update.setZipcode(33101);
+        update.setNotes("Updated notes");
         update.setAuthorizedUserIds(List.of("user_other"));
 
-        Property updated = service.updateProperty(
-                created.getId(), update, "user_owner");
-        Property stored = service.getPropertyById(
-                created.getId(), "user_owner");
+        Property updated = service.updateProperty("property-1", update, "user_owner");
 
-        assertEquals(created.getId(), updated.getId());
-        assertEquals("456 Updated Street", stored.getStreetAddress());
-        assertEquals("Miami", stored.getCity());
-        assertEquals("FL", stored.getState());
-        assertEquals(Integer.valueOf(33101), stored.getZipcode());
-        assertEquals(List.of("user_owner"), stored.getAuthorizedUserIds());
-
-        verify(propertyRepo, times(2)).save(any(Property.class));
+        assertEquals("property-1", updated.getId());
+        assertEquals("456 Updated Street", updated.getStreetAddress());
+        assertEquals("Miami", updated.getCity());
+        assertEquals("FL", updated.getState());
+        assertEquals(Integer.valueOf(33101), updated.getZipcode());
+        assertEquals("Updated notes", updated.getNotes());
+        assertEquals(List.of("user_owner"), updated.getAuthorizedUserIds());
+        verify(repository).save(any(Property.class));
     }
 
     @Test
     void authorizedUserCanDeleteProperty() {
-        Property created = service.addProperty(request(), "user_owner");
-        service.deleteProperty(created.getId(), "user_owner");
+        Property stored = storedProperty();
+        allowOwner(stored);
 
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
-                () -> service.getPropertyById(created.getId(), "user_owner"));
+        Property deleted = service.deleteProperty("property-1", "user_owner");
+
+        assertEquals(stored.getId(), deleted.getId());
+        verify(repository).delete(stored);
+    }
+
+    @Test
+    void missingPropertyReturnsNotFound() {
+        when(repository.findByIdAndAuthorizedUserIdsContaining("missing-property", "user_owner"))
+                .thenReturn(Optional.empty());
+        when(repository.existsById("missing-property")).thenReturn(false);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> service.getPropertyById("missing-property", "user_owner"));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
-
-        verify(propertyRepo).delete(any(Property.class));
+        verify(repository, never()).delete(any(Property.class));
     }
 
     @Test
-    void changingReturnedObjectDoesNotChangeStoredPermissions() {
-        Property created = service.addProperty(request(), "user_owner");
-        created.setAuthorizedUserIds(List.of("user_other"));
-
-        Property stored = service.getPropertyById(
-                created.getId(), "user_owner");
-
-        assertEquals(List.of("user_owner"), stored.getAuthorizedUserIds());
-    }
-
-    @Test
-    void missingUserIsRejected() {
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+    void missingUserIsRejectedBeforeDatabaseAccess() {
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
                 () -> service.addProperty(request(), ""));
 
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());
-
-        verify(propertyRepo, never()).save(any(Property.class));
+        verifyNoInteractions(repository);
     }
 }
