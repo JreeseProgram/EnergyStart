@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 Test set: com.energystart.prod.EnergyReportTests
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1.853 s <<< FAILURE! -- in com.energystart.prod.EnergyReportTests
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1.661 s <<< FAILURE! -- in com.energystart.prod.EnergyReportTests
 com.energystart.prod.EnergyReportTests.testRetrieveCDDHDD2 -- Time elapsed: 0.174 s <<< FAILURE!
 org.opentest4j.AssertionFailedError: expected: <10> but was: <11>
 	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:576)

@@ -31,12 +31,14 @@ class PropertyServiceTests {
     }
 
     private void allowOwner(Property property) {
-        when(repository.findByIdAndAuthorizedUserIdsContaining(property.getId(), "user_owner"))
+        when(repository.findByIdAndAuthorizedUserIdsContaining(
+                property.getId(), "user_owner"))
                 .thenReturn(Optional.of(property));
     }
 
     private void denyOtherUser() {
-        when(repository.findByIdAndAuthorizedUserIdsContaining("property-1", "user_other"))
+        when(repository.findByIdAndAuthorizedUserIdsContaining(
+                "property-1", "user_other"))
                 .thenReturn(Optional.empty());
         when(repository.existsById("property-1")).thenReturn(true);
     }
@@ -72,6 +74,7 @@ class PropertyServiceTests {
 
         assertEquals(1, visible.size());
         assertEquals(ownerProperty.getId(), visible.get(0).getId());
+        assertNotSame(ownerProperty, visible.get(0));
         verify(repository).findByAuthorizedUserIdsContaining("user_owner");
         verify(repository, never()).findAll();
     }
@@ -85,14 +88,17 @@ class PropertyServiceTests {
 
         assertEquals(stored.getId(), result.getId());
         assertEquals(stored.getStreetAddress(), result.getStreetAddress());
-        verify(repository).findByIdAndAuthorizedUserIdsContaining("property-1", "user_owner");
+        assertNotSame(stored, result);
+        verify(repository).findByIdAndAuthorizedUserIdsContaining(
+                "property-1", "user_owner");
     }
 
     @Test
     void anotherUserCannotViewProperty() {
         denyOtherUser();
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
                 () -> service.getPropertyById("property-1", "user_other"));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
@@ -101,11 +107,13 @@ class PropertyServiceTests {
     @Test
     void anotherUserCannotEditOrGiveThemselvesAccess() {
         denyOtherUser();
+
         Property update = request();
         update.setStreetAddress("Unauthorized change");
         update.setAuthorizedUserIds(List.of("user_other"));
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
                 () -> service.updateProperty("property-1", update, "user_other"));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
@@ -116,7 +124,8 @@ class PropertyServiceTests {
     void anotherUserCannotDeleteProperty() {
         denyOtherUser();
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
                 () -> service.deleteProperty("property-1", "user_other"));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
@@ -148,7 +157,7 @@ class PropertyServiceTests {
         assertEquals(Integer.valueOf(33101), updated.getZipcode());
         assertEquals("Updated notes", updated.getNotes());
         assertEquals(List.of("user_owner"), updated.getAuthorizedUserIds());
-        verify(repository).save(any(Property.class));
+        verify(repository).save(stored);
     }
 
     @Test
@@ -164,11 +173,13 @@ class PropertyServiceTests {
 
     @Test
     void missingPropertyReturnsNotFound() {
-        when(repository.findByIdAndAuthorizedUserIdsContaining("missing-property", "user_owner"))
+        when(repository.findByIdAndAuthorizedUserIdsContaining(
+                "missing-property", "user_owner"))
                 .thenReturn(Optional.empty());
         when(repository.existsById("missing-property")).thenReturn(false);
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
                 () -> service.getPropertyById("missing-property", "user_owner"));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
@@ -176,8 +187,20 @@ class PropertyServiceTests {
     }
 
     @Test
+    void changingReturnedObjectDoesNotChangeStoredPermissions() {
+        Property stored = storedProperty();
+        allowOwner(stored);
+
+        Property result = service.getPropertyById("property-1", "user_owner");
+        result.setAuthorizedUserIds(List.of("user_other"));
+
+        assertEquals(List.of("user_owner"), stored.getAuthorizedUserIds());
+    }
+
+    @Test
     void missingUserIsRejectedBeforeDatabaseAccess() {
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
                 () -> service.addProperty(request(), ""));
 
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());

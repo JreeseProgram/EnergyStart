@@ -11,7 +11,7 @@ public interface PropertyRepo extends MongoRepository<Property, String> {
     // Find all properties accessible to a user.
     List<Property> findByAuthorizedUserIdsContaining(String userId);
 
-    // Find a specific property only when the user has access.
+    // Find a property only when the logged-in user has access.
     Optional<Property> findByIdAndAuthorizedUserIdsContaining(
             String propertyId, String userId);
 }
