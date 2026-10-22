@@ -1,57 +1,19 @@
 package com.energystart.prod.service;
 
 import com.energystart.prod.model.User;
+import com.energystart.prod.repos.UserRepo;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Service
 public class UserService {
 
-    // Temporary list used instead of MongoDB
-    private final List<User> users = new ArrayList<>();
+    private final UserRepo userRepo;
 
-
-    // ============================================================
-    // TEST DATA
-    // ============================================================
-
-    public UserService() {
-
-        User user1 = new User(
-                "1",
-                "admin",
-                "admin@energystart.com",
-                "ADMIN"
-        );
-
-        User user2 = new User(
-                "2",
-                "johnsmith",
-                "john.smith@example.com",
-                "USER"
-        );
-
-        User user3 = new User(
-                "3",
-                "janedoe",
-                "jane.doe@example.com",
-                "USER"
-        );
-
-        User user4 = new User(
-                "4",
-                "propertymanager",
-                "manager@energystart.com",
-                "PROPERTY_MANAGER"
-        );
-
-        // Add test users to temporary list
-        users.add(user1);
-        users.add(user2);
-        users.add(user3);
-        users.add(user4);
+    public UserService(UserRepo userRepo) {
+        this.userRepo = userRepo;
     }
 
 
@@ -65,10 +27,7 @@ public class UserService {
      * POST /api/users
      */
     public User addUser(User user) {
-
-        users.add(user);
-
-        return user;
+        return userRepo.save(user);
     }
 
 
@@ -82,8 +41,7 @@ public class UserService {
      * GET /api/users
      */
     public List<User> getAllUsers() {
-
-        return users;
+        return userRepo.findAll();
     }
 
 
@@ -97,15 +55,7 @@ public class UserService {
      * GET /api/users/{id}
      */
     public User getUserById(String id) {
-
-        for (User user : users) {
-
-            if (user.getId().equals(id)) {
-                return user;
-            }
-        }
-
-        return null;
+        return userRepo.findById(id).orElse(null);
     }
 
 
@@ -118,25 +68,23 @@ public class UserService {
      *
      * PUT /api/users/{id}
      */
+
     public User updateUser(String id, User updatedUser) {
 
-        for (int i = 0; i < users.size(); i++) {
+        User existingUser = userRepo.findById(id).orElse(null);
 
-            User existingUser = users.get(i);
-
-            if (existingUser.getId().equals(id)) {
-
-                // Make sure the ID cannot accidentally change
-                updatedUser.setId(id);
-
-                users.set(i, updatedUser);
-
-                return updatedUser;
-            }
+        if (existingUser == null) {
+            return null;
         }
 
-        return null;
+        // Update the existing document's editable fields.
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setEmail(updatedUser.getEmail());
+
+        // Preserve the existing ID and role.
+        return userRepo.save(existingUser);
     }
+
 
 
     // ============================================================
@@ -148,20 +96,18 @@ public class UserService {
      *
      * DELETE /api/users/{id}
      */
+
     public User deleteUser(String id) {
 
-        for (int i = 0; i < users.size(); i++) {
+        User existingUser = userRepo.findById(id).orElse(null);
 
-            User user = users.get(i);
-
-            if (user.getId().equals(id)) {
-
-                users.remove(i);
-
-                return user;
-            }
+        if (existingUser == null) {
+            return null;
         }
 
-        return null;
+        userRepo.delete(existingUser);
+
+        return existingUser;
     }
+
 }

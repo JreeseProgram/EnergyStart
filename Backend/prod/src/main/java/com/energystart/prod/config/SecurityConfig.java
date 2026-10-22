@@ -19,6 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import org.springframework.context.annotation.Profile;
+@Profile("!local-test") // added to enable a local test of the work os profile according to GPT
 @Configuration
 public class SecurityConfig {
 

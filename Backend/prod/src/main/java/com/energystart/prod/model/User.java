@@ -1,11 +1,14 @@
 /**
- *Class Name: Users
- * Purpose: To provide a template for the database that will hold the Users.
- * when the Mongo DB is added this class will autoconfigure what needs to be added to the
- * mongo DB database.
+ * Class Name: User
  *
- * The program will temporarly use a List to retrieve and add to the values for a prototype.
+ * Purpose:
+ * Represents a user document stored in MongoDB.
  *
+ * The user's ID, username, email, and role are stored
+ * in the "users" collection.
+ *
+ * Property access is managed through the
+ * authorizedUserIds field in the Property model.
  */
 package com.energystart.prod.model;
 
@@ -13,7 +16,7 @@ package com.energystart.prod.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
+
 
 
 @Document(collection = "users")
@@ -23,10 +26,11 @@ public class User {
     private String email;
     private String username;
     private String role;
-    public List<Integer> propertyId;
 
 
 
+    public User() {
+    }
     public User(String id, String username, String email, String role) {
         this.id = id;
         this.username = username;

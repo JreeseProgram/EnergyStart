@@ -1,3 +1,4 @@
+
 package com.energystart.prod.service;
 
 import com.energystart.prod.model.Property;
@@ -76,6 +77,7 @@ public class PropertyService {
         return copy(existing);
     }
 
+    // Check both the property ID and authorized user in the repository query.
     private Property requireAccess(String id, String userId) {
         requireUser(userId);
 
@@ -96,6 +98,7 @@ public class PropertyService {
                 });
     }
 
+    // Require a nonempty authenticated user ID.
     private void requireUser(String userId) {
         if (userId == null || userId.isBlank()) {
             throw new ResponseStatusException(
@@ -104,6 +107,7 @@ public class PropertyService {
         }
     }
 
+    // Return a separate object rather than exposing the repository entity directly.
     private Property copy(Property original) {
         Property result = new Property(
                 original.getId(),
@@ -115,7 +119,12 @@ public class PropertyService {
                 original.getNotes()
         );
 
-        result.setAuthorizedUserIds(original.getAuthorizedUserIds());
+        result.setAuthorizedUserIds(
+                original.getAuthorizedUserIds() == null
+                        ? List.of()
+                        : List.copyOf(original.getAuthorizedUserIds())
+        );
+
         return result;
     }
 }

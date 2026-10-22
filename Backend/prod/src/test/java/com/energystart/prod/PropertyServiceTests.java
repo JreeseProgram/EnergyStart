@@ -20,9 +20,27 @@ class PropertyServiceTests {
     private final PropertyService service = new PropertyService(repository);
 
     private Property request() {
-        return new Property(
-                null, 1001, "123 Main Street",
-                "Orlando", "FL", 32801, "Test property");
+        return new Property(null, 1001, "123 Main Street", "Orlando", "FL", 32801, "Test property");
+    }
+
+    private Property storedProperty() {
+        Property property = request();
+        property.setId("property-1");
+        property.setAuthorizedUserIds(List.of("user_owner"));
+        return property;
+    }
+
+    private void allowOwner(Property property) {
+        when(repository.findByIdAndAuthorizedUserIdsContaining(
+                property.getId(), "user_owner"))
+                .thenReturn(Optional.of(property));
+    }
+
+    private void denyOtherUser() {
+        when(repository.findByIdAndAuthorizedUserIdsContaining(
+                "property-1", "user_other"))
+                .thenReturn(Optional.empty());
+        when(repository.existsById("property-1")).thenReturn(true);
     }
 
     private Property storedProperty() {
@@ -70,17 +88,34 @@ class PropertyServiceTests {
     @Test
     void propertyListOnlyIncludesAccessibleProperties() {
         Property ownerProperty = storedProperty();
-        Property otherProperty = request();
-        otherProperty.setId("property-2");
-        otherProperty.setAuthorizedUserIds(List.of("user_other"));
 
-        when(repository.findAll())
-                .thenReturn(List.of(ownerProperty, otherProperty));
+        // Changed from findAll(): PropertyService now asks MongoDB for authorized properties directly.
+        when(repository.findByAuthorizedUserIdsContaining("user_owner"))
+                .thenReturn(List.of(ownerProperty));
 
         List<Property> visible = service.getAllProperties("user_owner");
 
         assertEquals(1, visible.size());
         assertEquals(ownerProperty.getId(), visible.get(0).getId());
+        assertNotSame(ownerProperty, visible.get(0));
+        verify(repository).findByAuthorizedUserIdsContaining("user_owner");
+        verify(repository, never()).findAll();
+    }
+
+    @Test
+    void authorizedUserCanViewPropertyUsingRepositoryQuery() {
+        Property stored = storedProperty();
+        allowOwner(stored);
+
+        Property result = service.getPropertyById(
+                "property-1", "user_owner");
+
+        assertEquals(stored.getId(), result.getId());
+        assertEquals(stored.getStreetAddress(), result.getStreetAddress());
+        assertNotSame(stored, result);
+
+        verify(repository).findByIdAndAuthorizedUserIdsContaining(
+                "property-1", "user_owner");
     }
 
     @Test
@@ -194,6 +229,7 @@ class PropertyServiceTests {
                         "missing-property", "user_owner"));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        verify(repository, never()).delete(any(Property.class));
     }
 
     @Test
