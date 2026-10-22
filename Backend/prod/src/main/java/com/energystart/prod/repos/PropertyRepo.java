@@ -1,3 +1,4 @@
+
 package com.energystart.prod.repos;
 
 import com.energystart.prod.model.Property;
@@ -8,7 +9,7 @@ import java.util.Optional;
 
 public interface PropertyRepo extends MongoRepository<Property, String> {
 
-    // Find all properties accessible to a user.
+    // Added to support retrieving only properties accessible to the logged-in user.
     List<Property> findByAuthorizedUserIdsContaining(String userId);
 
     // Find a property only when the logged-in user has access.

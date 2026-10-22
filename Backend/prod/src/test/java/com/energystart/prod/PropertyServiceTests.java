@@ -48,11 +48,11 @@ class PropertyServiceTests {
         when(repository.save(any(Property.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        Property input = request();
-        input.setId("submitted-id");
-        input.setAuthorizedUserIds(List.of("user_other"));
+        Property request = request();
+        request.setId("submitted-id");
+        request.setAuthorizedUserIds(List.of("user_other"));
 
-        Property created = service.addProperty(input, "user_owner");
+        Property created = service.addProperty(request, "user_owner");
 
         assertNotNull(created.getId());
         assertNotEquals("submitted-id", created.getId());
@@ -61,12 +61,15 @@ class PropertyServiceTests {
         assertEquals("Orlando", created.getCity());
         assertEquals("FL", created.getState());
         assertEquals(Integer.valueOf(32801), created.getZipcode());
+
         verify(repository).save(any(Property.class));
     }
 
     @Test
     void propertyListOnlyIncludesAccessibleProperties() {
         Property ownerProperty = storedProperty();
+
+        // Changed from findAll(): PropertyService now asks MongoDB for authorized properties directly.
         when(repository.findByAuthorizedUserIdsContaining("user_owner"))
                 .thenReturn(List.of(ownerProperty));
 
@@ -84,11 +87,13 @@ class PropertyServiceTests {
         Property stored = storedProperty();
         allowOwner(stored);
 
-        Property result = service.getPropertyById("property-1", "user_owner");
+        Property result = service.getPropertyById(
+                "property-1", "user_owner");
 
         assertEquals(stored.getId(), result.getId());
         assertEquals(stored.getStreetAddress(), result.getStreetAddress());
         assertNotSame(stored, result);
+
         verify(repository).findByIdAndAuthorizedUserIdsContaining(
                 "property-1", "user_owner");
     }
@@ -114,7 +119,8 @@ class PropertyServiceTests {
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> service.updateProperty("property-1", update, "user_other"));
+                () -> service.updateProperty(
+                        "property-1", update, "user_other"));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
         verify(repository, never()).save(any(Property.class));
@@ -148,7 +154,8 @@ class PropertyServiceTests {
         update.setNotes("Updated notes");
         update.setAuthorizedUserIds(List.of("user_other"));
 
-        Property updated = service.updateProperty("property-1", update, "user_owner");
+        Property updated = service.updateProperty(
+                "property-1", update, "user_owner");
 
         assertEquals("property-1", updated.getId());
         assertEquals("456 Updated Street", updated.getStreetAddress());
@@ -157,6 +164,7 @@ class PropertyServiceTests {
         assertEquals(Integer.valueOf(33101), updated.getZipcode());
         assertEquals("Updated notes", updated.getNotes());
         assertEquals(List.of("user_owner"), updated.getAuthorizedUserIds());
+
         verify(repository).save(stored);
     }
 
@@ -165,7 +173,8 @@ class PropertyServiceTests {
         Property stored = storedProperty();
         allowOwner(stored);
 
-        Property deleted = service.deleteProperty("property-1", "user_owner");
+        Property deleted = service.deleteProperty(
+                "property-1", "user_owner");
 
         assertEquals(stored.getId(), deleted.getId());
         verify(repository).delete(stored);
@@ -180,7 +189,8 @@ class PropertyServiceTests {
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> service.getPropertyById("missing-property", "user_owner"));
+                () -> service.getPropertyById(
+                        "missing-property", "user_owner"));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
         verify(repository, never()).delete(any(Property.class));
@@ -191,7 +201,8 @@ class PropertyServiceTests {
         Property stored = storedProperty();
         allowOwner(stored);
 
-        Property result = service.getPropertyById("property-1", "user_owner");
+        Property result = service.getPropertyById(
+                "property-1", "user_owner");
         result.setAuthorizedUserIds(List.of("user_other"));
 
         assertEquals(List.of("user_owner"), stored.getAuthorizedUserIds());

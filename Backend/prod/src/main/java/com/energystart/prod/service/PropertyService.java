@@ -19,8 +19,6 @@ public class PropertyService {
         this.propertyRepo = propertyRepo;
     }
 
-    // CREATE: the authenticated creator receives access,
-    // regardless of submitted permissions.
     public Property addProperty(Property request, String userId) {
         requireUser(userId);
 
@@ -34,29 +32,27 @@ public class PropertyService {
                 request.getNotes()
         );
 
-        // Grant access using the authenticated user's ID.
-        // Do not trust permissions submitted in the request.
+        // Grant access using the user ID from the verified token.
         property.setAuthorizedUserIds(List.of(userId));
 
         return copy(propertyRepo.save(property));
     }
 
-    // READ ALL: query only properties that the authenticated user can access.
     public List<Property> getAllProperties(String userId) {
         requireUser(userId);
 
+        // Changed to query only accessible properties directly from MongoDB.
+        // This replaces the original findAll() and Java filtering approach.
         return propertyRepo.findByAuthorizedUserIdsContaining(userId)
                 .stream()
                 .map(this::copy)
                 .toList();
     }
 
-    // READ ONE
     public Property getPropertyById(String id, String userId) {
         return copy(requireAccess(id, userId));
     }
 
-    // UPDATE: never allow the request to replace the stored ID or access list.
     public Property updateProperty(
             String id, Property request, String userId) {
 
@@ -74,10 +70,8 @@ public class PropertyService {
         return copy(propertyRepo.save(existing));
     }
 
-    // DELETE
     public Property deleteProperty(String id, String userId) {
         Property existing = requireAccess(id, userId);
-
         propertyRepo.delete(existing);
 
         return copy(existing);
@@ -91,7 +85,6 @@ public class PropertyService {
         return propertyRepo
                 .findByIdAndAuthorizedUserIdsContaining(id, userId)
                 .orElseThrow(() -> {
-
                     // Preserve the existing 403 and 404 responses.
                     if (propertyRepo.existsById(id)) {
                         return new ResponseStatusException(
