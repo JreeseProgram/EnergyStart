@@ -10,7 +10,7 @@ const PropertyReportsRoute = () => {
   if (!propertyId) return <Navigate to={paths.app.properties.getHref()} />
 
   return (
-    <ContentLayout title="Property Reports">
+    <ContentLayout seo={{ title: "Property Reports" }}>
       <PropertyReportsCell propertyId={propertyId} />
     </ContentLayout>
   )

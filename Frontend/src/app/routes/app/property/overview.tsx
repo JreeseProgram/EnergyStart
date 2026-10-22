@@ -12,7 +12,7 @@ const PropertyOverviewRoute = () => {
   }
 
   return (
-    <ContentLayout title="Property Overview">
+    <ContentLayout seo={{ title: "Property Overview" }}>
       <PropertyOverviewCell propertyId={propertyId} />
     </ContentLayout>
   )
