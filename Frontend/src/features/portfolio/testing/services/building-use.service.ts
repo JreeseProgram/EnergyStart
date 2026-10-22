@@ -1,6 +1,6 @@
 import { useState } from "react"
 import z from "zod"
-import { defaultProperties } from "./property.service"
+import { defaultProperties } from "@/features/portfolio/testing/fixtures/property.fixtures"
 import { BuildingUse } from "../../models/building-use.models"
 import type { PropertyService } from "../../services/property.service"
 import {

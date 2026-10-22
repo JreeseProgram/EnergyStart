@@ -7,28 +7,9 @@ import {
   CreateEnergyMeterInput,
   type EnergyMeterService,
 } from "@/features/portfolio/services/energy-meter.service"
-import { defaultProperties } from "@/features/portfolio/testing/services/property.service"
+import { defaultEnergyMeters } from "@/features/portfolio/testing/fixtures/energy-meter.fixtures"
 import { delay } from "@/utils/delay"
-import z from "zod"
 import type { PropertyService } from "../../services/property.service"
-
-const defaultEnergyMeters = z.array(EnergyMeter).parse(
-  defaultProperties.map((property, index) => ({
-    id: `c0ed477e-df48-4e5a-9c79-${String(index + 1).padStart(12, "0")}`,
-    propertyId: property.id,
-    createdAt: property.createdAt,
-    date: "2025-12-31T00:00:00.000Z",
-    meterId: `METER-${String(index + 1).padStart(3, "0")}`,
-    meterType: "ELECTRIC_GRID",
-    unitOfMeasure: "kBtu",
-    inUse: true,
-    isDelivered: false,
-    meterKBtu: property.energyUse ?? 0,
-    rawUse: property.energyUse ?? 0,
-    siteEui: property.siteEui ?? 0,
-    sourceEui: property.sourceEui ?? 0,
-  }))
-)
 
 const SERVER_DELAY = 300
 
@@ -58,7 +39,10 @@ export function useEnergyMeterTestService(
     createEnergyMeter: async (input) => {
       await delay(SERVER_DELAY)
       const fields = CreateEnergyMeterInput.parse(input)
-      await propertyService.getProperty({ propertyId: fields.propertyId })
+      const property = await propertyService.getProperty({
+        propertyId: fields.propertyId,
+      })
+      if (!property) throw new Error(`Property ${fields.propertyId} not found`)
       const now = new Date().toISOString()
       const meter = EnergyMeter.parse({
         ...fields,

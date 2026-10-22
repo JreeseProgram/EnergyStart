@@ -56,12 +56,6 @@ public class EnergyReport {
     @Id
     private String ID;
     private String relatedPropertyID;
-    //low-rise stories 1-4; mid-rise 5-9; high-rise 10+
-    public enum BUILDING_HEIGHT_TYPES {
-        lowRise,
-        midRise,
-        highRise
-    }
     private int grossFloorArea;
     private int parkingSize;
     private int yearOfConstruction;

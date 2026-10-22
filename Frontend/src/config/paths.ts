@@ -22,6 +22,10 @@ export const paths = {
         path: "properties/:propertyId",
         getHref: (id: string) => `/app/properties/${id}`,
       },
+      overview: {
+        path: "",
+        getHref: (id: string) => `/app/properties/${id}`,
+      },
       buildingUses: {
         path: "building-uses",
         getHref: (id: string) => `/app/properties/${id}/building-uses`,
