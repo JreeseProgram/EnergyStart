@@ -1,9 +1,19 @@
 import { ContentLayout } from "@/components/layouts/content-layout"
+import { paths } from "@/config/paths"
+import { PropertyBuildingsCell } from "@/features/portfolio/cells/property-buildings.cell"
+import { usePropertyId } from "@/features/portfolio/hooks/use-property-id"
+import { Navigate } from "react-router"
 
 const PropertyBuildingsRoute = () => {
+  const propertyId = usePropertyId()
+
+  if (!propertyId) {
+    return <Navigate to={paths.app.properties.getHref()} />
+  }
+
   return (
-    <ContentLayout title="Property Buildings">
-      <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6"></div>
+    <ContentLayout title="Buildings">
+      <PropertyBuildingsCell propertyId={propertyId} />
     </ContentLayout>
   )
 }

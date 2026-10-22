@@ -3,9 +3,9 @@ import type { AuthService } from "@/features/auth/services/auth.service"
 import { useAuthService } from "@/features/auth/infrastructure/auth.service"
 import type { PropertyService } from "@/features/portfolio/services/property.service"
 import type { BuildingService } from "@/features/portfolio/services/building.service"
+import type { EnergyMeterService } from "@/features/portfolio/services/energy-meter.service"
 import { usePropertyService } from "@/features/portfolio/testing/services/property.service"
 import { useBuildingService } from "@/features/portfolio/testing/services/building.service"
-import type { EnergyMeterService } from "@/features/portfolio/services/energy-meter.service"
 import { useEnergyMeterService } from "@/features/portfolio/testing/services/energy-meter.service"
 
 export type Services = {

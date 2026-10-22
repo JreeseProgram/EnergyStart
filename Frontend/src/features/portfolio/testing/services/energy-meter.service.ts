@@ -7,7 +7,7 @@ import {
   CreateEnergyMeterInput,
   type EnergyMeterService,
 } from "@/features/portfolio/services/energy-meter.service"
-import { defaultBuildings } from "@/features/portfolio/testing/services/building.service"
+import { defaultEnergyMeters } from "@/features/portfolio/testing/fixtures/energy-meter.fixtures"
 import { delay } from "@/utils/delay"
 import React from "react"
 
@@ -15,27 +15,6 @@ type StoredEnergyMeter = {
   propertyId: PropertyId
   meter: EnergyMeter
 }
-
-const defaultEnergyMeters: StoredEnergyMeter[] = defaultBuildings.map(
-  (building, index) => ({
-    propertyId: building.parentProperty.id,
-    meter: EnergyMeter.parse({
-      id: `c0ed477e-df48-4e5a-9c79-${String(index + 1).padStart(12, "0")}`,
-      createdAt: building.createdAt,
-      buildingId: building.id,
-      date: "2025-12-31T00:00:00.000Z",
-      meterId: `METER-${String(index + 1).padStart(3, "0")}`,
-      meterType: "ELECTRIC_GRID",
-      unitOfMeasure: "kBtu",
-      inUse: true,
-      isDelivered: false,
-      meterKBtu: building.energyUse ?? 0,
-      rawUse: building.energyUse ?? 0,
-      siteEui: building.siteEui ?? 0,
-      sourceEui: building.sourceEui ?? 0,
-    }),
-  })
-)
 
 const SERVER_DELAY = 300
 
