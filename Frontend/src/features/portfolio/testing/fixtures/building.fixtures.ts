@@ -1,20 +1,15 @@
-import { testUser } from "@/features/auth/testing/services/auth.service"
-import {
-  Building,
-  BuildingId,
-} from "@/features/portfolio/models/building.models"
-import { delay } from "@/utils/delay"
-import React from "react"
-import z from "zod"
-import type { BuildingService } from "@/features/portfolio/services/building.service"
+import { Building } from "@/features/portfolio/models/building.models"
 import { Property } from "@/features/portfolio/models/property.models"
-import { defaultProperties } from "@/features/portfolio/testing/services/property.service"
+import { defaultProperties } from "@/features/portfolio/testing/fixtures/property.fixtures"
+import { testPortfolioUser } from "@/features/portfolio/testing/fixtures/user.fixtures"
+import z from "zod"
 
-const parentProperties = z
-  .array(Property)
-  .parse(
-    defaultProperties.map((property) => ({ ...property, owner: testUser }))
-  )
+const parentProperties = z.array(Property).parse(
+  defaultProperties.map((property) => ({
+    ...property,
+    owner: testPortfolioUser,
+  }))
+)
 
 export const defaultBuildings = z.array(Building).parse([
   {
@@ -23,7 +18,7 @@ export const defaultBuildings = z.array(Building).parse([
     humanReadableBuildingId: "BLDG-001",
     name: "Lake Eola Office Tower",
     notes: "LED lighting retrofit completed in 2025.",
-    owner: testUser,
+    owner: testPortfolioUser,
     parentProperty: parentProperties[0],
     grossFloorArea: 125000,
     energyUse: 6875000,
@@ -41,7 +36,7 @@ export const defaultBuildings = z.array(Building).parse([
     humanReadableBuildingId: "BLDG-002",
     name: "Mills 50 Retail Center",
     notes: "HVAC efficiency improvements planned.",
-    owner: testUser,
+    owner: testPortfolioUser,
     parentProperty: parentProperties[1],
     grossFloorArea: 32000,
     energyUse: 2720000,
@@ -59,7 +54,7 @@ export const defaultBuildings = z.array(Building).parse([
     humanReadableBuildingId: "BLDG-003",
     name: "Sunrail Commons Apartments",
     notes: "High-efficiency heat pumps installed throughout the building.",
-    owner: testUser,
+    owner: testPortfolioUser,
     parentProperty: parentProperties[2],
     grossFloorArea: 98000,
     energyUse: 3920000,
@@ -77,7 +72,7 @@ export const defaultBuildings = z.array(Building).parse([
     humanReadableBuildingId: "BLDG-004",
     name: "Cypress Distribution Warehouse",
     notes: "Energy audit scheduled to assess aging equipment.",
-    owner: testUser,
+    owner: testPortfolioUser,
     parentProperty: parentProperties[3],
     grossFloorArea: 210000,
     energyUse: 18900000,
@@ -89,41 +84,3 @@ export const defaultBuildings = z.array(Building).parse([
     reportingYear: "2025",
   },
 ])
-
-const SERVER_DELAY = 300
-
-export function useBuildingService(): BuildingService {
-  const buildings = React.useRef<Map<BuildingId, Building>>(
-    new Map(defaultBuildings.map((building) => [building.id, building]))
-  )
-  return {
-    getBuildings: async ({ propertyId }) => {
-      await delay(SERVER_DELAY)
-      return Array.from(buildings.current.values()).filter(
-        (building) => building.parentProperty.id === propertyId
-      )
-    },
-    getBuilding: async ({ buildingId }) => {
-      await delay(SERVER_DELAY)
-      const building = buildings.current.get(buildingId)
-      if (!building) throw new Error(`Building ${buildingId} not found`)
-      return building
-    },
-    createBuilding: async (input) => {
-      await delay(SERVER_DELAY)
-      const building = Building.parse({
-        id: BuildingId.parse(crypto.randomUUID()),
-        createdAt: new Date().toISOString(),
-        ...input,
-      })
-      buildings.current.set(building.id, building)
-      return building
-    },
-    updateBuilding: async (input) => {
-      await delay(SERVER_DELAY)
-      const building = Building.parse(input)
-      buildings.current.set(building.id, building)
-      return building
-    },
-  }
-}

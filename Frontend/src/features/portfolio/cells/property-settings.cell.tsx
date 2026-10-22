@@ -1,11 +1,18 @@
+import { ContentHeader } from "@/components/layouts/content-header"
 import { Button } from "@/components/ui/button"
+import { Link } from "@/components/ui/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { paths } from "@/config/paths"
 import { useProperty } from "@/features/portfolio/api/get-property.api"
+import {
+  PropertyHeader,
+  PropertyHeaderSkeleton,
+} from "@/features/portfolio/components/property-header"
 import { PropertySettings } from "@/features/portfolio/components/property-settings"
+import { PropertyModal } from "@/features/portfolio/modals/property.modal"
 import type { PropertyId } from "@/features/portfolio/models/property.models"
 import { createCell } from "@/lib/react-query"
-import { Link } from "react-router"
+import { Pencil } from "lucide-react"
 
 export function PropertySettingsCell({
   propertyId,
@@ -16,29 +23,49 @@ export function PropertySettingsCell({
 
   return createCell(query, {
     Loading: () => (
-      <div role="status" aria-label="Loading property settings">
-        <Skeleton className="h-80 w-full rounded-2xl" />
-      </div>
+      <>
+        <PropertyHeaderSkeleton />
+        <ContentHeader title={<Skeleton className="h-7 w-48" />} />
+      </>
     ),
     Failure: ({ ctx }) => (
-      <div role="alert" className="flex flex-col items-start gap-3">
-        <p>Unable to load property settings. Please try again.</p>
-        <Button variant="outline" onClick={() => void ctx.refetch()}>
-          Retry
-        </Button>
-      </div>
+      <ContentHeader
+        title="Something went wrong"
+        description="Unable to load property settings. Please try again."
+        action={
+          <Button variant="outline" onClick={() => void ctx.refetch()}>
+            Retry
+          </Button>
+        }
+      />
     ),
     Success: ({ data: property }) => {
       if (!property)
         return (
-          <div className="flex flex-col items-start gap-3">
-            <p>Property not found.</p>
-            <Link className="underline" to={paths.app.properties.getHref()}>
-              Back to properties
-            </Link>
-          </div>
+          <ContentHeader
+            title="Property not found"
+            action={
+              <Link className="underline" to={paths.app.properties.getHref()}>
+                Back to properties
+              </Link>
+            }
+          />
         )
-      return <PropertySettings property={property} />
+
+      return (
+        <>
+          <PropertyHeader property={property} />
+          <ContentHeader
+            title={"Property settings"}
+            action={
+              <PropertyModal property={property} render={<Button />}>
+                Edit property <Pencil className="size-4" />
+              </PropertyModal>
+            }
+          />
+          <PropertySettings property={property} />
+        </>
+      )
     },
   })
 }

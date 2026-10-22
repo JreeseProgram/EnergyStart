@@ -10,6 +10,11 @@ import {
   ErrorBoundary as AppRootErrorBoundary,
 } from "./routes/app/root"
 import { ProtectedRoute } from "@/features/auth/components/protected-route"
+import PropertyRoute from "./routes/app/property/root"
+import {
+  ProtectedPropertyRoute,
+  ProtectedPropertyRouteSkeleton,
+} from "@/features/portfolio/components/protected-property-route"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const convert = (queryClient: QueryClient) => (m: any) => {
@@ -22,7 +27,6 @@ const convert = (queryClient: QueryClient) => (m: any) => {
   }
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const createAppRouter = (queryClient: QueryClient) =>
   createBrowserRouter([
     {
@@ -54,13 +58,25 @@ export const createAppRouter = (queryClient: QueryClient) =>
         },
         {
           path: paths.app.property.root.path,
-          lazy: () =>
-            import("./routes/app/property/root").then(convert(queryClient)),
+          element: (
+            <ProtectedPropertyRoute
+              fallback={<ProtectedPropertyRouteSkeleton />}
+            >
+              <PropertyRoute />
+            </ProtectedPropertyRoute>
+          ),
           children: [
             {
-              path: paths.app.property.buildings.path,
+              path: paths.app.property.overview.path,
               lazy: () =>
-                import("./routes/app/property/buildings").then(
+                import("./routes/app/property/overview").then(
+                  convert(queryClient)
+                ),
+            },
+            {
+              path: paths.app.property.buildingUses.path,
+              lazy: () =>
+                import("./routes/app/property/building-uses").then(
                   convert(queryClient)
                 ),
             },

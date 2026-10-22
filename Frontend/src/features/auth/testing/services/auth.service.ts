@@ -1,16 +1,9 @@
 import { paths } from "@/config/paths"
-import { AuthenticatedUser } from "@/features/auth/models/auth.models"
 import type { AuthService } from "@/features/auth/services/auth.service"
-
-const SESSION_KEY = "energy-start:test-auth:authenticated"
-
-export const testUser = AuthenticatedUser.parse({
-  id: crypto.randomUUID(),
-  createdAt: new Date().toISOString(),
-  email: "luke-skywalker@jmail.com",
-  firstName: "Luke",
-  lastName: "Skywalker",
-})
+import {
+  SESSION_KEY,
+  testUser,
+} from "@/features/auth/testing/fixtures/auth.fixtures"
 
 export function useAuthService(): AuthService {
   const login = async () => {

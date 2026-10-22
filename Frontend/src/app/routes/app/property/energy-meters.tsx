@@ -1,11 +1,19 @@
 import { ContentLayout } from "@/components/layouts/content-layout"
+import { paths } from "@/config/paths"
+import { PropertyMetersCell } from "@/features/portfolio/cells/property-meters.cell"
+import { usePropertyId } from "@/features/portfolio/hooks/use-property-id"
+import { Navigate } from "react-router"
 
-const PropertyEnergyMetersRoute = () => {
+const PropertyMetersRoute = () => {
+  const propertyId = usePropertyId()
+
+  if (!propertyId) return <Navigate to={paths.app.properties.getHref()} />
+
   return (
-    <ContentLayout title="Property Energy Meters">
-      <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6"></div>
+    <ContentLayout seo={{ title: "Energy Meters" }}>
+      <PropertyMetersCell propertyId={propertyId} />
     </ContentLayout>
   )
 }
 
-export default PropertyEnergyMetersRoute
+export default PropertyMetersRoute
