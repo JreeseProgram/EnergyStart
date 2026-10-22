@@ -3,12 +3,17 @@ import type { PropsWithChildren, ReactNode } from "react"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/components/ui/link"
 import { paths } from "@/config/paths"
-import { Authorization } from "@/features/auth/components/authorization"
-import { useUser } from "@/features/auth/hooks/use-user"
+import { Authorization } from "@/utils/authorization"
 import { useProperty } from "@/features/portfolio/api/get-property.api"
 import { usePropertyId } from "@/features/portfolio/hooks/use-property-id"
 import type { PropertyId } from "@/features/portfolio/models/property.models"
-import { PROPERTY_POLICIES } from "@/features/portfolio/utils/portfolio-policies"
+import { PORTFOLIO_POLICIES } from "@/features/portfolio/utils/portfolio-policies"
+import { SidebarLayout } from "@/components/layouts/sidebar-layout"
+import { PropertySidebarSkeleton } from "@/features/portfolio/components/property-sidebar"
+import { ContentLayout } from "@/components/layouts/content-layout"
+import { PropertyHeaderSkeleton } from "@/features/portfolio/components/property-header"
+import { Skeleton } from "@/components/ui/skeleton"
+import { usePortfolioUser } from "@/features/portfolio/api/get-user.api"
 
 function PropertyFallback({
   title,
@@ -29,7 +34,7 @@ function PropertyAccess({
   fallback,
 }: PropsWithChildren<{ propertyId: PropertyId; fallback: ReactNode }>) {
   const property = useProperty({ propertyId })
-  const user = useUser()
+  const user = usePortfolioUser()
 
   if (property.isPending || user.isPending) {
     return <div role="status">{fallback}</div>
@@ -61,7 +66,10 @@ function PropertyAccess({
 
   return (
     <Authorization
-      policyCheck={PROPERTY_POLICIES["property:view"](user.data, property.data)}
+      policyCheck={PORTFOLIO_POLICIES["property:view"](
+        user.data,
+        property.data
+      )}
       forbiddenFallback={
         <PropertyFallback title="401 — You don’t have access to this property" />
       }
@@ -85,5 +93,16 @@ export function ProtectedPropertyRoute({
     <PropertyAccess propertyId={propertyId} fallback={fallback}>
       {children}
     </PropertyAccess>
+  )
+}
+
+export function ProtectedPropertyRouteSkeleton() {
+  return (
+    <SidebarLayout sidebar={<PropertySidebarSkeleton />}>
+      <ContentLayout>
+        <PropertyHeaderSkeleton />
+        <Skeleton className="h-[calc(100vh-20rem)]" />
+      </ContentLayout>
+    </SidebarLayout>
   )
 }
