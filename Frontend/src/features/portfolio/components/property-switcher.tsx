@@ -16,7 +16,7 @@ import {
 import { ChevronsUpDownIcon, CheckIcon, MapPinned } from "lucide-react"
 import type { Property } from "@/features/portfolio/models/property.models"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useNavigate } from "react-router"
+import { useLocation, useMatch, useNavigate } from "react-router"
 import { paths } from "@/config/paths"
 
 export function PropertySwitcher({
@@ -28,6 +28,22 @@ export function PropertySwitcher({
 }) {
   const selectedProperty = defaultProperty
   const navigate = useNavigate()
+  const location = useLocation()
+  const propertyMatch = useMatch(
+    `${paths.app.property.root.getHref(":propertyId")}/*`
+  )
+
+  function handleClick(property: Property) {
+    const page = propertyMatch?.params["*"]
+    const propertyPath = paths.app.property.root.getHref(property.id)
+
+    navigate({
+      pathname: page ? `${propertyPath}/${page}` : propertyPath,
+      search: location.search,
+      hash: location.hash,
+    })
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -62,9 +78,7 @@ export function PropertySwitcher({
             {properties.map((property) => (
               <DropdownMenuItem
                 key={`property_switcher_item_${property.id}`}
-                onClick={() => {
-                  navigate(paths.app.property.root.getHref(property.id))
-                }}
+                onClick={() => handleClick(property)}
               >
                 {property.name}{" "}
                 {property.id === selectedProperty.id && (
