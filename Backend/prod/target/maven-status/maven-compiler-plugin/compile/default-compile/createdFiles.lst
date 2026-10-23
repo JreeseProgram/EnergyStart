@@ -1,6 +1,5 @@
 com\energystart\prod\energy\report_types\BankBranchReport.class
 com\energystart\prod\energy\report_types\ConvenienceStoreReport.class
-com\energystart\prod\energy\EnergyReport$BUILDING_HEIGHT_TYPES.class
 com\energystart\prod\energy\report_types\DistributionCenterReport.class
 com\energystart\prod\energy\report_types\WorshipFacilityReport.class
 com\energystart\prod\model\Property.class
@@ -17,8 +16,6 @@ com\energystart\prod\energy\report_types\MultifamilyHousingReport.class
 com\energystart\prod\energy\report_types\WarehouseRefrigeratedReport.class
 com\energystart\prod\config\SecurityConfig.class
 com\energystart\prod\service\EnergyReportService.class
-com\energystart\prod\model\Building.class
-com\energystart\prod\service\BuildingService.class
 com\energystart\prod\model\BuildingMetrics.class
 com\energystart\prod\energy\report_types\OfficeReport.class
 com\energystart\prod\service\UserService.class
@@ -34,7 +31,6 @@ com\energystart\prod\repos\EnergyMeterRepo.class
 com\energystart\prod\energy\report_types\HotelReport.class
 com\energystart\prod\controller\EnergyReportController.class
 com\energystart\prod\energy\report_types\MedicalOfficeReport.class
-com\energystart\prod\controller\BuildingController.class
 com\energystart\prod\energy\report_types\HospitalReport.class
 com\energystart\prod\energy\EnergyMeter.class
 com\energystart\prod\energy\EnergyReport.class
