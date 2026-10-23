@@ -1,11 +1,12 @@
 com\energystart\prod\UserControllerTests.class
-com\energystart\prod\WorkOsLiveTests.class
-com\energystart\prod\EnergyReportTests.class
 com\energystart\prod\PropertyServiceTests.class
 com\energystart\prod\WorkOsUserServiceTests.class
+com\energystart\prod\PropertyMongoIntegrationTest.class
+com\energystart\prod\PropertyMongoLiveTests.class
+com\energystart\prod\WorkOsLiveTests.class
+com\energystart\prod\EnergyReportTests.class
 com\energystart\prod\UserServiceTests.class
 com\energystart\prod\AuthControllerTests.class
 com\energystart\prod\UserMongoIntegrationTests.class
-com\energystart\prod\PropertyMongoIntegrationTest.class
 com\energystart\prod\ProdApplicationTests.class
 com\energystart\prod\EnergyReportJsonTest.class
