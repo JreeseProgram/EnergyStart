@@ -15,7 +15,7 @@ public class PropertyController {
 
     // Temporary development identity.
     // Replace with authenticated user identity before deployment.
-    private static final String TEST_USER_ID = "user_localtest";
+    private static final String TEST_USER_ID = "sample_user_001";
 
     public PropertyController(PropertyService propertyService) {
         this.propertyService = propertyService;
