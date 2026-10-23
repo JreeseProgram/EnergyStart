@@ -1,11 +1,14 @@
-
 package com.energystart.prod.controller;
 
 import com.energystart.prod.model.Property;
 import com.energystart.prod.service.PropertyService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/properties")
@@ -51,5 +54,21 @@ public class PropertyController {
     @DeleteMapping("/{id}")
     public Property deleteProperty(@PathVariable String id) {
         return propertyService.deleteProperty(id, TEST_USER_ID);
+    }
+
+    // Return a JSON message when property access is denied.
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, Object>> handlePropertyAccessError(
+            ResponseStatusException exception) {
+
+        if (!exception.getStatusCode().equals(HttpStatus.FORBIDDEN)) {
+            throw exception;
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of(
+                        "status", 403,
+                        "message", "You do not have access to this property."
+                ));
     }
 }
