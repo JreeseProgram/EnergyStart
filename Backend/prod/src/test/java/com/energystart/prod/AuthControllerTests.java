@@ -17,6 +17,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,14 +45,24 @@ class AuthControllerTests {
     @Test
     void missingTokenReturnsUnauthorized() throws Exception {
         mockMvc.perform(get("/api/auth/me"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentTypeCompatibleWith("application/json"))
+                .andExpect(header().string("WWW-Authenticate", org.hamcrest.Matchers.startsWith("Bearer ")))
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.message")
+                        .value("A valid login token is required."));
     }
 
     @Test
     void invalidTokenReturnsUnauthorized() throws Exception {
         mockMvc.perform(get("/api/auth/me")
                         .header("Authorization", "Bearer invalid-test-token"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentTypeCompatibleWith("application/json"))
+                .andExpect(header().exists("WWW-Authenticate"))
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.message")
+                        .value("A valid login token is required."));
     }
 
     @Test
@@ -67,7 +79,11 @@ class AuthControllerTests {
     @Test
     void profileWithoutTokenIsBlockedBeforeWorkOsLookup() throws Exception {
         mockMvc.perform(get("/api/auth/me/profile"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentTypeCompatibleWith("application/json"))
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.message")
+                        .value("A valid login token is required."));
 
         verifyNoInteractions(workOsUserService);
     }

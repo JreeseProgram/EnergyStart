@@ -3,6 +3,7 @@ package com.energystart.prod.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -15,12 +16,12 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import org.springframework.context.annotation.Profile;
-@Profile("!local-test") // added to enable a local test of the work os profile according to GPT
+@Profile("!local-test")
 @Configuration
 public class SecurityConfig {
 
@@ -36,7 +37,20 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth -> oauth
-                        .jwt(withDefaults()));
+                        .jwt(withDefaults())
+                        .authenticationEntryPoint((request, response, exception) -> {
+                            BearerTokenAuthenticationEntryPoint entryPoint =
+                                    new BearerTokenAuthenticationEntryPoint();
+
+                            entryPoint.commence(request, response, exception);
+
+                            // Return a JSON message when authentication fails.
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            response.getWriter().write(
+                                    "{\"status\":" + response.getStatus()
+                                            + ",\"message\":\"A valid login token is required.\"}");
+                        }));
 
         return http.build();
     }
