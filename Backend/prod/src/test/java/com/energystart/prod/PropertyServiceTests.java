@@ -21,7 +21,7 @@ class PropertyServiceTests {
     private final PropertyService service = new PropertyService(repository);
 
     private Property request() {
-        return new Property(null, 1001, "123 Main Street", "Orlando", "FL", 32801, "Test property");
+        return new Property(null, 1001, "Test Office Building","123 Main Street", "Orlando", "FL", 32801, "Test property");
     }
 
     private Property storedProperty() {
@@ -57,6 +57,7 @@ class PropertyServiceTests {
 
         assertNotNull(created.getId());
         assertNotEquals("submitted-id", created.getId());
+        assertEquals("Test Office Building", created.getPropertyName());
         assertEquals(List.of("user_owner"), created.getAuthorizedUserIds());
         assertEquals("123 Main Street", created.getStreetAddress());
         assertEquals("Orlando", created.getCity());
@@ -148,6 +149,7 @@ class PropertyServiceTests {
 
         Property update = request();
         update.setId("replacement-id");
+        update.setPropertyName("Updated Office Building");
         update.setStreetAddress("456 Updated Street");
         update.setCity("Miami");
         update.setState("FL");
@@ -159,6 +161,7 @@ class PropertyServiceTests {
                 "property-1", update, "user_owner");
 
         assertEquals("property-1", updated.getId());
+        assertEquals("Updated Office Building", updated.getPropertyName());
         assertEquals("456 Updated Street", updated.getStreetAddress());
         assertEquals("Miami", updated.getCity());
         assertEquals("FL", updated.getState());
