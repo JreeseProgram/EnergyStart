@@ -25,6 +25,7 @@ public class PropertyService {
         Property property = new Property(
                 UUID.randomUUID().toString(),
                 request.getHumanReadablePropertyId(),
+                request.getPropertyName(),
                 request.getStreetAddress(),
                 request.getCity(),
                 request.getState(),
@@ -60,6 +61,7 @@ public class PropertyService {
 
         existing.setHumanReadablePropertyId(
                 request.getHumanReadablePropertyId());
+        existing.setPropertyName(request.getPropertyName());
         existing.setStreetAddress(request.getStreetAddress());
         existing.setCity(request.getCity());
         existing.setState(request.getState());
@@ -112,6 +114,7 @@ public class PropertyService {
         Property result = new Property(
                 original.getId(),
                 original.getHumanReadablePropertyId(),
+                original.getPropertyName(),
                 original.getStreetAddress(),
                 original.getCity(),
                 original.getState(),

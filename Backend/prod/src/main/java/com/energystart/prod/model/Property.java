@@ -20,6 +20,7 @@ public class Property {
     private String id;
 
     private Integer humanReadablePropertyId;
+    private String propertyName;
     private String streetAddress;
     private String city;
     private String state;
@@ -38,6 +39,7 @@ public class Property {
     public Property(
             String id,
             Integer humanReadablePropertyId,
+            String propertyname,
             String streetAddress,
             String city,
             String state,
@@ -45,6 +47,7 @@ public class Property {
             String notes) {
         this.id = id;
         this.humanReadablePropertyId = humanReadablePropertyId;
+        this.propertyName = propertyname;
         this.streetAddress = streetAddress;
         this.city = city;
         this.state = state;
@@ -110,6 +113,14 @@ public class Property {
 
     public void setHumanReadablePropertyId(Integer humanReadablePropertyId) {
         this.humanReadablePropertyId = humanReadablePropertyId;
+    }
+
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    public void setPropertyName(String propertyName) {
+        this.propertyName = propertyName;
     }
 
     public String getStreetAddress() {

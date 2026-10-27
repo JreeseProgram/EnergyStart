@@ -38,6 +38,7 @@ class PropertyMongoLiveTests {
         Property property = new Property(
                 "permission-test-" + suffix,
                 910017,
+                "Permission Test Property",
                 "Temporary permission test",
                 "Orlando",
                 "FL",
