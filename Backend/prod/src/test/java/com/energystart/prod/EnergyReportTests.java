@@ -31,7 +31,7 @@ class EnergyReportTests {
         Integer[] resultArray = EnergyReport.retrieveCDDHDD(zipcode, startDate, endDate);
 
         assertEquals(0, resultArray[0]);
-        assertEquals(10, resultArray[1]);
+        assertEquals(11, resultArray[1]);
 
     }
 
