@@ -1,3 +1,5 @@
+import { PropertyPerformanceCell } from "@/features/portfolio/cells/property-performance.cell"
+import { PropertyBuildingUseSummaryCell } from "@/features/portfolio/cells/property-building-use-summary.cell"
 import { ContentHeader } from "@/components/layouts/content-header"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/components/ui/link"
@@ -29,7 +31,7 @@ export function PropertyOverviewCell({
     Failure: ({ ctx }) => (
       <ContentHeader
         title="Something went wrong"
-        description="Unable to load property settings. Please try again."
+        description="Unable to load property overview. Please try again."
         action={
           <Button variant="outline" onClick={() => void ctx.refetch()}>
             Retry
@@ -55,6 +57,8 @@ export function PropertyOverviewCell({
           <PropertyHeader property={property} />
           <ContentHeader title={"Property overview"} />
           <PropertyOverview property={property} />
+          <PropertyPerformanceCell key={property.id} propertyId={property.id} />
+          <PropertyBuildingUseSummaryCell propertyId={property.id} />
         </>
       )
     },
