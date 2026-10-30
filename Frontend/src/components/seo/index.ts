@@ -1,1 +1,1 @@
-export { Head } from "./head"
+export { Head } from "@/components/seo/head"

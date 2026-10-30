@@ -9,7 +9,7 @@ import {
 } from "@/features/portfolio/services/energy-meter.service"
 import { defaultEnergyMeters } from "@/features/portfolio/testing/fixtures/energy-meter.fixtures"
 import { delay } from "@/utils/delay"
-import type { PropertyService } from "../../services/property.service"
+import type { PropertyService } from "@/features/portfolio/services/property.service"
 
 const SERVER_DELAY = 300
 
