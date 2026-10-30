@@ -1,4 +1,3 @@
-
 package com.energystart.prod;
 
 import com.energystart.prod.model.Property;
@@ -71,17 +70,21 @@ class PropertyServiceTests {
     void propertyListOnlyIncludesAccessibleProperties() {
         Property ownerProperty = storedProperty();
 
-        // Changed from findAll(): PropertyService now asks MongoDB for authorized properties directly.
-        when(repository.findByAuthorizedUserIdsContaining("user_owner"))
-                .thenReturn(List.of(ownerProperty));
+        Property otherProperty = request();
+        otherProperty.setId("property-2");
+        otherProperty.setAuthorizedUserIds(List.of("user_other"));
+
+        // Include both users' properties to check the permission filter.
+        when(repository.findAll())
+                .thenReturn(List.of(ownerProperty, otherProperty));
 
         List<Property> visible = service.getAllProperties("user_owner");
 
         assertEquals(1, visible.size());
         assertEquals(ownerProperty.getId(), visible.get(0).getId());
         assertNotSame(ownerProperty, visible.get(0));
-        verify(repository).findByAuthorizedUserIdsContaining("user_owner");
-        verify(repository, never()).findAll();
+
+        verify(repository).findAll();
     }
 
     @Test

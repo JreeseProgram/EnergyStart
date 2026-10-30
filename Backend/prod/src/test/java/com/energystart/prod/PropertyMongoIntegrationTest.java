@@ -30,6 +30,7 @@ class PropertyMongoIntegrationTest {
         Property request = new Property(
                 null,
                 999999,
+                "Integration Test Property",
                 "Integration Test Street",
                 "Orlando",
                 "FL",
