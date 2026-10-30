@@ -1,0 +1,55 @@
+import z from "zod"
+import { BuildingUse } from "@/features/portfolio/models/building-use.models"
+import { defaultProperties } from "@/features/portfolio/testing/fixtures/property.fixtures"
+
+export const defaultBuildingUses = z.array(BuildingUse).parse([
+  {
+    id: "b0ed477e-df48-4e5a-9c79-2323c5df5301",
+    propertyId: defaultProperties[0].id,
+    createdAt: "2025-01-15T12:00:00.000Z",
+    buildingUseType: "OFFICE",
+    grossFloorArea: 125000,
+    parkingSize: 0,
+    yearOfConstruction: 2000,
+    numOfComputers: 100,
+    numOfWorkersMainShift: 100,
+    percentCooled: 100,
+    weeklyOperatingHours: 40,
+  },
+  {
+    id: "b0ed477e-df48-4e5a-9c79-2323c5df5302",
+    propertyId: defaultProperties[1].id,
+    createdAt: "2025-01-15T12:00:00.000Z",
+    buildingUseType: "RETAIL_STORE",
+    grossFloorArea: 32000,
+    parkingSize: 0,
+    yearOfConstruction: 2005,
+    doesWorkWeekend: true,
+    hasCookingFacilities: false,
+    isHighSchool: false,
+    numOfWorkersMainShift: 20,
+    percentCooled: 100,
+    percentHeated: 100,
+  },
+  {
+    id: "b0ed477e-df48-4e5a-9c79-2323c5df5303",
+    propertyId: defaultProperties[1].id,
+    createdAt: "2025-01-15T12:00:00.000Z",
+    buildingUseType: "DATA_CENTER",
+    grossFloorArea: 1000,
+    parkingSize: 0,
+    yearOfConstruction: 2005,
+  },
+  {
+    id: "b0ed477e-df48-4e5a-9c79-2323c5df5304",
+    propertyId: defaultProperties[2].id,
+    createdAt: "2025-01-15T12:00:00.000Z",
+    buildingUseType: "MULTIFAMILY_HOUSING",
+    grossFloorArea: 98000,
+    parkingSize: 0,
+    yearOfConstruction: 2010,
+    BuildingHeight: "MID_RISE",
+    numOfBedrooms: 120,
+    numOfResidentialUnits: 60,
+  },
+])
