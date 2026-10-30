@@ -7,7 +7,6 @@ import {
   EllipsisVertical,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardFooter } from "@/components/ui/card"
 import {
   Table,
@@ -75,10 +74,13 @@ export function BuildingUsesTable({
               Use Type
             </TableHead>
             <TableHead scope="col" className="text-right">
-              Floor Area
+              Gross Floor Area
             </TableHead>
-            <TableHead scope="col" className="w-44 text-right">
-              Status
+            <TableHead scope="col" className="w-48 text-right">
+              Parking Area
+            </TableHead>
+            <TableHead scope="col" className="w-48 text-right">
+              Year of Construction
             </TableHead>
             <TableHead scope="col" className="w-16">
               <span className="sr-only">Actions</span>
@@ -90,6 +92,7 @@ export function BuildingUsesTable({
             const label = PROPERTY_TYPES.find(
               (type) => type.value === use.buildingUseType
             )?.label
+
             return (
               <TableRow key={use.id}>
                 <TableCell className="h-20 pl-6">
@@ -105,10 +108,12 @@ export function BuildingUsesTable({
                   {use.grossFloorArea.toLocaleString("en-US")}{" "}
                   <span className="text-muted-foreground">ft²</span>
                 </TableCell>
-                <TableCell className="text-right">
-                  <Badge className="h-7 bg-emerald-50 px-3 text-sm text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                    Complete
-                  </Badge>
+                <TableCell className="text-right tabular-nums">
+                  {use.parkingSize.toLocaleString("en-US")}{" "}
+                  <span className="text-muted-foreground">ft²</span>
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {use.yearOfConstruction}
                 </TableCell>
                 <TableCell className="pr-6 text-right">
                   <DropdownMenu>
@@ -135,7 +140,7 @@ export function BuildingUsesTable({
           })}
           {buildingUses.length === 0 && (
             <TableRow>
-              <TableCell colSpan={4} className="h-40 text-center">
+              <TableCell colSpan={5} className="h-40 text-center">
                 <p className="font-medium">No building uses yet</p>
                 <p className="mt-2 text-muted-foreground">
                   Add a building use to describe this property's floor area.

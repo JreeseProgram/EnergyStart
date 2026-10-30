@@ -11,6 +11,7 @@ import {
 import { BuildingUseForm } from "@/features/portfolio/forms/building-use.form"
 import type { BuildingUse } from "@/features/portfolio/models/building-use.models"
 import type { PropertyId } from "@/features/portfolio/models/property.models"
+import { SubmitButton } from "@/components/form/submit-button"
 
 export function BuildingUseModal({
   propertyId,
@@ -57,13 +58,9 @@ export function BuildingUseModal({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={!canSubmit}>
-                {isSubmitting
-                  ? "Saving…"
-                  : buildingUse
-                    ? "Save changes"
-                    : "Add building use"}
-              </Button>
+              <SubmitButton disabled={!canSubmit}>
+                {buildingUse ? "Save changes" : "Add building use"}
+              </SubmitButton>
             </DialogFooter>
           )}
         </BuildingUseForm>
