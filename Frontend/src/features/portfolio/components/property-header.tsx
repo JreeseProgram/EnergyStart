@@ -4,13 +4,13 @@ import { MapPinned } from "lucide-react"
 
 export function PropertyHeader({ property }: { property: Property }) {
   return (
-    <div className="flex w-full items-center gap-4 rounded-xl bg-card-dark p-4 text-card-dark-foreground">
-      <div className="flex size-14 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+    <div className="flex w-full items-center gap-4 rounded-xl border border-border bg-card p-4 text-card-foreground">
+      <div className="flex size-14 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground">
         <MapPinned />
       </div>
       <div>
         <h2 className="text-2xl font-bold">{property.name}</h2>
-        <p className="text-sm">
+        <p className="text-sm text-muted-foreground">
           {property.streetAddress}, {property.city}, {property.state}
         </p>
       </div>
