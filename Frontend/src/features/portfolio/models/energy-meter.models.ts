@@ -58,9 +58,35 @@ export const UnitOfMeasure = z.enum(
   "Select a meter type type"
 )
 
+export const EnergyReadingFields = z
+  .object({
+    startDate: z.iso.date("Enter a valid start date"),
+    endDate: z.iso.date("Enter a valid end date"),
+    usage: z.number().nonnegative("Usage must be zero or greater"),
+    cost: z.number().nonnegative("Cost must be zero or greater").optional(),
+  })
+  .refine((reading) => reading.startDate <= reading.endDate, {
+    message: "End date must be on or after start date",
+    path: ["endDate"],
+  })
+  .refine(
+    (reading) => reading.endDate <= new Date().toISOString().slice(0, 10),
+    {
+      message: "Readings cannot end in the future",
+      path: ["endDate"],
+    }
+  )
+export const EnergyReading = EnergyReadingFields.safeExtend({
+  id: z.uuid(),
+  createdAt: z.iso.datetime(),
+})
+export type EnergyReading = z.infer<typeof EnergyReading>
+
 export type EnergyMeter = z.infer<typeof EnergyMeter>
 export const EnergyMeter = BaseEntity(EnergyMeterId).extend({
   propertyId: PropertyId,
+  updatedAt: z.iso.datetime().optional(),
+  readings: z.array(EnergyReading).default([]),
   date: z.iso.datetime().optional().default(new Date().toISOString()),
   meterId: z.string().optional(),
   meterType: EnergyMeterType,

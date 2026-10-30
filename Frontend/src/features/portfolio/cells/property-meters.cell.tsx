@@ -8,7 +8,7 @@ import {
   PropertyHeader,
   PropertyHeaderSkeleton,
 } from "@/features/portfolio/components/property-header"
-import { PropertyMeters } from "@/features/portfolio/components/property-meters"
+import { EnergyMetersListCell } from "@/features/portfolio/cells/energy-meters-list.cell"
 import type { PropertyId } from "@/features/portfolio/models/property.models"
 import { createCell } from "@/lib/react-query"
 
@@ -25,7 +25,7 @@ export function PropertyMetersCell({ propertyId }: { propertyId: PropertyId }) {
     Failure: ({ ctx }) => (
       <ContentHeader
         title="Something went wrong"
-        description="Unable to load property settings. Please try again."
+        description="Unable to load this property. Please try again."
         action={
           <Button variant="outline" onClick={() => void ctx.refetch()}>
             Retry
@@ -49,8 +49,7 @@ export function PropertyMetersCell({ propertyId }: { propertyId: PropertyId }) {
       return (
         <>
           <PropertyHeader property={property} />
-          <ContentHeader title={"Energy meters"} />
-          <PropertyMeters property={property} />
+          <EnergyMetersListCell key={property.id} property={property} />
         </>
       )
     },
