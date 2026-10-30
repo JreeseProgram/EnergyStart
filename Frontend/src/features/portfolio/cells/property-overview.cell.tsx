@@ -1,3 +1,4 @@
+import { PropertyPerformanceCell } from "@/features/portfolio/cells/property-performance.cell"
 import { PropertyBuildingUseSummaryCell } from "@/features/portfolio/cells/property-building-use-summary.cell"
 import { ContentHeader } from "@/components/layouts/content-header"
 import { Button } from "@/components/ui/button"
@@ -56,6 +57,7 @@ export function PropertyOverviewCell({
           <PropertyHeader property={property} />
           <ContentHeader title={"Property overview"} />
           <PropertyOverview property={property} />
+          <PropertyPerformanceCell key={property.id} propertyId={property.id} />
           <PropertyBuildingUseSummaryCell propertyId={property.id} />
         </>
       )
