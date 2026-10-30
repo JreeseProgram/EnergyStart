@@ -21,10 +21,17 @@ export function PropertyModal({
   ...props
 }: Omit<DialogTriggerProps, "property"> & { property?: Property }) {
   const [open, setOpen] = useState(false)
+  const [pending, setPending] = useState(false)
   const action = property ? "Edit" : "Create"
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className={"sm:max-w-2xl"}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!pending) setOpen(nextOpen)
+      }}
+    >
+      <DialogContent className={"sm:max-w-2xl"} showCloseButton={!pending}>
         <DialogHeader>
           <DialogTitle>{action} Property</DialogTitle>
           <DialogDescription>
@@ -34,7 +41,9 @@ export function PropertyModal({
           </DialogDescription>
         </DialogHeader>
         <PropertyForm
+          onSubmittingChange={setPending}
           onSuccess={() => {
+            setPending(false)
             setOpen(false)
           }}
           key={property?.id ?? "create"}
@@ -45,11 +54,12 @@ export function PropertyModal({
             <Button
               variant={"outline"}
               type="button"
+              disabled={pending}
               onClick={() => setOpen(false)}
             >
               Cancel
             </Button>
-            <SubmitButton>
+            <SubmitButton disabled={pending}>
               {property ? "Save changes" : "Create property"}
             </SubmitButton>
           </DialogFooter>
