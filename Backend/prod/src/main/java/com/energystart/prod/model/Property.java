@@ -6,7 +6,9 @@ import com.energystart.prod.energy.EnergyStarLookupTable;
 import com.energystart.prod.energy.report_types.DataCenterReport;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.EnergyReportRepo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
@@ -27,7 +29,11 @@ public class Property {
     private Integer zipcode;
     private String notes;
     private int energyScore;
+    @Transient
+    @JsonIgnore
     private EnergyMeterRepo energyMeterRepo;
+    @Transient
+    @JsonIgnore
     private EnergyReportRepo energyReportRepo;
 
     // WorkOS user IDs allowed to access this property.
@@ -55,14 +61,13 @@ public class Property {
         this.notes = notes;
     }
     //Custom methods
-    public void calculateEnergyScore(LocalDate startDate, LocalDate endDate) {
+    public void calculateEnergyScore(LocalDate startDate, LocalDate endDate, int cdd, int hdd) {
         float energyScore = -1f;
         List<Float> individualKBtu = new ArrayList<>();
         List<Float> weights = new ArrayList<>();
         float totalSourceKBtu = 0.0f;
         float totalPredictedKBtu = 0.0f;
         int totalsqft = 0;
-        Integer[] cddhdd = EnergyReport.retrieveCDDHDD(this.getZipcode(), startDate, endDate);
 
         //Access energy reports and get pertinent info
         List<EnergyReport> relevantEnergyReports = energyReportRepo.findAllByRelatedPropertyID
@@ -71,7 +76,7 @@ public class Property {
             float value = 0;
             totalsqft += report.getGrossFloorArea();
             if(!(report instanceof DataCenterReport)){
-                value = report.energyStarRegressionCalc(cddhdd[0], cddhdd[1]);
+                value = report.energyStarRegressionCalc(cdd, hdd);
                 totalPredictedKBtu += value;
                 individualKBtu.add(value);
             }
@@ -163,7 +168,7 @@ public class Property {
         this.notes = notes;
     }
 
-    public float getEnergyScore() {
+    public int getEnergyScore() {
         return energyScore;
     }
 
