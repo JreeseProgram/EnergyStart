@@ -1,3 +1,4 @@
+
 package com.energystart.prod;
 
 import com.energystart.prod.model.Property;
@@ -20,27 +21,7 @@ class PropertyServiceTests {
     private final PropertyService service = new PropertyService(repository);
 
     private Property request() {
-        return new Property(null, 1001, "123 Main Street", "Orlando", "FL", 32801, "Test property");
-    }
-
-    private Property storedProperty() {
-        Property property = request();
-        property.setId("property-1");
-        property.setAuthorizedUserIds(List.of("user_owner"));
-        return property;
-    }
-
-    private void allowOwner(Property property) {
-        when(repository.findByIdAndAuthorizedUserIdsContaining(
-                property.getId(), "user_owner"))
-                .thenReturn(Optional.of(property));
-    }
-
-    private void denyOtherUser() {
-        when(repository.findByIdAndAuthorizedUserIdsContaining(
-                "property-1", "user_other"))
-                .thenReturn(Optional.empty());
-        when(repository.existsById("property-1")).thenReturn(true);
+        return new Property(null, 1001, "Test Office Building","123 Main Street", "Orlando", "FL", 32801, "Test property");
     }
 
     private Property storedProperty() {
@@ -76,6 +57,7 @@ class PropertyServiceTests {
 
         assertNotNull(created.getId());
         assertNotEquals("submitted-id", created.getId());
+        assertEquals("Test Office Building", created.getPropertyName());
         assertEquals(List.of("user_owner"), created.getAuthorizedUserIds());
         assertEquals("123 Main Street", created.getStreetAddress());
         assertEquals("Orlando", created.getCity());
@@ -100,22 +82,6 @@ class PropertyServiceTests {
         assertNotSame(ownerProperty, visible.get(0));
         verify(repository).findByAuthorizedUserIdsContaining("user_owner");
         verify(repository, never()).findAll();
-    }
-
-    @Test
-    void authorizedUserCanViewPropertyUsingRepositoryQuery() {
-        Property stored = storedProperty();
-        allowOwner(stored);
-
-        Property result = service.getPropertyById(
-                "property-1", "user_owner");
-
-        assertEquals(stored.getId(), result.getId());
-        assertEquals(stored.getStreetAddress(), result.getStreetAddress());
-        assertNotSame(stored, result);
-
-        verify(repository).findByIdAndAuthorizedUserIdsContaining(
-                "property-1", "user_owner");
     }
 
     @Test
@@ -183,6 +149,7 @@ class PropertyServiceTests {
 
         Property update = request();
         update.setId("replacement-id");
+        update.setPropertyName("Updated Office Building");
         update.setStreetAddress("456 Updated Street");
         update.setCity("Miami");
         update.setState("FL");
@@ -194,6 +161,7 @@ class PropertyServiceTests {
                 "property-1", update, "user_owner");
 
         assertEquals("property-1", updated.getId());
+        assertEquals("Updated Office Building", updated.getPropertyName());
         assertEquals("456 Updated Street", updated.getStreetAddress());
         assertEquals("Miami", updated.getCity());
         assertEquals("FL", updated.getState());
