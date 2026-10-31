@@ -29,12 +29,6 @@ public class Property {
     private Integer zipcode;
     private String notes;
     private int energyScore;
-    @Transient
-    @JsonIgnore
-    private EnergyMeterRepo energyMeterRepo;
-    @Transient
-    @JsonIgnore
-    private EnergyReportRepo energyReportRepo;
 
     // WorkOS user IDs allowed to access this property.
     private List<String> authorizedUserIds = new ArrayList<>();
@@ -61,7 +55,10 @@ public class Property {
         this.notes = notes;
     }
     //Custom methods
-    public void calculateEnergyScore(LocalDate startDate, LocalDate endDate, int cdd, int hdd) {
+    public void calculateEnergyScore(EnergyReportRepo energyReportRepo,
+                                     EnergyMeterRepo energyMeterRepo,
+                                     LocalDate startDate, LocalDate endDate,
+                                     int cdd, int hdd) {
         float energyScore = -1f;
         List<Float> individualKBtu = new ArrayList<>();
         List<Float> weights = new ArrayList<>();

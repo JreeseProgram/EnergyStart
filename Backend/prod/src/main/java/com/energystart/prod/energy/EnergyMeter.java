@@ -1,8 +1,10 @@
 package com.energystart.prod.energy;
 
 import com.energystart.prod.repos.EnergyReportRepo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.stereotype.Service;
 
@@ -62,6 +64,8 @@ public class EnergyMeter {
     private String ID;
     private String associatedPropertyID;
     @Autowired
+    @Transient
+    @JsonIgnore
     private EnergyReportRepo repo;
     private LocalDate date; //YYYY-MM-DD
     private String meterID;
@@ -77,6 +81,7 @@ public class EnergyMeter {
 
     //This is used to calculate
     private record key(TYPE_OF_METER a, TYPE_OF_MEASURE b) {}
+    @Transient
     private final Map<key, Float> kBtuMultipliers = Map.ofEntries(
             //Electric Grid
             Map.entry(new key(

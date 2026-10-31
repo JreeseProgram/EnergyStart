@@ -102,6 +102,8 @@ class EnergyReportTests {
         energyReportRepo.save(csr);
 
         property.calculateEnergyScore(
+                energyReportRepo,
+                meterRepo,
                 LocalDate.now(),
                 LocalDate.now(),
                 480,
