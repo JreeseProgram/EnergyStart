@@ -56,7 +56,7 @@ class EnergyReportTests {
     @Test
     void testConvenienceStoreScore(){
 
-        String targetDate = LocalDate.of(2026,8,1);
+        String targetDate = "2026-08";
 
         Property property = new Property(
                 "Test-Energy-Score-conv-store",
