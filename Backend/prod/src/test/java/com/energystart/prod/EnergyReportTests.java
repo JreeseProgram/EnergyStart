@@ -56,6 +56,8 @@ class EnergyReportTests {
     @Test
     void testConvenienceStoreScore(){
 
+        LocalDate targetDate = LocalDate.of(2026,8,1);
+
         Property property = new Property(
                 "Test-Energy-Score-conv-store",
                 90001,
@@ -81,6 +83,7 @@ class EnergyReportTests {
         EnergyMeter meterElec = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.ELECTRIC_GRID,
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
+                targetDate,
                 true,
                 false,
                 490000.0f
@@ -88,6 +91,7 @@ class EnergyReportTests {
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
+                targetDate,
                 true,
                 true,
                 5446.0f
@@ -96,26 +100,26 @@ class EnergyReportTests {
         meterElec.setAssociatedPropertyID("Test-Energy-Score-conv-store");
         meterGas.setAssociatedPropertyID("Test-Energy-Score-conv-store");
 
-        propertyRepo.save(property);
-        meterRepo.save(meterElec);
-        meterRepo.save(meterGas);
-        energyReportRepo.save(csr);
+        property = propertyRepo.save(property);
+        meterElec = meterRepo.save(meterElec);
+        meterGas = meterRepo.save(meterGas);
+        csr = energyReportRepo.save(csr);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
-                LocalDate.now(),
-                LocalDate.now(),
+                targetDate,
+                targetDate,
                 480,
                 9285
         );
 
         int result = property.getEnergyScore();
 
-        propertyRepo.delete(property);
-        meterRepo.delete(meterElec);
-        meterRepo.delete(meterGas);
-        energyReportRepo.delete(csr);
+        propertyRepo.deleteById(property.getId());
+        meterRepo.deleteById(meterElec.getID());
+        meterRepo.deleteById(meterGas.getID());
+        energyReportRepo.deleteById(csr.getID());
 
         assertEquals(53, result);
 

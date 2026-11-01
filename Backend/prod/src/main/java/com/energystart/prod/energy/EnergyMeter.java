@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 
@@ -680,11 +683,13 @@ public class EnergyMeter {
     //Constructor from input (no meter ID)
     public EnergyMeter(TYPE_OF_METER meterSelected,
                        TYPE_OF_MEASURE unitOfMeasure,
+                       LocalDate date,
                        boolean inUse,
                        boolean isDelivered,
                        float rawUse){
         setMeterSelected(meterSelected);
         setUnitOfMeasure(unitOfMeasure);
+        setDate(date);
         setInUse(inUse);
         setDelivered(isDelivered);
         setRawUse(rawUse);

@@ -12,6 +12,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class Property {
 
         //access energy meters and extract pertinent info
         List<EnergyMeter> energyMeters = energyMeterRepo.findByAssociatedPropertyIDAndDateBetween
-                (this.getId(), startDate, endDate);
+                (this.getId(), startDate.toString(), endDate.toString());
         for (EnergyMeter energyMeter : energyMeters) {
             totalSourceKBtu += energyMeter.getSourceEUI() * totalsqft;
         }
