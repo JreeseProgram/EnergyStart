@@ -44,6 +44,13 @@ public class SupermarketReport extends EnergyReport {
         float cooled = cdd * this.getPercentCooled();
         float heated = hdd * this.getPercentHeated();
 
+        //FP imprecision fix numWorkersPerThousandFt = Math.round(numWorkersPerThousandFt * 100.0f) / 100.0f;
+        weeklyOperatingHours = Math.round(weeklyOperatingHours * 100.0f) / 100.0f;
+        numWorkersPer1000ft = Math.round(numWorkersPer1000ft * 100.0f) / 100.0f;
+        numCommercialFreezerPerThousandFt = Math.round(numCommercialFreezerPerThousandFt * 100.0f) / 100.0f;
+        cooled = Math.round(cooled * 100.0f) / 100.0f;
+        heated = Math.round(heated * 100.0f) / 100.0f;
+
         predictedSourceEUI += (weeklyOperatingHours - 77.93f) * 1.222f;
         predictedSourceEUI += ((numWorkersPer1000ft - 0.8353f) * 39.28f)
                 + ((numWorkersPer1000ft - 0.8353f) * 81.23f); //this is added d/t supermarket calcs being mixed with retail
