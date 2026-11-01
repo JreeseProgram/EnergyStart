@@ -63,10 +63,6 @@ public class EnergyMeter {
     @Id
     private String ID;
     private String associatedPropertyID;
-    @Autowired
-    @Transient
-    @JsonIgnore
-    private EnergyReportRepo repo;
     private LocalDate date; //YYYY-MM-DD
     private String meterID;
     private TYPE_OF_METER meterSelected;
@@ -719,7 +715,7 @@ public class EnergyMeter {
     }
 
     //TODO: update with potentially better error handling
-    public void calcEUI(){
+    public void calcEUI(EnergyReportRepo repo){
         //Get square footage
         int sqrFootage = 0;
         List<EnergyReport> reports = repo.findAllByRelatedPropertyID(getAssociatedPropertyID());
