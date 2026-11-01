@@ -29,10 +29,10 @@ public class BankBranchReport extends EnergyReport {
     //Custom Methods
 
 
-    public float energyStarRegressionCalc(float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 143.1f; //standard
-        float squareFoot = this.getGrossFloorArea();
+        float squareFoot = sqft;
         float squareFootPerThousand = squareFoot/1000;
         float weeklyOperatingHours = this.getWeeklyOperatingHours();
         float numWorkersPer1000ft = this.getNumOfWorkersMainShift() / squareFootPerThousand;
@@ -41,6 +41,14 @@ public class BankBranchReport extends EnergyReport {
         float heated = hdd;
 
         if(squareFoot > 100000){squareFoot = 100000;}
+
+        //FP Precision Fix
+        weeklyOperatingHours = Math.round(weeklyOperatingHours * 100.0f) / 100.0f;
+        numWorkersPer1000ft = Math.round(numWorkersPer1000ft * 100.0f) / 100.0f;
+        numComputerPer1000ft = Math.round(numComputerPer1000ft * 100.0f) / 100.0f;
+        cooled = Math.round(cooled * 100.0f) / 100.0f;
+        heated = Math.round(heated * 100.0f) / 100.0f;
+
         predictedSourceEUI += (squareFoot - 12342) * 0.0006768f;
         predictedSourceEUI += (weeklyOperatingHours - 54.09f) * 0.6130f;
         predictedSourceEUI += (numWorkersPer1000ft - 2.056f) * 15.90f;
@@ -50,7 +58,7 @@ public class BankBranchReport extends EnergyReport {
 
         if(squareFoot < 50000){predictedSourceEUI += 82.87f;}
 
-        return predictedSourceEUI * this.getGrossFloorArea(); // this gives the predicted Source kBtu
+        return predictedSourceEUI * sqft; // this gives the predicted Source kBtu
 
     }
 
