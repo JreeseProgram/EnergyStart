@@ -34,10 +34,10 @@ public class DistributionCenterReport extends EnergyReport {
 
     //Custom Methods
 
-    public float energyStarRegressionCalc(float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 69.62f; //standard
-        float squareFoot = this.getGrossFloorArea();
+        float squareFoot = sqft;
         float squareFootPerThousand = squareFoot/1000;
         float weeklyOperatingHours = this.getWeeklyOperatingHours();
         float numWorkersPer1000ft = this.getNumOfWorkersMainShift() / squareFootPerThousand;
@@ -46,13 +46,20 @@ public class DistributionCenterReport extends EnergyReport {
         float cooled = cdd * (this.getPercentCooled()+ percentColdStorage);
         float heated = hdd * this.getPercentHeated();
 
+        //FP imprecision fix:
+        weeklyOperatingHours = Math.round(weeklyOperatingHours * 100.0f) / 100.0f;
+        numWorkersPer1000ft = Math.round(numWorkersPer1000ft * 100.0f) / 100.0f;
+        percentColdStorage = Math.round(percentColdStorage * 100.0f) / 100.0f;
+        cooled = Math.round(cooled * 100.0f) / 100.0f;
+        heated = Math.round(heated * 100.0f) / 100.0f;
+
         predictedSourceEUI += (weeklyOperatingHours - 59.25f) * 0.1943f;
         predictedSourceEUI += (numWorkersPer1000ft - 0.8502f) * 25.83f;
         predictedSourceEUI += (percentColdStorage - 0.007669f) * 239.3f;
         predictedSourceEUI += (cooled - 552.1f) * 0.01209f;
         predictedSourceEUI += (heated - 1602f) * 0.009370f;
 
-        return predictedSourceEUI * this.getGrossFloorArea();
+        return predictedSourceEUI * sqft;
     }
 
     //Getters and Setters

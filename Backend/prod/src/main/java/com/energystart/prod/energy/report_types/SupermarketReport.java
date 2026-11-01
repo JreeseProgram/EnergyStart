@@ -31,10 +31,10 @@ public class SupermarketReport extends EnergyReport {
         setWeeklyOperatingHours(weeklyOperatingHours);
     }
     //Custom Methods
-    public float energyStarRegressionCalc(float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 162.0f + 252.6f; //standard + supermarket specific added
-        float squareFoot = this.getGrossFloorArea();
+        float squareFoot = sqft;
         float squareFootPerThousand = squareFoot / 1000;
 
         float weeklyOperatingHours = this.getWeeklyOperatingHours();
@@ -58,7 +58,7 @@ public class SupermarketReport extends EnergyReport {
         predictedSourceEUI += (cooled - 5.606f) * 5.698f;
         predictedSourceEUI += (heated - 6.911f) * 6.493f;
 
-        return predictedSourceEUI * this.getGrossFloorArea();
+        return predictedSourceEUI * sqft;
     }
 
     //Getters and Setters
