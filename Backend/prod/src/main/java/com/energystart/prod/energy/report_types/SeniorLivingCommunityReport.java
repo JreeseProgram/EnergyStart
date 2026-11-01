@@ -49,10 +49,10 @@ public class SeniorLivingCommunityReport extends EnergyReport {
     //Custom Methods
 
 
-    public float energyStarRegressionCalc(float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 219.4f; //standard
-        float squareFoot = this.getGrossFloorArea();
+        float squareFoot = sqft;
         float squareFootPerThousand = squareFoot / 1000;
         float numUnitsPerThousandFt = this.getNumOfResidentialUnits() / squareFootPerThousand;
         float percentCapacity = (float) this.getAvgNumResidents() / this.getMaxResidentCapacity();
@@ -91,7 +91,7 @@ public class SeniorLivingCommunityReport extends EnergyReport {
         predictedSourceEUI += (cooled - 1184f) * 0.01456f;
         predictedSourceEUI += (heated - 4524f) * 0.005431f;
 
-        return predictedSourceEUI * this.getGrossFloorArea();
+        return predictedSourceEUI * sqft;
     }
 
     //Getters and Setters
