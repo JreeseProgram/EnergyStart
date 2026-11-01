@@ -67,6 +67,19 @@ public class SeniorLivingCommunityReport extends EnergyReport {
 
         if(numResidentWashingMachinePerThousandFt > 0.16f){numResidentWashingMachinePerThousandFt = 0.16f;}
 
+        //FP precision fix
+        numUnitsPerThousandFt = Math.round(numUnitsPerThousandFt * 100.0f) / 100.0f;
+        percentCapacity = Math.round(percentCapacity * 100.0f) / 100.0f;
+        numLiftsPerThousandFt = Math.round(numLiftsPerThousandFt * 100.0f) / 100.0f;
+        numWorkersPer1000ft = Math.round(numWorkersPer1000ft * 100.0f) / 100.0f;
+        numComputerPer1000ft = Math.round(numComputerPer1000ft * 100.0f) / 100.0f;
+        numCommRefrigerationPerThousandFt = Math.round(numCommRefrigerationPerThousandFt * 100.0f) / 100.0f;
+        numCommWashingMachinePerThousandFt = Math.round(numCommWashingMachinePerThousandFt * 100.0f) / 100.0f;
+        numResidentWashingMachinePerThousandFt = Math.round(numResidentWashingMachinePerThousandFt * 100.0f) / 100.0f;
+        cooled = Math.round(cooled * 100.0f) / 100.0f;
+        heated = Math.round(heated * 100.0f) / 100.0f;
+
+
         predictedSourceEUI += (numUnitsPerThousandFt - 1.582f) * 17.43f;
         predictedSourceEUI += (percentCapacity - 0.8761f) * 0.7962f;
         predictedSourceEUI += (numLiftsPerThousandFt - 0.06915f) * 253.9f;
