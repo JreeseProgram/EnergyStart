@@ -67,10 +67,13 @@ public class Property {
         List<EnergyReport> relevantEnergyReports = energyReportRepo.findAllByRelatedPropertyID
                 (this.getId());
         for(EnergyReport report : relevantEnergyReports){
-            float value = 0;
             totalsqft += report.getGrossFloorArea();
+
+        }
+        for (EnergyReport report : relevantEnergyReports){
+            float value = 0;
             if(!(report instanceof DataCenterReport)){
-                value = report.energyStarRegressionCalc(cdd, hdd);
+                value = report.energyStarRegressionCalc(cdd, hdd, totalsqft);
                 totalPredictedKBtu += value;
                 individualKBtu.add(value);
             }

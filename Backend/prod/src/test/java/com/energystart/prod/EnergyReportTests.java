@@ -73,7 +73,7 @@ class EnergyReportTests {
                 1987,
                 407,
                 87,
-                6,
+                3, //Changed to 3 from 6 as its literally wrong on official documentation
                 15,
                 5,
                 1.0f,
@@ -100,10 +100,16 @@ class EnergyReportTests {
         meterElec.setAssociatedPropertyID("Test-Energy-Score-conv-store");
         meterGas.setAssociatedPropertyID("Test-Energy-Score-conv-store");
 
+
+
         property = propertyRepo.save(property);
+        csr = energyReportRepo.save(csr);
+
+        meterElec.calcEUI(energyReportRepo);
+        meterGas.calcEUI(energyReportRepo);
+
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
-        csr = energyReportRepo.save(csr);
 
         property.calculateEnergyScore(
                 energyReportRepo,
