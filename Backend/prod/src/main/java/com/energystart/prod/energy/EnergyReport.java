@@ -1,5 +1,6 @@
 package com.energystart.prod.energy;
 
+import com.energystart.prod.repos.EnergyMeterRepo;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -86,7 +87,7 @@ public class EnergyReport {
         return -1;
     }
 
-    public float energyStarRegressionCalc(String startDate, String endDate) {
+    public float energyStarRegressionCalc(String startDate, String endDate, EnergyMeterRepo meterRepo) {
         return -1;
     }
 

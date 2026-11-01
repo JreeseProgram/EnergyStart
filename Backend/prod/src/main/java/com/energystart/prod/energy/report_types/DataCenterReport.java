@@ -10,8 +10,6 @@ import java.util.List;
 public class DataCenterReport extends EnergyReport {
 
     private float annualITEnergy;
-    private PropertyRepo repo;
-    private EnergyMeterRepo meterRepo;
 
 
     //Constructors
@@ -23,7 +21,7 @@ public class DataCenterReport extends EnergyReport {
         setAnnualITEnergy(annualITEnergy);
     }
 
-    public float energyStarRegressionCalc(String startDate, String endDate){
+    public float energyStarRegressionCalc(EnergyMeterRepo meterRepo, String startDate, String endDate){
         float predictedPUE = 1.924f;
         List<EnergyMeter> meters = meterRepo.findByAssociatedPropertyIDAndDateBetween(this.getRelatedPropertyID(),startDate,endDate);
         float sourceKBtu = 0;
