@@ -6,13 +6,9 @@ import com.energystart.prod.energy.EnergyStarLookupTable;
 import com.energystart.prod.energy.report_types.DataCenterReport;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.EnergyReportRepo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +54,7 @@ public class Property {
     //Custom methods
     public void calculateEnergyScore(EnergyReportRepo energyReportRepo,
                                      EnergyMeterRepo energyMeterRepo,
-                                     LocalDate startDate, LocalDate endDate,
+                                     String startDate, String endDate,
                                      int cdd, int hdd) {
         float energyScore = -1f;
         List<Float> individualKBtu = new ArrayList<>();
@@ -91,7 +87,7 @@ public class Property {
 
         //access energy meters and extract pertinent info
         List<EnergyMeter> energyMeters = energyMeterRepo.findByAssociatedPropertyIDAndDateBetween
-                (this.getId(), startDate.toString(), endDate.toString());
+                (this.getId(), startDate, endDate);
         for (EnergyMeter energyMeter : energyMeters) {
             totalSourceKBtu += energyMeter.getSourceEUI() * totalsqft;
         }

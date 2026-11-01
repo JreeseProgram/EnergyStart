@@ -5,8 +5,6 @@ import com.energystart.prod.energy.EnergyReport;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.PropertyRepo;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 public class DataCenterReport extends EnergyReport {
@@ -25,9 +23,9 @@ public class DataCenterReport extends EnergyReport {
         setAnnualITEnergy(annualITEnergy);
     }
 
-    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate){
+    public float energyStarRegressionCalc(String startDate, String endDate){
         float predictedPUE = 1.924f;
-        List<EnergyMeter> meters = meterRepo.findByAssociatedPropertyIDAndDateBetween(this.getRelatedPropertyID(),startDate.toString(),endDate.toString());
+        List<EnergyMeter> meters = meterRepo.findByAssociatedPropertyIDAndDateBetween(this.getRelatedPropertyID(),startDate,endDate);
         float sourceKBtu = 0;
         for(EnergyMeter meter: meters){
             //Keeps Multipliers but reverts floor area calculations

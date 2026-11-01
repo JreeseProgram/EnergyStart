@@ -86,7 +86,7 @@ public class EnergyReport {
         return -1;
     }
 
-    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate) {
+    public float energyStarRegressionCalc(String startDate, String endDate) {
         return -1;
     }
 
