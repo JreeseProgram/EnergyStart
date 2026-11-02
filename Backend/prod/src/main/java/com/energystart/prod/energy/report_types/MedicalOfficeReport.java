@@ -30,10 +30,10 @@ public class MedicalOfficeReport extends EnergyReport {
 
     //Custom Methods
 
-    public float energyStarRegressionCalc(float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 250.9f; //standard
-        float squareFoot = this.getGrossFloorArea();
+        float squareFoot = sqft;
         float squareFootPerThousand = squareFoot / 1000;
         float numMRIPerThousandFt = this.getNumOfMRIMachines()/squareFootPerThousand;
         float numBedsPerThousandFt = this.getNumOfSurgicalBeds()/squareFootPerThousand;
@@ -44,6 +44,14 @@ public class MedicalOfficeReport extends EnergyReport {
 
         if(squareFoot > 100000) {squareFoot = 100000;}
 
+        //FP Precision Fix
+        numMRIPerThousandFt = Math.round(numMRIPerThousandFt * 100.0f) / 100.0f;
+        numBedsPerThousandFt = Math.round(numBedsPerThousandFt * 100.0f) / 100.0f;
+        numWorkersPerThousandFt = Math.round(numWorkersPerThousandFt * 100.0f) / 100.0f;
+        weeklyHours = Math.round(weeklyHours * 100.0f) / 100.0f;
+        cooled = Math.round(cooled * 100.0f) / 100.0f;
+        heated = Math.round(heated * 100.0f) / 100.0f;
+
         predictedSourceEUI += (squareFoot - 84175f) * 0.0005471f;
         predictedSourceEUI += (numMRIPerThousandFt - 0.003156f) * 3469f;
         predictedSourceEUI += (numBedsPerThousandFt - 0.009331f) * 1536f;
@@ -52,7 +60,7 @@ public class MedicalOfficeReport extends EnergyReport {
         predictedSourceEUI += (cooled - 1754f) * 0.01926f;
         predictedSourceEUI += (heated - 3983f) * 0.004240f;
 
-        return predictedSourceEUI * this.getGrossFloorArea();
+        return predictedSourceEUI * sqft;
     }
 
     //Getters and Setters

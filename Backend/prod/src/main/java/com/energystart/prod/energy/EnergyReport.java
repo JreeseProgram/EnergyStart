@@ -1,5 +1,6 @@
 package com.energystart.prod.energy;
 
+import com.energystart.prod.repos.EnergyMeterRepo;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -82,11 +83,11 @@ public class EnergyReport {
     //Custom Methods
 
     //IMPORTANT: DO NOT USE THIS METHOD IN AN ENERGY REPORT, IT WILL BE OVERRIDDEN BY CHILD CLASSES
-    public float energyStarRegressionCalc(float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         return -1;
     }
 
-    public float energyStarRegressionCalc(LocalDate startDate, LocalDate endDate) {
+    public float energyStarRegressionCalc() {
         return -1;
     }
 

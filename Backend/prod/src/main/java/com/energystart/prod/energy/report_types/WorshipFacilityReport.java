@@ -30,19 +30,27 @@ public class WorshipFacilityReport extends EnergyReport {
     }
     //Custom Methods
 
-    public float energyStarRegressionCalc(float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
-        float predictedSourceEUI = 143.1f; //standard
-        float squareFoot = this.getGrossFloorArea();
+        float predictedSourceEUI = 68.24f; //standard
+        float squareFoot = sqft;
         float squareFootPerThousand = squareFoot / 1000;
         float weeklyOperatingHours = this.getWeeklyOperatingHours();
         float numSeatsPerThousandFt = this.getSeatingCapacity() / squareFootPerThousand;
-        float percentAreaForFoodPrep = this.getGrossFloorAreaForFoodPrep() / squareFootPerThousand;
+        float percentAreaForFoodPrep = this.getGrossFloorAreaForFoodPrep() / squareFoot;
         float cooled = cdd * this.getPercentCooled();
         float heated = hdd * this.getPercentHeated();
 
         if(numSeatsPerThousandFt < 40){numSeatsPerThousandFt = 40f;}
         if(percentAreaForFoodPrep > 0.1){percentAreaForFoodPrep = 0.1f;}
+
+        //Fix FP imprecision
+        weeklyOperatingHours = Math.round(weeklyOperatingHours * 100.0f) / 100.0f;
+        numSeatsPerThousandFt = Math.round(numSeatsPerThousandFt * 100.0f) / 100.0f;
+        percentAreaForFoodPrep = Math.round(percentAreaForFoodPrep * 100000.0f) / 100000.0f;
+        cooled = Math.round(cooled * 100.0f) / 100.0f;
+        heated = Math.round(heated * 100.0f) / 100.0f;
+
 
         predictedSourceEUI += (weeklyOperatingHours - 26.49f) * 0.5107f;
         predictedSourceEUI += (numSeatsPerThousandFt - 47.84f) * 0.7336f;
@@ -50,7 +58,7 @@ public class WorshipFacilityReport extends EnergyReport {
         predictedSourceEUI += (cooled - 1471f) * 0.01249f;
         predictedSourceEUI += (heated - 3243f) * 0.004180f;
 
-        return predictedSourceEUI * this.getGrossFloorArea();
+        return predictedSourceEUI * sqft;
     }
 
 

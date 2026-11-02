@@ -49,10 +49,10 @@ public class SeniorLivingCommunityReport extends EnergyReport {
     //Custom Methods
 
 
-    public float energyStarRegressionCalc(float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 219.4f; //standard
-        float squareFoot = this.getGrossFloorArea();
+        float squareFoot = sqft;
         float squareFootPerThousand = squareFoot / 1000;
         float numUnitsPerThousandFt = this.getNumOfResidentialUnits() / squareFootPerThousand;
         float percentCapacity = (float) this.getAvgNumResidents() / this.getMaxResidentCapacity();
@@ -67,8 +67,21 @@ public class SeniorLivingCommunityReport extends EnergyReport {
 
         if(numResidentWashingMachinePerThousandFt > 0.16f){numResidentWashingMachinePerThousandFt = 0.16f;}
 
+        //FP precision fix
+        numUnitsPerThousandFt = Math.round(numUnitsPerThousandFt * 1000.0f) / 1000.0f;
+        percentCapacity = Math.round(percentCapacity * 10000.0f) / 10000.0f;
+        numLiftsPerThousandFt = Math.round(numLiftsPerThousandFt * 100000.0f) / 100000.0f;
+        numWorkersPer1000ft = Math.round(numWorkersPer1000ft * 1000.0f) / 1000.0f;
+        numComputerPer1000ft = Math.round(numComputerPer1000ft * 10000.0f) / 10000.0f;
+        numCommRefrigerationPerThousandFt = Math.round(numCommRefrigerationPerThousandFt * 10000.0f) / 10000.0f;
+        numCommWashingMachinePerThousandFt = Math.round(numCommWashingMachinePerThousandFt * 100000.0f) / 100000.0f;
+        numResidentWashingMachinePerThousandFt = Math.round(numResidentWashingMachinePerThousandFt * 100.0f) / 100.0f;
+        cooled = Math.round(cooled * 100.0f) / 100.0f;
+        heated = Math.round(heated * 100.0f) / 100.0f;
+
+
         predictedSourceEUI += (numUnitsPerThousandFt - 1.582f) * 17.43f;
-        predictedSourceEUI += (percentCapacity - 0.8761f) * 0.7962f;
+        predictedSourceEUI += ((percentCapacity * 100) - 87.61f) * 0.7962f;
         predictedSourceEUI += (numLiftsPerThousandFt - 0.06915f) * 253.9f;
         predictedSourceEUI += (numWorkersPer1000ft - 0.9370f) * 30.36f;
         predictedSourceEUI += (numComputerPer1000ft - 0.3636f) * 75.03f;
@@ -78,7 +91,7 @@ public class SeniorLivingCommunityReport extends EnergyReport {
         predictedSourceEUI += (cooled - 1184f) * 0.01456f;
         predictedSourceEUI += (heated - 4524f) * 0.005431f;
 
-        return predictedSourceEUI * this.getGrossFloorArea();
+        return predictedSourceEUI * sqft;
     }
 
     //Getters and Setters

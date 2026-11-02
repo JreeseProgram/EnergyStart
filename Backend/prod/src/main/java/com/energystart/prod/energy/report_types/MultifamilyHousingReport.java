@@ -33,10 +33,10 @@ public class MultifamilyHousingReport extends EnergyReport {
     }
 
     //Custom Methods
-    public float energyStarRegressionCalc(float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 130.7f; //standard
-        float squareFoot = this.getGrossFloorArea();
+        float squareFoot = sqft;
         float squareFootPerThousand = squareFoot / 1000;
         float unitsPerThousandFt = this.getNumOfResidentialUnits() / squareFootPerThousand;
         float bedroomsPerUnit = (float) this.getNumOfBedrooms() / this.getNumOfResidentialUnits();
@@ -45,13 +45,20 @@ public class MultifamilyHousingReport extends EnergyReport {
         float cooled = cdd;
         float heated = hdd;
 
+        //FP Precision Fix Math.round(numWorkersPerThousandFt * 100.0f) / 100.0f;
+        unitsPerThousandFt = Math.round(unitsPerThousandFt * 100.0f) / 100.0f;
+        bedroomsPerUnit = Math.round(bedroomsPerUnit * 100.0f) / 100.0f;
+        lowRisePercent = Math.round(lowRisePercent * 100.0f) / 100.0f;
+        cooled = Math.round(cooled * 100.0f) / 100.0f;
+        heated = Math.round(heated * 100.0f) / 100.0f;
+
         predictedSourceEUI += (unitsPerThousandFt - 1.215f) * 48.01f;
         predictedSourceEUI += (bedroomsPerUnit - 1.238f) * 22.64f;
         predictedSourceEUI += lowRisePercent * -19.00f;
         predictedSourceEUI += (cooled - 1364f) * 0.01406f;
         predictedSourceEUI += (heated - 4233f) * 0.008989f;
 
-        return predictedSourceEUI * this.getGrossFloorArea();
+        return predictedSourceEUI * sqft;
     }
 
 

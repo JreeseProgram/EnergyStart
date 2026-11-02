@@ -30,3 +30,4 @@ Backend/prod/target/classes/com/energystart/prod/repos/EnergyReportRepo.class
 Backend/prod/target/classes/com/energystart/prod/repos/PropertyRepo.class
 *.class
 Backend/prod/target/classes/com/energystart/prod/energy/EnergyMeter.class
+*.class
