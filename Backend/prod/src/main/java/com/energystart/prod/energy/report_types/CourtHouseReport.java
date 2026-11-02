@@ -36,7 +36,7 @@ public class CourtHouseReport extends EnergyReport {
         float weeklyOperatingHours = this.getWeeklyOperatingHours();
         float numWorkersPer1000ft = this.getNumOfWorkersMainShift() / squareFootPerThousand;
         float numComputerPer1000ft = this.getNumOfComputers() / squareFootPerThousand;
-        float cooled = cdd * this.getPercentCooled();
+        float cooled = (float) Math.log(cdd) * this.getPercentCooled();
         float heated = hdd;
 
         if(squareFoot > 100000){squareFoot = 100000;}
@@ -51,7 +51,7 @@ public class CourtHouseReport extends EnergyReport {
         predictedSourceEUI += (squareFoot - 12342) * 0.0006768f;
         predictedSourceEUI += (weeklyOperatingHours - 54.09f) * 0.6130f;
         predictedSourceEUI += (numWorkersPer1000ft - 2.056f) * 15.90f;
-        predictedSourceEUI += (numComputerPer1000ft - 3.028f) * 15.90f;
+        predictedSourceEUI += (numComputerPer1000ft - 3.028f) * 10.13f;
         predictedSourceEUI += (cooled - 6.332f) * 4.529f;
         predictedSourceEUI += (heated - 924f) * 0.004693f;
 
