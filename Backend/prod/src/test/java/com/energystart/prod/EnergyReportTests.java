@@ -806,4 +806,77 @@ class EnergyReportTests {
         assertEquals(65, result);
     }
 
+    @Test
+    void testVehicleDealershipScore(){
+        String targetDate = "2026-08";
+
+        Property property = new Property(
+                "Test-Energy-Score-Vehicle-Dealership",
+                90001,
+                "Test-Vehicle-Dealership",
+                "123 street ave",
+                "CityPlace",
+                "FL",
+                32801,
+                "");
+        VehicleDealershipReport vdr = new VehicleDealershipReport(
+                50000,
+                20000,
+                1985,
+                250,
+                70,
+                1.0f,
+                1.0f
+        );
+        vdr.setRelatedPropertyID("Test-Energy-Score-Vehicle-Dealership");
+        EnergyMeter meterElec = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.ELECTRIC_GRID,
+                EnergyMeter.TYPE_OF_MEASURE.kWh,
+                targetDate,
+                true,
+                false,
+                439625.0f
+        );
+        EnergyMeter meterGas = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
+                EnergyMeter.TYPE_OF_MEASURE.Therms,
+                targetDate,
+                true,
+                true,
+                12000.0f
+        );
+
+        meterElec.setAssociatedPropertyID("Test-Energy-Score-Vehicle-Dealership");
+        meterGas.setAssociatedPropertyID("Test-Energy-Score-Vehicle-Dealership");
+
+
+
+        property = propertyRepo.save(property);
+        vdr = energyReportRepo.save(vdr);
+
+        meterElec.calcEUI(energyReportRepo);
+        meterGas.calcEUI(energyReportRepo);
+
+        meterElec = meterRepo.save(meterElec);
+        meterGas = meterRepo.save(meterGas);
+
+        property.calculateEnergyScore(
+                energyReportRepo,
+                meterRepo,
+                targetDate,
+                targetDate,
+                3663,
+                1904
+        );
+
+        int result = property.getEnergyScore();
+
+        propertyRepo.deleteById(property.getId());
+        meterRepo.deleteById(meterElec.getID());
+        meterRepo.deleteById(meterGas.getID());
+        energyReportRepo.deleteById(vdr.getID());
+
+        assertEquals(76, result);
+    }
+
 }
