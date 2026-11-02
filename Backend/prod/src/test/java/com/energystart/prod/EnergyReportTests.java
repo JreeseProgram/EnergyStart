@@ -498,4 +498,78 @@ class EnergyReportTests {
         assertEquals(78, result);
     }
 
+    @Test
+    void testMultiFamilyHousingScore(){
+        String targetDate = "2026-08";
+
+        Property property = new Property(
+                "Test-Energy-Score-Multi-Family-Housing",
+                90001,
+                "Test-Multi-Family-Housing",
+                "123 street ave",
+                "CityPlace",
+                "FL",
+                32801,
+                "");
+        MultifamilyHousingReport mfhr = new MultifamilyHousingReport(
+                120000,
+                30000,
+                1985,
+                200,
+                100,
+                0,
+                440,
+                300
+        );
+        mfhr.setRelatedPropertyID("Test-Energy-Score-Multi-Family-Housing");
+        EnergyMeter meterElec = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.ELECTRIC_GRID,
+                EnergyMeter.TYPE_OF_MEASURE.kWh,
+                targetDate,
+                true,
+                false,
+                2100000.0f
+        );
+        EnergyMeter meterGas = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
+                EnergyMeter.TYPE_OF_MEASURE.Therms,
+                targetDate,
+                true,
+                true,
+                800.0f
+        );
+
+        meterElec.setAssociatedPropertyID("Test-Energy-Score-Multi-Family-Housing");
+        meterGas.setAssociatedPropertyID("Test-Energy-Score-Multi-Family-Housing");
+
+
+
+        property = propertyRepo.save(property);
+        mfhr = energyReportRepo.save(mfhr);
+
+        meterElec.calcEUI(energyReportRepo);
+        meterGas.calcEUI(energyReportRepo);
+
+        meterElec = meterRepo.save(meterElec);
+        meterGas = meterRepo.save(meterGas);
+
+        property.calculateEnergyScore(
+                energyReportRepo,
+                meterRepo,
+                targetDate,
+                targetDate,
+                1287,
+                4710
+        );
+
+        int result = property.getEnergyScore();
+
+        propertyRepo.deleteById(property.getId());
+        meterRepo.deleteById(meterElec.getID());
+        meterRepo.deleteById(meterGas.getID());
+        energyReportRepo.deleteById(mfhr.getID());
+
+        assertEquals(63, result);
+    }
+
 }
