@@ -2,10 +2,7 @@ package com.energystart.prod;
 
 import com.energystart.prod.energy.EnergyMeter;
 import com.energystart.prod.energy.EnergyReport;
-import com.energystart.prod.energy.report_types.ConvenienceStoreReport;
-import com.energystart.prod.energy.report_types.DataCenterReport;
-import com.energystart.prod.energy.report_types.HospitalReport;
-import com.energystart.prod.energy.report_types.HotelReport;
+import com.energystart.prod.energy.report_types.*;
 import com.energystart.prod.model.Property;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.EnergyReportRepo;
@@ -351,6 +348,81 @@ class EnergyReportTests {
         energyReportRepo.deleteById(hr.getID());
 
         assertEquals(63, result);
+    }
+
+    @Test
+    void testSchoolScore(){
+        String targetDate = "2026-08";
+
+        Property property = new Property(
+                "Test-Energy-Score-School",
+                90001,
+                "Test-School",
+                "123 street ave",
+                "CityPlace",
+                "FL",
+                32801,
+                "");
+        SchoolReport sr = new SchoolReport(
+                100000,
+                10000,
+                1985,
+                true,
+                false,
+                true,
+                80,
+                1.0f,
+                1.0f
+        );
+        sr.setRelatedPropertyID("Test-Energy-Score-School");
+        EnergyMeter meterElec = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.ELECTRIC_GRID,
+                EnergyMeter.TYPE_OF_MEASURE.kWh,
+                targetDate,
+                true,
+                false,
+                700000.0f
+        );
+        EnergyMeter meterGas = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
+                EnergyMeter.TYPE_OF_MEASURE.Therms,
+                targetDate,
+                true,
+                true,
+                20000.0f
+        );
+
+        meterElec.setAssociatedPropertyID("Test-Energy-Score-School");
+        meterGas.setAssociatedPropertyID("Test-Energy-Score-School");
+
+
+
+        property = propertyRepo.save(property);
+        sr = energyReportRepo.save(sr);
+
+        meterElec.calcEUI(energyReportRepo);
+        meterGas.calcEUI(energyReportRepo);
+
+        meterElec = meterRepo.save(meterElec);
+        meterGas = meterRepo.save(meterGas);
+
+        property.calculateEnergyScore(
+                energyReportRepo,
+                meterRepo,
+                targetDate,
+                targetDate,
+                1046,
+                4937
+        );
+
+        int result = property.getEnergyScore();
+
+        propertyRepo.deleteById(property.getId());
+        meterRepo.deleteById(meterElec.getID());
+        meterRepo.deleteById(meterGas.getID());
+        energyReportRepo.deleteById(sr.getID());
+
+        assertEquals(81, result);
     }
 
 }
