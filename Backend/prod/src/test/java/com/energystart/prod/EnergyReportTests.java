@@ -5,6 +5,7 @@ import com.energystart.prod.energy.EnergyReport;
 import com.energystart.prod.energy.report_types.ConvenienceStoreReport;
 import com.energystart.prod.energy.report_types.DataCenterReport;
 import com.energystart.prod.energy.report_types.HospitalReport;
+import com.energystart.prod.energy.report_types.HotelReport;
 import com.energystart.prod.model.Property;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.EnergyReportRepo;
@@ -275,6 +276,81 @@ class EnergyReportTests {
         energyReportRepo.deleteById(hr.getID());
 
         assertEquals(82, result);
+    }
+
+    @Test
+    void testHotelScore(){
+        String targetDate = "2026-08";
+
+        Property property = new Property(
+                "Test-Energy-Score-Hotel",
+                90001,
+                "Test-Hotel",
+                "123 street ave",
+                "CityPlace",
+                "FL",
+                32801,
+                "");
+        HotelReport hr = new HotelReport(
+                300000,
+                30000,
+                1985,
+                true,
+                20,
+                360,
+                180,
+                1.0f,
+                1.0f
+        );
+        hr.setRelatedPropertyID("Test-Energy-Score-Hotel");
+        EnergyMeter meterElec = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.ELECTRIC_GRID,
+                EnergyMeter.TYPE_OF_MEASURE.kWh,
+                targetDate,
+                true,
+                false,
+                4500000.0f
+        );
+        EnergyMeter meterGas = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
+                EnergyMeter.TYPE_OF_MEASURE.Therms,
+                targetDate,
+                true,
+                true,
+                110000.0f
+        );
+
+        meterElec.setAssociatedPropertyID("Test-Energy-Score-Hotel");
+        meterGas.setAssociatedPropertyID("Test-Energy-Score-Hotel");
+
+
+
+        property = propertyRepo.save(property);
+        hr = energyReportRepo.save(hr);
+
+        meterElec.calcEUI(energyReportRepo);
+        meterGas.calcEUI(energyReportRepo);
+
+        meterElec = meterRepo.save(meterElec);
+        meterGas = meterRepo.save(meterGas);
+
+        property.calculateEnergyScore(
+                energyReportRepo,
+                meterRepo,
+                targetDate,
+                targetDate,
+                1388,
+                4532
+        );
+
+        int result = property.getEnergyScore();
+
+        propertyRepo.deleteById(property.getId());
+        meterRepo.deleteById(meterElec.getID());
+        meterRepo.deleteById(meterGas.getID());
+        energyReportRepo.deleteById(hr.getID());
+
+        assertEquals(63, result);
     }
 
 }
