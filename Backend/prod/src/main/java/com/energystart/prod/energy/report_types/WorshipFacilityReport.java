@@ -32,12 +32,12 @@ public class WorshipFacilityReport extends EnergyReport {
 
     public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
-        float predictedSourceEUI = 143.1f; //standard
+        float predictedSourceEUI = 68.24f; //standard
         float squareFoot = sqft;
         float squareFootPerThousand = squareFoot / 1000;
         float weeklyOperatingHours = this.getWeeklyOperatingHours();
         float numSeatsPerThousandFt = this.getSeatingCapacity() / squareFootPerThousand;
-        float percentAreaForFoodPrep = this.getGrossFloorAreaForFoodPrep() / squareFootPerThousand;
+        float percentAreaForFoodPrep = this.getGrossFloorAreaForFoodPrep() / squareFoot;
         float cooled = cdd * this.getPercentCooled();
         float heated = hdd * this.getPercentHeated();
 
@@ -47,7 +47,7 @@ public class WorshipFacilityReport extends EnergyReport {
         //Fix FP imprecision
         weeklyOperatingHours = Math.round(weeklyOperatingHours * 100.0f) / 100.0f;
         numSeatsPerThousandFt = Math.round(numSeatsPerThousandFt * 100.0f) / 100.0f;
-        percentAreaForFoodPrep = Math.round(percentAreaForFoodPrep * 100.0f) / 100.0f;
+        percentAreaForFoodPrep = Math.round(percentAreaForFoodPrep * 100000.0f) / 100000.0f;
         cooled = Math.round(cooled * 100.0f) / 100.0f;
         heated = Math.round(heated * 100.0f) / 100.0f;
 
