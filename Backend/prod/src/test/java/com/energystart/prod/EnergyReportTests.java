@@ -425,4 +425,77 @@ class EnergyReportTests {
         assertEquals(81, result);
     }
 
+    @Test
+    void testMedicalOfficeScore(){
+        String targetDate = "2026-08";
+
+        Property property = new Property(
+                "Test-Energy-Score-Medical-Office",
+                90001,
+                "Test-Medical-Office",
+                "123 street ave",
+                "CityPlace",
+                "FL",
+                32801,
+                "");
+        MedicalOfficeReport mor = new MedicalOfficeReport(
+                50000,
+                3000,
+                1985,
+                1,
+                1,
+                100,
+                55
+        );
+        mor.setRelatedPropertyID("Test-Energy-Score-Medical-Office");
+        EnergyMeter meterElec = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.ELECTRIC_GRID,
+                EnergyMeter.TYPE_OF_MEASURE.kWh,
+                targetDate,
+                true,
+                false,
+                703400.0f
+        );
+        EnergyMeter meterGas = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
+                EnergyMeter.TYPE_OF_MEASURE.Therms,
+                targetDate,
+                true,
+                true,
+                42000.0f
+        );
+
+        meterElec.setAssociatedPropertyID("Test-Energy-Score-Medical-Office");
+        meterGas.setAssociatedPropertyID("Test-Energy-Score-Medical-Office");
+
+
+
+        property = propertyRepo.save(property);
+        mor = energyReportRepo.save(mor);
+
+        meterElec.calcEUI(energyReportRepo);
+        meterGas.calcEUI(energyReportRepo);
+
+        meterElec = meterRepo.save(meterElec);
+        meterGas = meterRepo.save(meterGas);
+
+        property.calculateEnergyScore(
+                energyReportRepo,
+                meterRepo,
+                targetDate,
+                targetDate,
+                1074,
+                6126
+        );
+
+        int result = property.getEnergyScore();
+
+        propertyRepo.deleteById(property.getId());
+        meterRepo.deleteById(meterElec.getID());
+        meterRepo.deleteById(meterGas.getID());
+        energyReportRepo.deleteById(mor.getID());
+
+        assertEquals(78, result);
+    }
+
 }
