@@ -21,18 +21,17 @@ public class DataCenterReport extends EnergyReport {
         setAnnualITEnergy(annualITEnergy);
     }
 
-    public float energyStarRegressionCalc(EnergyMeterRepo meterRepo, String startDate, String endDate){
+    public float energyStarRegressionCalc(){
         float predictedPUE = 1.924f;
-        List<EnergyMeter> meters = meterRepo.findByAssociatedPropertyIDAndDateBetween(this.getRelatedPropertyID(),startDate,endDate);
-        float sourceKBtu = 0;
-        for(EnergyMeter meter: meters){
-            //Keeps Multipliers but reverts floor area calculations
-            sourceKBtu += meter.getSourceEUI() * this.getGrossFloorArea();
-        }
+
         // 3.412 converts kwh to kbtu, 2.8 converts to source kBtu
         float sourceITUsage = getAnnualITEnergy() * 3.412f * 2.80f;
-        float realPUE = sourceKBtu/sourceITUsage;
-        predictedPUE += (realPUE - 0.2091f) * (-0.9506f);
+
+        predictedPUE += (Math.min((sourceITUsage / 1000000000f),0.4f) - 0.2091f) * (-0.9506f);
+
+        //Fix FP Precision
+        predictedPUE = Math.round(predictedPUE * 1000.0f) / 1000.0f;
+
 
         return predictedPUE * sourceITUsage; // converts this to predicted kBtu
     }

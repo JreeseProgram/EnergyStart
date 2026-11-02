@@ -78,7 +78,7 @@ public class Property {
                 individualKBtu.add(value);
             }
             else{ //only triggers for our outlier: Data Centers
-                value = report.energyStarRegressionCalc(startDate, endDate, energyMeterRepo);
+                value = report.energyStarRegressionCalc();
                 totalPredictedKBtu += value;
                 individualKBtu.add(value);
             }
