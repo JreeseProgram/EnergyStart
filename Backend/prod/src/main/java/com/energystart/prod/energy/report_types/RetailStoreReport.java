@@ -8,8 +8,7 @@ public class RetailStoreReport extends EnergyReport {
 
     private boolean hasExteriorEntrance = false;
     private boolean isSingleStore = false;
-    private int numOfOpenClosedFreezers;
-    private int numWalkInFreezers;
+    private int numOfFreezers;
     private int numOfWorkersMainShift;
     private float percentCooled;
     private float percentHeated;
@@ -24,14 +23,13 @@ public class RetailStoreReport extends EnergyReport {
 
     public RetailStoreReport(int grossFloorArea, int parkingSize, int yearOfConstruction,
                              boolean hasExteriorEntrance, boolean isSingleStore,
-                             int numOfOpenClosedFreezers, int numWalkInFreezers, int numOfWorkersMainShift,
+                             int numOfFreezers,  int numOfWorkersMainShift,
                              float percentCooled, float percentHeated, int weeklyOperatingHours) {
         super(grossFloorArea, parkingSize, yearOfConstruction);
 
         setHasExteriorEntrance(hasExteriorEntrance);
         setSingleStore(isSingleStore);
-        setNumOfOpenClosedFreezers(numOfOpenClosedFreezers);
-        setNumWalkInFreezers(numWalkInFreezers);
+        setNumOfFreezers(numOfFreezers);
         setNumOfWorkersMainShift(numOfWorkersMainShift);
         setPercentCooled(percentCooled);
         setPercentHeated(percentHeated);
@@ -45,18 +43,16 @@ public class RetailStoreReport extends EnergyReport {
         float squareFootPerThousand = squareFoot / 1000;
         float weeklyOperatingHours = this.getWeeklyOperatingHours();
         float numWorkersPer1000ft = this.getNumOfWorkersMainShift() / squareFootPerThousand;
-        float numCommercialFreezerPerThousandFt =
-                (this.getNumOfOpenClosedFreezers() + this.getNumWalkInFreezers()) / squareFootPerThousand;
-
-        float cooled = cdd * this.getPercentCooled();
-        float heated = hdd * this.getPercentHeated();
+        float numCommercialFreezerPerThousandFt = (this.getNumOfFreezers() / squareFootPerThousand);
+        float cooled = (float) Math.log(cdd) * this.getPercentCooled();
+        float heated = (float) Math.log (hdd) * this.getPercentHeated();
 
         //FP imprecision fix numWorkersPerThousandFt = Math.round(numWorkersPerThousandFt * 100.0f) / 100.0f;
         weeklyOperatingHours = Math.round(weeklyOperatingHours * 100.0f) / 100.0f;
         numWorkersPer1000ft = Math.round(numWorkersPer1000ft * 100.0f) / 100.0f;
         numCommercialFreezerPerThousandFt = Math.round(numCommercialFreezerPerThousandFt * 100.0f) / 100.0f;
-        cooled = Math.round(cooled * 100.0f) / 100.0f;
-        heated = Math.round(heated * 100.0f) / 100.0f;
+        cooled = Math.round(cooled * 1000.0f) / 1000.0f;
+        heated = Math.round(heated * 1000.0f) / 1000.0f;
 
         predictedSourceEUI += (weeklyOperatingHours - 77.93f) * 1.222f;
         predictedSourceEUI += (numWorkersPer1000ft - 0.8353f) * 39.28f;
@@ -86,20 +82,12 @@ public class RetailStoreReport extends EnergyReport {
         isSingleStore = singleStore;
     }
 
-    public int getNumOfOpenClosedFreezers() {
-        return numOfOpenClosedFreezers;
+    public int getNumOfFreezers() {
+        return numOfFreezers;
     }
 
-    public void setNumOfOpenClosedFreezers(int numOfOpenClosedFreezers) {
-        this.numOfOpenClosedFreezers = numOfOpenClosedFreezers;
-    }
-
-    public int getNumWalkInFreezers() {
-        return numWalkInFreezers;
-    }
-
-    public void setNumWalkInFreezers(int numWalkInFreezers) {
-        this.numWalkInFreezers = numWalkInFreezers;
+    public void setNumOfFreezers(int numOfOpenClosedFreezers) {
+        this.numOfFreezers = numOfOpenClosedFreezers;
     }
 
     public int getNumOfWorkersMainShift() {
