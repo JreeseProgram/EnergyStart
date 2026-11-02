@@ -32,17 +32,17 @@ public class HospitalReport extends EnergyReport {
         //Calculate predicted source EUI
         float predictedSourceEUI = 433.6f; //standard
         float squareFoot = sqft;
-        float squareFootPerThousand = squareFoot / 1000;
+        float squareFootPerThousand = squareFoot / 1000f;
         float numWorkersPerThousandFt = this.getNumOfFullTimeWorkers()/squareFootPerThousand;
         float numBedsPerThousandFt = this.getNumOfStaffedBeds()/squareFootPerThousand;
-        float numMRIPerThousandFt = this.getNumOfMRIMachines()/squareFootPerThousand;
+        float numMRIPerThousandFt = (float) this.getNumOfMRIMachines()/squareFootPerThousand;
         float cooled = cdd;
         float heated = hdd;
 
         //FP Precision Fix
         numWorkersPerThousandFt = Math.round(numWorkersPerThousandFt * 100.0f) / 100.0f;
         numBedsPerThousandFt = Math.round(numBedsPerThousandFt * 100.0f) / 100.0f;
-        numMRIPerThousandFt = Math.round(numMRIPerThousandFt * 100.0f) / 100.0f;
+        numMRIPerThousandFt = Math.round(numMRIPerThousandFt * 100000.0f) / 100000.0f;
         cooled = Math.round(cooled * 100.0f) / 100.0f;
         heated = Math.round(heated * 100.0f) / 100.0f;
 
