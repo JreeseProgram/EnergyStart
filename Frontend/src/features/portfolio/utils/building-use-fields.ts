@@ -46,6 +46,9 @@ const labels: Record<string, string> = {
   numOfWalkInFreezers: "Walk-in freezers",
   grossFloorAreaForFoodPrep: "Food preparation area (ft²)",
   seatingCapacity: "Seating capacity",
+  lowRiseUnits: "Number of low rise units",
+  midRiseUnits: "Number of mid rise units",
+  highRiseUnits: "Number of high rise units",
 }
 
 function getFieldInput(

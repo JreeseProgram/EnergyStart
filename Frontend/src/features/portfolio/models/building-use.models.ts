@@ -8,12 +8,14 @@ import z from "zod"
 export type BuildingUseType = PropertyType
 export const BuildingUseType = PropertyType
 
-export type BuildingHeight = z.infer<typeof BuildingHeight>
-export const BuildingHeight = z.enum([
-  "LOW_RISE",
-  "MID_RISE",
-  "HIGH_RISE",
-] as const)
+export type LowRiseUnits = z.infer<typeof LowRiseUnits>
+export const LowRiseUnits = z.number().optional()
+
+export type MidRiseUnits = z.infer<typeof MidRiseUnits>
+export const MidRiseUnits = z.number().optional()
+
+export type HighRiseUnits = z.infer<typeof HighRiseUnits>
+export const HighRiseUnits = z.number().optional()
 
 export type BuildingUseId = z.infer<typeof BuildingUseId>
 export const BuildingUseId = z.uuid().brand("BuildingUseId")
@@ -127,7 +129,9 @@ export const MedicalOfficeUse = z.object({
 export type MultiFamilyHousingUse = z.infer<typeof MultiFamilyHousingUse>
 export const MultiFamilyHousingUse = z.object({
   buildingUseType: z.literal(BuildingUseType.enum.MULTIFAMILY_HOUSING),
-  BuildingHeight: BuildingHeight,
+  lowRiseUnits: LowRiseUnits,
+  midRiseUnits: MidRiseUnits,
+  highRiseUnits: HighRiseUnits,
   numOfBedrooms: count,
   numOfResidentialUnits: count,
 })
