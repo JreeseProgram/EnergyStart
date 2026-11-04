@@ -2,6 +2,8 @@ import { useState } from "react"
 import { createPortfolioTestStore } from "@/features/portfolio/testing/portfolio-test-store"
 import { createPropertyTestService } from "@/features/portfolio/testing/services/property.service"
 import { createBuildingUseTestService } from "@/features/portfolio/testing/services/building-use.service"
+import type { EnergyReportService } from "@/features/portfolio/services/energy-report.service"
+import { useEnergyReportTestService } from "@/features/portfolio/testing/services/energy-report.service"
 import { useEnergyMeterTestService } from "@/features/portfolio/testing/services/energy-meter.service"
 import * as React from "react"
 import type { AuthService } from "@/features/auth/services/auth.service"
@@ -17,11 +19,11 @@ export type Services = {
   propertyService: PropertyService
   buildingUseService: BuildingUseService
   energyMeterService: EnergyMeterService
+  energyReportService: EnergyReportService
   portfolioPerformanceService: PortfolioPerformanceService
   // ... additional service types go here
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const Services = React.createContext<Services>({} as Services)
 
 export type ServicesProviderProps = {
@@ -50,6 +52,10 @@ export function ServicesProvider(
   const buildingUseService = createBuildingUseTestService(store)
   const energyMeterService = useEnergyMeterTestService(propertyService)
   const portfolioPerformanceService = usePortfolioPerformanceService()
+  const energyReportService = useEnergyReportTestService(
+    propertyService,
+    portfolioPerformanceService
+  )
 
   return (
     <BaseServicesProvider
@@ -59,6 +65,7 @@ export function ServicesProvider(
         buildingUseService,
         energyMeterService,
         portfolioPerformanceService,
+        energyReportService,
         // ... additional services go here
       }}
       {...props}

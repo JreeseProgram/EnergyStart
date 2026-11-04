@@ -34,10 +34,10 @@ public class SchoolReport extends EnergyReport {
     }
     //Custom Methods
 
-    public float energyStarRegressionCalc(float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 101.7f; //standard
-        float squareFoot = this.getGrossFloorArea();
+        float squareFoot = sqft;
         float squareFootPerThousand = squareFoot / 1000;
         float numWorkersPer1000ft = this.getNumOfWorkersMainShift() / squareFootPerThousand;
         float hasCooking = (this.isHasCookingFacilities()) ? 8.182f : 0.0f;
@@ -45,6 +45,11 @@ public class SchoolReport extends EnergyReport {
         float isHighSchool = (this.isHighSchool()) ? 14.08f : 0.0f;
         float cooled = cdd * this.getPercentCooled();
         float heated = hdd * this.getPercentHeated();
+
+        //FP Precision fix
+        numWorkersPer1000ft = Math.round(numWorkersPer1000ft * 100.0f) / 100.0f;
+        cooled = Math.round(cooled * 100.0f) / 100.0f;
+        heated = Math.round(heated * 100.0f) / 100.0f;
 
 
         predictedSourceEUI += (numWorkersPer1000ft - 0.7967f) * 25.61f;
@@ -54,7 +59,7 @@ public class SchoolReport extends EnergyReport {
         predictedSourceEUI += (cooled - 1472f) * 0.02059f;
         predictedSourceEUI += (heated - 3597f) * 0.008370f;
 
-        return  predictedSourceEUI * this.getGrossFloorArea();
+        return  predictedSourceEUI * sqft;
     }
 
     //Getters and Setters

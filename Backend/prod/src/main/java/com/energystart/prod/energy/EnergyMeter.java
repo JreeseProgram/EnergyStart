@@ -1,13 +1,12 @@
 package com.energystart.prod.energy;
 
 import com.energystart.prod.repos.EnergyReportRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.stereotype.Service;
 
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -61,9 +60,7 @@ public class EnergyMeter {
     @Id
     private String ID;
     private String associatedPropertyID;
-    @Autowired
-    private EnergyReportRepo repo;
-    private LocalDate date; //YYYY-MM-DD
+    private String date; //YYYY-MM
     private String meterID;
     private TYPE_OF_METER meterSelected;
     private TYPE_OF_MEASURE unitOfMeasure;
@@ -77,6 +74,7 @@ public class EnergyMeter {
 
     //This is used to calculate
     private record key(TYPE_OF_METER a, TYPE_OF_MEASURE b) {}
+    @Transient
     private final Map<key, Float> kBtuMultipliers = Map.ofEntries(
             //Electric Grid
             Map.entry(new key(
@@ -679,11 +677,13 @@ public class EnergyMeter {
     //Constructor from input (no meter ID)
     public EnergyMeter(TYPE_OF_METER meterSelected,
                        TYPE_OF_MEASURE unitOfMeasure,
+                       String date,
                        boolean inUse,
                        boolean isDelivered,
                        float rawUse){
         setMeterSelected(meterSelected);
         setUnitOfMeasure(unitOfMeasure);
+        setDate(date);
         setInUse(inUse);
         setDelivered(isDelivered);
         setRawUse(rawUse);
@@ -714,7 +714,7 @@ public class EnergyMeter {
     }
 
     //TODO: update with potentially better error handling
-    public void calcEUI(){
+    public void calcEUI(EnergyReportRepo repo){
         //Get square footage
         int sqrFootage = 0;
         List<EnergyReport> reports = repo.findAllByRelatedPropertyID(getAssociatedPropertyID());
@@ -785,11 +785,11 @@ public class EnergyMeter {
         this.associatedPropertyID = associatedReportID;
     }
 
-    public LocalDate getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

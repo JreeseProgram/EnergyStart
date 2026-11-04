@@ -35,10 +35,10 @@ public class HotelReport extends EnergyReport {
 
     //Custom Methods
 
-    public float energyStarRegressionCalc(float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 146.5f; //standard
-        float squareFoot = this.getGrossFloorArea();
+        float squareFoot = sqft;
         float squareFootPerThousand = squareFoot / 1000;
         float numRoomsPerThousandFt = this.getNumOfRooms() / squareFootPerThousand;
         float numWorkersPer1000ft = this.getNumOfWorkersMainShift() / squareFootPerThousand;
@@ -51,6 +51,13 @@ public class HotelReport extends EnergyReport {
         if (numRoomsPerThousandFt < 3.0f){numRoomsPerThousandFt = 3.0f;}
         else if (numRoomsPerThousandFt > 4.0f) {numRoomsPerThousandFt = 4.0f;}
 
+        //FP Precision fix Math.round(numWorkersPerThousandFt * 100.0f) / 100.0f;
+        numRoomsPerThousandFt = Math.round(numRoomsPerThousandFt * 100.0f) / 100.0f;
+        numWorkersPer1000ft = Math.round(numWorkersPer1000ft * 100.0f) / 100.0f;
+        numCommercialFreezerPerThousandFt = Math.round(numCommercialFreezerPerThousandFt * 100.0f) / 100.0f;
+        cooled = Math.round(cooled * 100.0f) / 100.0f;
+        heated = Math.round(heated * 100.0f) / 100.0f;
+
         predictedSourceEUI += (numRoomsPerThousandFt - 3.022f) * 103.7f;
         predictedSourceEUI += (numWorkersPer1000ft - 0.3359f) * 34.93f;
         predictedSourceEUI += (numCommercialFreezerPerThousandFt - 0.05219f) * 178.7f;
@@ -58,7 +65,7 @@ public class HotelReport extends EnergyReport {
         predictedSourceEUI += (cooled - 1722f) * 0.008473f;
         predictedSourceEUI += (heated - 2873f) * 0.006324f;
 
-        return predictedSourceEUI * this.getGrossFloorArea();
+        return predictedSourceEUI * sqft;
     }
 
     //Getters and Setters

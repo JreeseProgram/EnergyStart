@@ -35,11 +35,11 @@ public class ConvenienceStoreReport extends EnergyReport {
         setPercentHeated(percentHeated);
     }
     // Custom Methods
-    public float energyStarRegressionCalc(float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 938.5f; //standard
-        float squareFoot = this.getGrossFloorArea();
-        float squareFootPerThousand = squareFoot/1000;
+        float squareFoot = sqft;
+        float squareFootPerThousand = squareFoot/1000.0f;
         float numWorkersPerThousandFt = this.getNumOfFullTimeWorkers()/squareFootPerThousand;
         float numCookingPerThousandFt = this.getNumOfCookingEquipment()/squareFootPerThousand;
         float numHeatingPerThousandFt = this.getNumOfHeatingUnits()/squareFootPerThousand;
@@ -47,6 +47,15 @@ public class ConvenienceStoreReport extends EnergyReport {
         float percentWalkinFreezer = this.getAreaOfWalkInFreezer()/squareFoot;
         float cooled = cdd * this.getPercentCooled();
         float heated = hdd * this.getPercentHeated();
+
+        //Fix FP imprecision
+        numWorkersPerThousandFt = Math.round(numWorkersPerThousandFt * 100.0f) / 100.0f;
+        numCookingPerThousandFt = Math.round(numCookingPerThousandFt * 100.0f) / 100.0f;
+        numHeatingPerThousandFt = Math.round(numHeatingPerThousandFt * 100.0f) / 100.0f;
+        lenOpenCloseFreezerPerThousandFt = Math.round(lenOpenCloseFreezerPerThousandFt * 100.0f) / 100.0f;
+        percentWalkinFreezer = Math.round(percentWalkinFreezer * 100.0f) / 100.0f;
+        cooled = Math.round(cooled * 100.0f) / 100.0f;
+        heated = Math.round(heated * 100.0f) / 100.0f;
 
         predictedSourceEUI += (numWorkersPerThousandFt - 2.843f) * 66.65f;
         predictedSourceEUI += (numCookingPerThousandFt - 0.6083f) * 243.6f;
@@ -57,7 +66,7 @@ public class ConvenienceStoreReport extends EnergyReport {
         predictedSourceEUI += (heated - 5765f) * 0.02592f;
 
 
-        return predictedSourceEUI * this.getGrossFloorArea();
+        return predictedSourceEUI * sqft;
     }
 
     //Getters and Setters

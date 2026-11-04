@@ -4,14 +4,11 @@ import com.energystart.prod.energy.EnergyReport;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.PropertyRepo;
 
-import java.time.LocalDate;
-
 public class WholesaleClubReport extends EnergyReport {
 
     private boolean hasExteriorEntrance = false;
     private boolean isSingleStore = false;
-    private int numOfOpenClosedFreezers;
-    private int numOfWalkInFreezers;
+    private int numOfFreezers;
     private int numOfWorkersMainShift;
     private float percentCooled;
     private float percentHeated;
@@ -26,15 +23,14 @@ public class WholesaleClubReport extends EnergyReport {
 
     public WholesaleClubReport(int grossFloorArea, int parkingSize, int yearOfConstruction,
                                boolean hasExteriorEntrance, boolean isSingleStore,
-                               int numOfOpenClosedFreezers, int numOfWalkInFreezers,
+                               int numOfFreezers,
                                int numOfWorkersMainShift, float percentCooled, float percentHeated,
                                int weeklyOperatingHours) {
         super(grossFloorArea, parkingSize, yearOfConstruction);
 
         setHasExteriorEntrance(hasExteriorEntrance);
         setSingleStore(isSingleStore);
-        setNumOfOpenClosedFreezers(numOfOpenClosedFreezers);
-        setNumOfWalkInFreezers(numOfWalkInFreezers);
+        setNumOfFreezers(numOfFreezers);
         setNumOfWorkersMainShift(numOfWorkersMainShift);
         setPercentCooled(percentCooled);
         setPercentHeated(percentHeated);
@@ -44,16 +40,23 @@ public class WholesaleClubReport extends EnergyReport {
 
     //Custom Methods
 
-    public float energyStarRegressionCalc(float cdd, float hdd) {
+    public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 162.0f + 252.6f; //standard + supermarket specific added
-        float squareFoot = this.getGrossFloorArea();
+        float squareFoot = sqft;
         float squareFootPerThousand = squareFoot / 1000;
         float weeklyOperatingHours = this.getWeeklyOperatingHours();
         float numWorkersPer1000ft = this.getNumOfWorkersMainShift() / squareFootPerThousand;
-        float numCommercialFreezerPerThousandFt = this.getNumOfOpenClosedFreezers() / squareFootPerThousand;
-        float cooled = cdd * this.getPercentCooled();
-        float heated = hdd * this.getPercentHeated();
+        float numCommercialFreezerPerThousandFt = this.getNumOfFreezers() / squareFootPerThousand;
+        float cooled = (float) Math.log(cdd) * this.getPercentCooled();
+        float heated = (float) Math.log(hdd) * this.getPercentHeated();
+
+        //FP imprecision fix numWorkersPerThousandFt = Math.round(numWorkersPerThousandFt * 100.0f) / 100.0f;
+        weeklyOperatingHours = Math.round(weeklyOperatingHours * 100.0f) / 100.0f;
+        numWorkersPer1000ft = Math.round(numWorkersPer1000ft * 100.0f) / 100.0f;
+        numCommercialFreezerPerThousandFt = Math.round(numCommercialFreezerPerThousandFt * 100.0f) / 100.0f;
+        cooled = Math.round(cooled * 1000.0f) / 1000.0f;
+        heated = Math.round(heated * 1000.0f) / 1000.0f;
 
         predictedSourceEUI += (weeklyOperatingHours - 77.93f) * 1.222f;
         predictedSourceEUI += ((numWorkersPer1000ft - 0.8353f) * 39.28f)
@@ -62,7 +65,7 @@ public class WholesaleClubReport extends EnergyReport {
         predictedSourceEUI += (cooled - 5.606f) * 5.698f;
         predictedSourceEUI += (heated - 6.911f) * 6.493f;
 
-        return predictedSourceEUI * this.getGrossFloorArea();
+        return predictedSourceEUI * sqft;
     }
 
     //Setters and Getters
@@ -83,20 +86,12 @@ public class WholesaleClubReport extends EnergyReport {
         isSingleStore = singleStore;
     }
 
-    public int getNumOfOpenClosedFreezers() {
-        return numOfOpenClosedFreezers;
+    public int getNumOfFreezers() {
+        return numOfFreezers;
     }
 
-    public void setNumOfOpenClosedFreezers(int numOfOpenClosedFreezers) {
-        this.numOfOpenClosedFreezers = numOfOpenClosedFreezers;
-    }
-
-    public int getNumOfWalkInFreezers() {
-        return numOfWalkInFreezers;
-    }
-
-    public void setNumOfWalkInFreezers(int numOfWalkInFreezers) {
-        this.numOfWalkInFreezers = numOfWalkInFreezers;
+    public void setNumOfFreezers(int numOfOpenClosedFreezers) {
+        this.numOfFreezers = numOfOpenClosedFreezers;
     }
 
     public int getNumOfWorkersMainShift() {

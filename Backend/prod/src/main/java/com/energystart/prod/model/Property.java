@@ -9,7 +9,6 @@ import com.energystart.prod.repos.EnergyReportRepo;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +26,6 @@ public class Property {
     private Integer zipcode;
     private String notes;
     private int energyScore;
-    private EnergyMeterRepo energyMeterRepo;
-    private EnergyReportRepo energyReportRepo;
 
     // WorkOS user IDs allowed to access this property.
     private List<String> authorizedUserIds = new ArrayList<>();
@@ -55,28 +52,33 @@ public class Property {
         this.notes = notes;
     }
     //Custom methods
-    public void calculateEnergyScore(LocalDate startDate, LocalDate endDate) {
+    public void calculateEnergyScore(EnergyReportRepo energyReportRepo,
+                                     EnergyMeterRepo energyMeterRepo,
+                                     String startDate, String endDate,
+                                     int cdd, int hdd) {
         float energyScore = -1f;
         List<Float> individualKBtu = new ArrayList<>();
         List<Float> weights = new ArrayList<>();
         float totalSourceKBtu = 0.0f;
         float totalPredictedKBtu = 0.0f;
         int totalsqft = 0;
-        Integer[] cddhdd = EnergyReport.retrieveCDDHDD(this.getZipcode(), startDate, endDate);
 
         //Access energy reports and get pertinent info
         List<EnergyReport> relevantEnergyReports = energyReportRepo.findAllByRelatedPropertyID
                 (this.getId());
         for(EnergyReport report : relevantEnergyReports){
-            float value = 0;
             totalsqft += report.getGrossFloorArea();
+
+        }
+        for (EnergyReport report : relevantEnergyReports){
+            float value = 0;
             if(!(report instanceof DataCenterReport)){
-                value = report.energyStarRegressionCalc(cddhdd[0], cddhdd[1]);
+                value = report.energyStarRegressionCalc(cdd, hdd, totalsqft);
                 totalPredictedKBtu += value;
                 individualKBtu.add(value);
             }
             else{ //only triggers for our outlier: Data Centers
-                value = report.energyStarRegressionCalc(startDate, endDate);
+                value = report.energyStarRegressionCalc();
                 totalPredictedKBtu += value;
                 individualKBtu.add(value);
             }
@@ -163,7 +165,7 @@ public class Property {
         this.notes = notes;
     }
 
-    public float getEnergyScore() {
+    public int getEnergyScore() {
         return energyScore;
     }
 
