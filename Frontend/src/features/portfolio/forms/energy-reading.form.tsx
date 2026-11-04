@@ -5,7 +5,7 @@ import { InputField } from "@/components/form/input-field"
 import { SubmitButton } from "@/components/form/submit-button"
 import { FieldError, FieldGroup, FieldSet } from "@/components/ui/field"
 import { toast } from "@/components/ui/toast"
-import { useCreateEnergyReading } from "@/features/portfolio/api/energy-meters.api"
+import { useCreateEnergyReading } from "@/features/portfolio/api/create-energy-reading.api"
 import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
 import { CreateEnergyReadingInput } from "@/features/portfolio/services/energy-meter.service"
 
