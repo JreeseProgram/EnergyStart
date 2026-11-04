@@ -1,50 +1,49 @@
+import type { PortfolioTestStore } from "@/features/portfolio/testing/portfolio-test-store"
 import { Property } from "@/features/portfolio/models/property.models"
 import {
   type PropertyService,
   CreatePropertyInput,
   UpdatePropertyInput,
 } from "@/features/portfolio/services/property.service"
-import { defaultProperties } from "@/features/portfolio/testing/fixtures/property.fixtures"
 import { testPortfolioUser } from "@/features/portfolio/testing/fixtures/user.fixtures"
 import { delay } from "@/utils/delay"
-import React from "react"
-import z from "zod"
 
 const SERVER_DELAY = 300
 
-export function usePropertyTestService(): PropertyService {
-  const properties = React.useRef<Property[]>(
-    z.array(Property).parse(
-      defaultProperties.map((prop) => ({
-        ...prop,
-        owner: testPortfolioUser,
-      }))
-    )
-  )
+export function createPropertyTestService(
+  store: PortfolioTestStore
+): PropertyService {
+  const withFloorArea = (property: Property): Property =>
+    Property.parse({
+      ...property,
+      grossFloorArea: Array.from(store.buildingUses.values())
+        .filter((use) => use.propertyId === property.id)
+        .reduce((sum, use) => sum + use.grossFloorArea, 0),
+    })
   return {
     getProperties: async () => {
       await delay(SERVER_DELAY)
-      return properties.current.map((property) => Property.parse(property))
+      return store.properties.map((property) => withFloorArea(property))
     },
     getProperty: async ({ propertyId }) => {
       await delay(SERVER_DELAY)
-      const property = properties.current.find(
+      const property = store.properties.find(
         (property) => property.id === propertyId
       )
-      return property ?? null
+      return property ? withFloorArea(property) : null
     },
     updateProperty: async (input) => {
       const { propertyId, ...fields } = UpdatePropertyInput.parse(input)
       await delay(SERVER_DELAY)
-      const existing = properties.current.find(
+      const existing = store.properties.find(
         (property) => property.id === propertyId
       )
       if (!existing) throw new Error(`Property ${propertyId} not found`)
       const updated = Property.parse({ ...existing, ...fields })
-      properties.current = properties.current.map((property) =>
+      store.properties = store.properties.map((property) =>
         property.id === propertyId ? updated : property
       )
-      return updated
+      return withFloorArea(updated)
     },
     createProperty: async (input) => {
       await delay(SERVER_DELAY)
@@ -57,7 +56,7 @@ export function usePropertyTestService(): PropertyService {
         auditComplianceStatus: "NOT_PARTICIPATING",
         grossFloorArea: 0,
       })
-      properties.current = [...properties.current, property]
+      store.properties = [...store.properties, property]
       return Property.parse(property)
     },
   }

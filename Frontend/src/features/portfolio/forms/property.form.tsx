@@ -5,7 +5,7 @@ import { InputField } from "@/components/form/input-field"
 import { toast } from "@/components/ui/toast"
 import { CreatePropertyInput } from "@/features/portfolio/services/property.service"
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { PropsWithChildren } from "react"
+import { useEffect, useId, type PropsWithChildren } from "react"
 import { useForm } from "react-hook-form"
 import { SelectField } from "@/components/form/select-field"
 import {
@@ -18,10 +18,12 @@ import type { Property } from "@/features/portfolio/models/property.models"
 
 export function PropertyForm({
   onSuccess,
+  onSubmittingChange,
   children,
   property,
 }: PropsWithChildren<{
   onSuccess: (data: Property) => void
+  onSubmittingChange?: (isSubmitting: boolean) => void
   property?: Property
 }>) {
   const form = useForm<CreatePropertyInput>({
@@ -29,9 +31,15 @@ export function PropertyForm({
     defaultValues: { ...property },
   })
 
+  const formId = useId()
   const createProperty = useCreateProperty()
   const updateProperty = useUpdateProperty()
   const mutation = property ? updateProperty : createProperty
+  const { isSubmitting } = form.formState
+
+  useEffect(() => {
+    onSubmittingChange?.(isSubmitting)
+  }, [isSubmitting, onSubmittingChange])
 
   async function onSubmit(data: CreatePropertyInput) {
     if (mutation.isPending) return
@@ -54,8 +62,8 @@ export function PropertyForm({
   }
 
   return (
-    <form id="form-rhf-input" onSubmit={form.handleSubmit(onSubmit)}>
-      <FieldSet disabled={form.formState.isSubmitting}>
+    <form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldSet disabled={isSubmitting}>
         <InputField
           control={form.control}
           name="name"

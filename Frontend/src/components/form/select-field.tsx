@@ -11,6 +11,7 @@ import {
   Controller,
   type Control,
   type FieldPath,
+  type FieldPathValue,
   type FieldValues,
 } from "react-hook-form"
 
@@ -18,6 +19,15 @@ type FormSelectProps<TFieldValues extends FieldValues> = {
   control: Control<TFieldValues>
   name: FieldPath<TFieldValues>
   label?: string
+  required?: boolean
+  errorMessage?: string
+  parseValue?: (
+    value: string | null
+  ) => FieldPathValue<TFieldValues, FieldPath<TFieldValues>> | undefined
+  formatValue?: (
+    value: FieldPathValue<TFieldValues, FieldPath<TFieldValues>>
+  ) => string | null
+  onValueChange?: (value: string | null) => void
   items: { label: string; value: string }[]
   placeholder?: string
   disabled?: boolean
@@ -32,6 +42,11 @@ export function SelectField<T extends FieldValues>({
   placeholder,
   disabled,
   className,
+  required,
+  errorMessage,
+  parseValue,
+  formatValue,
+  onValueChange,
 }: FormSelectProps<T>) {
   const id = useId()
   const key = `${id}_${name}`
@@ -46,8 +61,14 @@ export function SelectField<T extends FieldValues>({
           <FieldLabel htmlFor={key}>{label}</FieldLabel>
           <Select
             name={field.name}
-            value={field.value ?? null}
-            onValueChange={field.onChange}
+            value={
+              formatValue ? formatValue(field.value) : (field.value ?? null)
+            }
+            onValueChange={(value) => {
+              const next = parseValue ? parseValue(value) : value
+              field.onChange(next)
+              onValueChange?.(value)
+            }}
             disabled={field.disabled}
             items={items}
           >
@@ -55,6 +76,8 @@ export function SelectField<T extends FieldValues>({
               id={key}
               ref={field.ref}
               onBlur={field.onBlur}
+              aria-required={required}
+              aria-describedby={fieldState.error ? key + "-error" : undefined}
               aria-invalid={fieldState.invalid}
               className="w-full"
             >
@@ -68,7 +91,14 @@ export function SelectField<T extends FieldValues>({
               ))}
             </SelectContent>
           </Select>
-          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          {fieldState.invalid && (
+            <FieldError
+              id={key + "-error"}
+              errors={errorMessage ? undefined : [fieldState.error]}
+            >
+              {errorMessage}
+            </FieldError>
+          )}
         </Field>
       )}
     />

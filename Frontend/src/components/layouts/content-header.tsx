@@ -1,4 +1,4 @@
-export { DashboardLayout } from "./dashboard-layout"
+export { DashboardLayout } from "@/components/layouts/dashboard-layout"
 
 export function ContentHeader({
   title,
