@@ -1,3 +1,4 @@
+import { useEnergyReportTestService } from "@/features/portfolio/testing/services/energy-report.service"
 import {
   BaseServicesProvider,
   type ServicesProviderProps,
@@ -16,6 +17,10 @@ export function ServicesProvider(
   const buildingUseService = useBuildingUseTestService(propertyService)
   const energyMeterService = useEnergyMeterTestService(propertyService)
   const portfolioPerformanceService = usePortfolioPerformanceService()
+  const energyReportService = useEnergyReportTestService(
+    propertyService,
+    portfolioPerformanceService
+  )
 
   return (
     <BaseServicesProvider
@@ -25,6 +30,7 @@ export function ServicesProvider(
         buildingUseService,
         energyMeterService,
         portfolioPerformanceService,
+        energyReportService,
         // ... additional services go here
       }}
       {...props}

@@ -1,3 +1,5 @@
+import type { EnergyReportService } from "@/features/portfolio/services/energy-report.service"
+import { useEnergyReportTestService } from "@/features/portfolio/testing/services/energy-report.service"
 import { usePropertyTestService } from "@/features/portfolio/testing/services/property.service"
 import { useBuildingUseTestService } from "@/features/portfolio/testing/services/building-use.service"
 import { useEnergyMeterTestService } from "@/features/portfolio/testing/services/energy-meter.service"
@@ -15,6 +17,7 @@ export type Services = {
   propertyService: PropertyService
   buildingUseService: BuildingUseService
   energyMeterService: EnergyMeterService
+  energyReportService: EnergyReportService
   portfolioPerformanceService: PortfolioPerformanceService
   // ... additional service types go here
 }
@@ -47,6 +50,10 @@ export function ServicesProvider(
   const buildingUseService = useBuildingUseTestService(propertyService)
   const energyMeterService = useEnergyMeterTestService(propertyService)
   const portfolioPerformanceService = usePortfolioPerformanceService()
+  const energyReportService = useEnergyReportTestService(
+    propertyService,
+    portfolioPerformanceService
+  )
 
   return (
     <BaseServicesProvider
@@ -56,6 +63,7 @@ export function ServicesProvider(
         buildingUseService,
         energyMeterService,
         portfolioPerformanceService,
+        energyReportService,
         // ... additional services go here
       }}
       {...props}
