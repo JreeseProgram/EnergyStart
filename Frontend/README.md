@@ -112,20 +112,23 @@ Pages / hooks → service interface → selected implementation
                                    └── In-memory test double
 ```
 
-[ServicesProvider](src/context/services.context.tsx) is where implementations are
-selected and supplied through React context. Feature hooks read services from that
-context and call their interface methods.
+[ServicesProvider](src/context/services.context.tsx) supplies the bundle returned by
+`useServices()` through React context. That hook selects WorkOS authentication and
+the current mock portfolio implementations. `useTestServices()` constructs a fully
+mock bundle without requiring WorkOS. Both hooks share internal portfolio setup,
+including the in-memory store and service dependencies. Feature hooks read services
+from context and call their interface methods.
 
 To add or swap a service:
 
 1. Define its interface in `features/<feature>/services/`, including inputs and return types.
 2. Implement that contract in `infrastructure/` for a live integration or `testing/`
    for a test double. Both must follow the same behavior as well as the same types.
-3. Register the interface in the `Services` type and select its implementation in
-   `ServicesProvider`. Hooks and pages continue using the same contract.
+3. Register the interface in the `Services` type and wire its implementations into
+   the service bundle hooks. Hooks and pages continue using the same contract.
 
 This pattern supports new integrations and lets tests use predictable in-memory
-data. Swapping an implementation is a wiring change in the provider; any supporting
+data. Swapping an implementation is a wiring change in the bundle hooks; any supporting
 SDK setup belongs in the app providers.
 
 ### Validating service boundaries with Zod
@@ -178,3 +181,18 @@ separately from issues introduced by your change.
 
 The `pnpm typecheck` script uses `tsc --noEmit` at the solution-level config and does not replace the
 project checks performed by `pnpm build`.
+
+### Mock property sharing
+
+The app uses WorkOS sign-in with in-memory portfolio services. Starter properties
+belong to the signed-in user. Sharing grants view/edit access; only the owner can
+add or remove shared users. The owner cannot be removed or added as a shared user.
+
+Registered mock recipients are `maya@example.com`, `alex@example.com`, and
+`sam@example.com`. Lake Eola Offices starts shared with Maya; other starter
+properties have no assignments. Names, emails, and assignment dates are mock data.
+Sharing matches emails case-insensitively and never sends invitations.
+
+Mock changes survive navigation but reset on refresh or account change. Separate
+browsers do not synchronize. A new query client and portfolio store
+are mounted for each authenticated identity, keeping account caches separate.

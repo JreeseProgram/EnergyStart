@@ -39,6 +39,12 @@ export const AuditComplianceStatus = z.enum([
   "APPROVED_FOR_EXEMPTION",
 ] as const)
 
+export const PropertyAssignment = z.object({
+  user: User,
+  assignedAt: z.iso.datetime(),
+})
+export type PropertyAssignment = z.infer<typeof PropertyAssignment>
+
 export type Property = z.infer<typeof Property>
 export const Property = BaseEntity(PropertyId).extend({
   humanReadablePropertyId: z.string().optional(),
@@ -47,6 +53,8 @@ export const Property = BaseEntity(PropertyId).extend({
   name: z.string("Enter the name of the property"),
   notes: z.string().optional(),
   owner: User,
+  // Read-only snapshot; sharing changes use dedicated service operations.
+  assignments: z.array(PropertyAssignment).default([]),
   propertyType: PropertyType,
   state: z.string("Enter the city the property is located in"),
   streetAddress: z.string("Enter a the property street address"),

@@ -47,28 +47,28 @@ export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
     defaultValues: { startDate: "", endDate: "", usage: "", cost: "" },
   })
   const mutation = useCreateEnergyReading()
-  async function submit(data: z.output<typeof ReadingFormInput>) {
+  function submit(data: z.output<typeof ReadingFormInput>) {
     if (mutation.isPending) return
-    try {
-      await mutation.mutateAsync(
-        CreateEnergyReadingInput.parse({
-          ...data,
-          usage: Number(data.usage),
-          cost: data.cost === "" ? undefined : Number(data.cost),
-          propertyId: meter.propertyId,
-          energyMeterId: meter.id,
-        })
-      )
-      form.reset()
-      toast.add({ type: "success", title: "Reading recorded" })
-    } catch {
-      /* The service error is displayed below. */
-    }
+    mutation.mutate(
+      CreateEnergyReadingInput.parse({
+        ...data,
+        usage: Number(data.usage),
+        cost: data.cost === "" ? undefined : Number(data.cost),
+        propertyId: meter.propertyId,
+        energyMeterId: meter.id,
+      }),
+      {
+        onSuccess: () => {
+          form.reset()
+          toast.add({ type: "success", title: "Reading recorded" })
+        },
+      }
+    )
   }
   return (
     <form onSubmit={form.handleSubmit(submit)} className="flex flex-col gap-4">
       <h3 className="font-semibold">Record a reading</h3>
-      <FieldSet disabled={!meter.inUse || form.formState.isSubmitting}>
+      <FieldSet disabled={!meter.inUse || mutation.isPending}>
         <FieldGroup className="grid grid-cols-2">
           <InputField
             control={form.control}
@@ -103,7 +103,7 @@ export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
         {mutation.isError && (
           <FieldError role="alert">{mutation.error.message}</FieldError>
         )}
-        <SubmitButton disabled={!meter.inUse || form.formState.isSubmitting}>
+        <SubmitButton disabled={!meter.inUse || mutation.isPending}>
           Record reading
         </SubmitButton>
       </FieldSet>
