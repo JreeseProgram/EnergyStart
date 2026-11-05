@@ -58,31 +58,27 @@ export function BuildingUseForm({
 
   const type = useWatch({ control: form.control, name: "buildingUseType" })
   const fields = getBuildingUseFields(type)
-  const pending = form.formState.isSubmitting
+  const pending = mutation.isPending
 
   useEffect(() => {
     onSubmittingChange?.(pending)
   }, [pending, onSubmittingChange])
 
-  async function submit(details: BuildingUseDetails) {
+  function submit(details: BuildingUseDetails) {
     if (pending || !user.data) return
 
     const input = { ...details, userId: UserId.parse(user.data.id) }
-
-    try {
-      if (buildingUse)
-        await update.mutateAsync({ ...input, id: buildingUse.id })
-      else await create.mutateAsync(input)
-    } catch {
-      return
+    const options = {
+      onSuccess: () => {
+        toast.add({
+          type: "success",
+          title: buildingUse ? "Building use updated" : "Building use added",
+        })
+        onSuccess()
+      },
     }
-
-    toast.add({
-      type: "success",
-      title: buildingUse ? "Building use updated" : "Building use added",
-    })
-
-    onSuccess()
+    if (buildingUse) update.mutate({ ...input, id: buildingUse.id }, options)
+    else create.mutate(input, options)
   }
 
   function changeType(next: BuildingUseType) {

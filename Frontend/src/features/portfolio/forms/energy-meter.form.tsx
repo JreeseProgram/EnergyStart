@@ -41,26 +41,26 @@ export function EnergyMeterForm({
   })
   const mutation = useSaveEnergyMeter()
   const hasReadings = Boolean(meter?.readings.length)
-  async function submit(data: z.infer<typeof MeterFormInput>) {
+  function submit(data: z.infer<typeof MeterFormInput>) {
     if (mutation.isPending) return
-    try {
-      await mutation.mutateAsync(
-        meter
-          ? { ...data, propertyId, energyMeterId: meter.id }
-          : { ...data, propertyId }
-      )
-      toast.add({
-        type: "success",
-        title: meter ? "Meter updated" : "Meter created",
-      })
-      onClose()
-    } catch {
-      /* Feedback is displayed from the mutation below. */
-    }
+    mutation.mutate(
+      meter
+        ? { ...data, propertyId, energyMeterId: meter.id }
+        : { ...data, propertyId },
+      {
+        onSuccess: () => {
+          toast.add({
+            type: "success",
+            title: meter ? "Meter updated" : "Meter created",
+          })
+          onClose()
+        },
+      }
+    )
   }
   return (
     <form onSubmit={form.handleSubmit(submit)} className="flex flex-col gap-6">
-      <FieldSet disabled={form.formState.isSubmitting}>
+      <FieldSet disabled={mutation.isPending}>
         <InputField
           control={form.control}
           name="meterId"
@@ -132,7 +132,7 @@ export function EnergyMeterForm({
         <Button
           type="button"
           variant="outline"
-          disabled={form.formState.isSubmitting}
+          disabled={mutation.isPending}
           onClick={onClose}
         >
           Cancel

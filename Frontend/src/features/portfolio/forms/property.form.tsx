@@ -35,30 +35,27 @@ export function PropertyForm({
   const createProperty = useCreateProperty()
   const updateProperty = useUpdateProperty()
   const mutation = property ? updateProperty : createProperty
-  const { isSubmitting } = form.formState
+  const isSubmitting = mutation.isPending
 
   useEffect(() => {
     onSubmittingChange?.(isSubmitting)
   }, [isSubmitting, onSubmittingChange])
 
-  async function onSubmit(data: CreatePropertyInput) {
+  function onSubmit(data: CreatePropertyInput) {
     if (mutation.isPending) return
 
-    let savedProperty: Property
-    try {
-      savedProperty = property
-        ? await updateProperty.mutateAsync({ ...data, propertyId: property.id })
-        : await createProperty.mutateAsync(data)
-    } catch {
-      // The mutation keeps the error available for the form's feedback below.
-      return
+    const options = {
+      onSuccess: (savedProperty: Property) => {
+        toast.add({
+          type: "success",
+          title: property ? "Property Updated" : "Property Created",
+        })
+        onSuccess(savedProperty)
+      },
     }
-
-    toast.add({
-      type: "success",
-      title: property ? "Property Updated" : "Property Created",
-    })
-    onSuccess(savedProperty)
+    if (property)
+      updateProperty.mutate({ ...data, propertyId: property.id }, options)
+    else createProperty.mutate(data, options)
   }
 
   return (

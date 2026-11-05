@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { InputField } from "@/components/form/input-field"
@@ -35,18 +36,21 @@ export function EnergyReportForm({
     defaultValues: { name: "", reportType: "SITE_EUI", ...period },
   })
   const mutation = useGenerateEnergyReport()
-  async function submit(fields: EnergyReportFields) {
+  useEffect(() => {
+    onPendingChange(mutation.isPending)
+  }, [mutation.isPending, onPendingChange])
+
+  function submit(fields: EnergyReportFields) {
     if (mutation.isPending) return
-    onPendingChange(true)
-    try {
-      const report = await mutation.mutateAsync({ ...fields, propertyId })
-      toast.add({ type: "success", title: "Simulated report generated" })
-      onGenerated(report)
-    } catch {
-      /* The mutation keeps the service feedback available below. */
-    } finally {
-      onPendingChange(false)
-    }
+    mutation.mutate(
+      { ...fields, propertyId },
+      {
+        onSuccess: (report) => {
+          toast.add({ type: "success", title: "Simulated report generated" })
+          onGenerated(report)
+        },
+      }
+    )
   }
   return (
     <form
@@ -54,7 +58,7 @@ export function EnergyReportForm({
       className="flex flex-col gap-6"
       noValidate
     >
-      <FieldSet disabled={form.formState.isSubmitting}>
+      <FieldSet disabled={mutation.isPending}>
         <InputField
           control={form.control}
           name="name"
@@ -97,12 +101,12 @@ export function EnergyReportForm({
         <Button
           type="button"
           variant="outline"
-          disabled={form.formState.isSubmitting}
+          disabled={mutation.isPending}
           onClick={onCancel}
         >
           Cancel
         </Button>
-        <SubmitButton disabled={form.formState.isSubmitting}>
+        <SubmitButton disabled={mutation.isPending}>
           Generate simulated report
         </SubmitButton>
       </DialogFooter>
