@@ -645,6 +645,308 @@ class EnergyReportTests {
         assertEquals(57, result);
     }
 
+    //Bank Branch
+    //Courthouse
+    //Financial Office
+
+
+    @Test
+    void testBankBranchGT50000Score(){
+        String targetDate = "2026-08";
+
+        Property property = new Property(
+                "Test-Energy-Score-Bank-Branch",
+                90001,
+                "Test-Bank-Branch",
+                "123 street ave",
+                "CityPlace",
+                "FL",
+                32801,
+                "");
+        BankBranchReport bbr = new BankBranchReport(
+                200000,
+                1500,
+                1985,
+                300,
+                300,
+                1.0f,
+                80
+
+        );
+        bbr.setRelatedPropertyID("Test-Energy-Score-Bank-Branch");
+        EnergyMeter meterElec = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.ELECTRIC_GRID,
+                EnergyMeter.TYPE_OF_MEASURE.kWh,
+                targetDate,
+                true,
+                false,
+                3500000.0f
+        );
+        EnergyMeter meterGas = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
+                EnergyMeter.TYPE_OF_MEASURE.Therms,
+                targetDate,
+                true,
+                true,
+                4000.0f
+        );
+
+        meterElec.setAssociatedPropertyID("Test-Energy-Score-Bank-Branch");
+        meterGas.setAssociatedPropertyID("Test-Energy-Score-Bank-Branch");
+
+
+
+        property = propertyRepo.save(property);
+        bbr = energyReportRepo.save(bbr);
+
+        meterElec.calcEUI(energyReportRepo);
+        meterGas.calcEUI(energyReportRepo);
+
+        meterElec = meterRepo.save(meterElec);
+        meterGas = meterRepo.save(meterGas);
+
+        property.calculateEnergyScore(
+                energyReportRepo,
+                meterRepo,
+                targetDate,
+                targetDate,
+                1046,
+                4937
+        );
+
+        int result = property.getEnergyScore();
+
+        propertyRepo.deleteById(property.getId());
+        meterRepo.deleteById(meterElec.getID());
+        meterRepo.deleteById(meterGas.getID());
+        energyReportRepo.deleteById(bbr.getID());
+
+        assertEquals(57, result);
+    }
+
+    @Test
+    void testBankBranchLTE50000Score(){
+        String targetDate = "2026-08";
+
+        Property property = new Property(
+                "Test-Energy-Score-Bank-Branch-Small",
+                90001,
+                "Test-Bank-Branch",
+                "123 street ave",
+                "CityPlace",
+                "FL",
+                32801,
+                "");
+        BankBranchReport bbr = new BankBranchReport(
+                49000,
+                1500,
+                1985,
+                300,
+                300,
+                1.0f,
+                80
+
+        );
+        bbr.setRelatedPropertyID("Test-Energy-Score-Bank-Branch-Small");
+        EnergyMeter meterElec = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.ELECTRIC_GRID,
+                EnergyMeter.TYPE_OF_MEASURE.kWh,
+                targetDate,
+                true,
+                false,
+                3500000.0f
+        );
+        EnergyMeter meterGas = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
+                EnergyMeter.TYPE_OF_MEASURE.Therms,
+                targetDate,
+                true,
+                true,
+                4000.0f
+        );
+
+        meterElec.setAssociatedPropertyID("Test-Energy-Score-Bank-Branch-Small");
+        meterGas.setAssociatedPropertyID("Test-Energy-Score-Bank-Branch-Small");
+
+
+
+        property = propertyRepo.save(property);
+        bbr = energyReportRepo.save(bbr);
+
+        meterElec.calcEUI(energyReportRepo);
+        meterGas.calcEUI(energyReportRepo);
+
+        meterElec = meterRepo.save(meterElec);
+        meterGas = meterRepo.save(meterGas);
+
+        property.calculateEnergyScore(
+                energyReportRepo,
+                meterRepo,
+                targetDate,
+                targetDate,
+                1046,
+                4937
+        );
+
+        int result = property.getEnergyScore();
+
+        propertyRepo.deleteById(property.getId());
+        meterRepo.deleteById(meterElec.getID());
+        meterRepo.deleteById(meterGas.getID());
+        energyReportRepo.deleteById(bbr.getID());
+
+        assertEquals(6, result);
+    }
+
+    @Test
+    void testFinancialOfficeGT50000Score(){
+        String targetDate = "2026-08";
+
+        Property property = new Property(
+                "Test-Energy-Score-Financial-Office",
+                90001,
+                "Test-Bank-Branch",
+                "123 street ave",
+                "CityPlace",
+                "FL",
+                32801,
+                "");
+        FinancialOfficeReport fr = new FinancialOfficeReport(
+                200000,
+                1500,
+                1985,
+                300,
+                300,
+                1.0f,
+                80
+
+        );
+        fr.setRelatedPropertyID("Test-Energy-Score-Financial-Office");
+        EnergyMeter meterElec = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.ELECTRIC_GRID,
+                EnergyMeter.TYPE_OF_MEASURE.kWh,
+                targetDate,
+                true,
+                false,
+                3500000.0f
+        );
+        EnergyMeter meterGas = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
+                EnergyMeter.TYPE_OF_MEASURE.Therms,
+                targetDate,
+                true,
+                true,
+                4000.0f
+        );
+
+        meterElec.setAssociatedPropertyID("Test-Energy-Score-Financial-Office");
+        meterGas.setAssociatedPropertyID("Test-Energy-Score-Financial-Office");
+
+
+
+        property = propertyRepo.save(property);
+        fr = energyReportRepo.save(fr);
+
+        meterElec.calcEUI(energyReportRepo);
+        meterGas.calcEUI(energyReportRepo);
+
+        meterElec = meterRepo.save(meterElec);
+        meterGas = meterRepo.save(meterGas);
+
+        property.calculateEnergyScore(
+                energyReportRepo,
+                meterRepo,
+                targetDate,
+                targetDate,
+                1046,
+                4937
+        );
+
+        int result = property.getEnergyScore();
+
+        propertyRepo.deleteById(property.getId());
+        meterRepo.deleteById(meterElec.getID());
+        meterRepo.deleteById(meterGas.getID());
+        energyReportRepo.deleteById(fr.getID());
+
+        assertEquals(57, result);
+    }
+
+    @Test
+    void testFinancialOfficeLTE50000Score(){
+        String targetDate = "2026-08";
+
+        Property property = new Property(
+                "Test-Energy-Score-Financial-Office-Small",
+                90001,
+                "Test-Bank-Branch",
+                "123 street ave",
+                "CityPlace",
+                "FL",
+                32801,
+                "");
+        FinancialOfficeReport fr = new FinancialOfficeReport(
+                49000,
+                1500,
+                1985,
+                300,
+                300,
+                1.0f,
+                80
+
+        );
+        fr.setRelatedPropertyID("Test-Energy-Score-Financial-Office-Small");
+        EnergyMeter meterElec = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.ELECTRIC_GRID,
+                EnergyMeter.TYPE_OF_MEASURE.kWh,
+                targetDate,
+                true,
+                false,
+                3500000.0f
+        );
+        EnergyMeter meterGas = new EnergyMeter(
+                EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
+                EnergyMeter.TYPE_OF_MEASURE.Therms,
+                targetDate,
+                true,
+                true,
+                4000.0f
+        );
+
+        meterElec.setAssociatedPropertyID("Test-Energy-Score-Financial-Office-Small");
+        meterGas.setAssociatedPropertyID("Test-Energy-Score-Financial-Office-Small");
+
+
+
+        property = propertyRepo.save(property);
+        fr = energyReportRepo.save(fr);
+
+        meterElec.calcEUI(energyReportRepo);
+        meterGas.calcEUI(energyReportRepo);
+
+        meterElec = meterRepo.save(meterElec);
+        meterGas = meterRepo.save(meterGas);
+
+        property.calculateEnergyScore(
+                energyReportRepo,
+                meterRepo,
+                targetDate,
+                targetDate,
+                1046,
+                4937
+        );
+
+        int result = property.getEnergyScore();
+
+        propertyRepo.deleteById(property.getId());
+        meterRepo.deleteById(meterElec.getID());
+        meterRepo.deleteById(meterGas.getID());
+        energyReportRepo.deleteById(fr.getID());
+
+        assertEquals(6, result);
+    }
+
+
     //TODO: create test for bank branch
     @Test
     void testRetailScore(){
@@ -724,6 +1026,9 @@ class EnergyReportTests {
     }
 
     //TODO: create test for supermarket/wholesale
+
+    //Supermarket
+    //Wholesale
 
     @Test
     void testSeniorCommunity(){
