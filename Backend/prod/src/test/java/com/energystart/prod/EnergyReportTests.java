@@ -573,7 +573,7 @@ class EnergyReportTests {
     }
 
     @Test
-    void testOfficeLikesScore(){
+    void testOfficeScore(){
         String targetDate = "2026-08";
 
         Property property = new Property(
@@ -954,6 +954,9 @@ class EnergyReportTests {
     }
 
     //TODO: make refrigerated warehouse and Distribution center tests
+
+    //Refrigerated
+    //Distribution
 
     @Test
     void testWorshipFacilityScore(){
