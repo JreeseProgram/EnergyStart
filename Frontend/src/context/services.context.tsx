@@ -1,18 +1,11 @@
-import { useState } from "react"
-import { createPortfolioTestStore } from "@/features/portfolio/testing/portfolio-test-store"
-import { createPropertyTestService } from "@/features/portfolio/testing/services/property.service"
-import { createBuildingUseTestService } from "@/features/portfolio/testing/services/building-use.service"
 import type { EnergyReportService } from "@/features/portfolio/services/energy-report.service"
-import { useEnergyReportTestService } from "@/features/portfolio/testing/services/energy-report.service"
-import { useEnergyMeterTestService } from "@/features/portfolio/testing/services/energy-meter.service"
 import * as React from "react"
 import type { AuthService } from "@/features/auth/services/auth.service"
-import { useAuthService } from "@/features/auth/infrastructure/auth.service"
 import type { PropertyService } from "@/features/portfolio/services/property.service"
 import type { BuildingUseService } from "@/features/portfolio/services/building-use.service"
 import type { EnergyMeterService } from "@/features/portfolio/services/energy-meter.service"
 import type { PortfolioPerformanceService } from "@/features/portfolio/services/portfolio-performance.service"
-import { usePortfolioPerformanceService } from "@/features/portfolio/testing/services/portfolio-performance.service"
+import { useServices } from "@/hooks/use-services"
 
 export type Services = {
   authService: AuthService
@@ -46,29 +39,6 @@ export function BaseServicesProvider({
 export function ServicesProvider(
   props: Omit<ServicesProviderProps, "services">
 ) {
-  const authService = useAuthService()
-  const [store] = useState(createPortfolioTestStore)
-  const propertyService = createPropertyTestService(store)
-  const buildingUseService = createBuildingUseTestService(store)
-  const energyMeterService = useEnergyMeterTestService(propertyService)
-  const portfolioPerformanceService = usePortfolioPerformanceService()
-  const energyReportService = useEnergyReportTestService(
-    propertyService,
-    portfolioPerformanceService
-  )
-
-  return (
-    <BaseServicesProvider
-      services={{
-        authService,
-        propertyService,
-        buildingUseService,
-        energyMeterService,
-        portfolioPerformanceService,
-        energyReportService,
-        // ... additional services go here
-      }}
-      {...props}
-    />
-  )
+  const services = useServices()
+  return <BaseServicesProvider services={services} {...props} />
 }

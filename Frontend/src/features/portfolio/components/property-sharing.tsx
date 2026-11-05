@@ -1,9 +1,47 @@
-import type { Property } from "@/features/portfolio/models/property.models"
+import { useState } from "react"
+import { ContentHeader } from "@/components/layouts/content-header"
+import { PropertySharingTable } from "@/features/portfolio/components/property-sharing-table"
+import type {
+  Property,
+  PropertyAssignment,
+} from "@/features/portfolio/models/property.models"
+import {
+  AddPropertyUserModal,
+  RemovePropertyUserModal,
+} from "@/features/portfolio/modals/property-sharing.modal"
 
-export function PropertySharing({ property }: { property: Property }) {
+export function PropertySharing({
+  property,
+  canManage,
+}: {
+  property: Property
+  canManage: boolean
+}) {
+  const [removing, setRemoving] = useState<PropertyAssignment | null>(null)
+
   return (
-    <div className="flex items-center justify-between gap-4">
-      <pre>{JSON.stringify(property, null, 2)}</pre>
-    </div>
+    <>
+      <ContentHeader
+        title="Property sharing"
+        description="Manage registered users who can access this property"
+        action={
+          canManage ? <AddPropertyUserModal property={property} /> : undefined
+        }
+      />
+
+      <PropertySharingTable
+        property={property}
+        canManage={canManage}
+        onRemove={setRemoving}
+      />
+
+      {canManage && removing && (
+        <RemovePropertyUserModal
+          property={property}
+          assignment={removing}
+          onClose={() => setRemoving(null)}
+        />
+      )}
+    </>
   )
 }

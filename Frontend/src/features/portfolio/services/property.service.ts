@@ -4,8 +4,11 @@ import {
   PropertyId,
 } from "@/features/portfolio/models/property.models"
 import z from "zod"
+import { UserId } from "@/features/portfolio/models/user.models"
 
 export interface PropertyService {
+  addPropertyUser: (input: AddPropertyUserInput) => Promise<Property>
+  removePropertyUser: (input: RemovePropertyUserInput) => Promise<Property>
   getProperties: () => Promise<Property[]>
   getProperty: (input: GetPropertyInput) => Promise<Property | null>
   createProperty: (input: CreatePropertyInput) => Promise<Property>
@@ -38,4 +41,20 @@ export const CreatePropertyInput = z.object({
 export type UpdatePropertyInput = z.infer<typeof UpdatePropertyInput>
 export const UpdatePropertyInput = CreatePropertyInput.extend({
   propertyId: PropertyId,
+})
+
+export type AddPropertyUserInput = z.infer<typeof AddPropertyUserInput>
+export const AddPropertyUserInput = z.object({
+  propertyId: PropertyId,
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .pipe(z.email("Enter a valid email address")),
+})
+
+export type RemovePropertyUserInput = z.infer<typeof RemovePropertyUserInput>
+export const RemovePropertyUserInput = z.object({
+  propertyId: PropertyId,
+  userId: UserId,
 })

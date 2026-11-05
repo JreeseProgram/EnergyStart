@@ -1,3 +1,5 @@
+import { usePortfolioUser } from "@/features/portfolio/api/get-user.api"
+import { PORTFOLIO_POLICIES } from "@/features/portfolio/utils/portfolio-policies"
 import { ContentHeader } from "@/components/layouts/content-header"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/components/ui/link"
@@ -17,6 +19,7 @@ export function PropertySharingCell({
 }: {
   propertyId: PropertyId
 }) {
+  const user = usePortfolioUser()
   const query = useProperty({ propertyId })
 
   return createCell(query, {
@@ -24,12 +27,13 @@ export function PropertySharingCell({
       <>
         <PropertyHeaderSkeleton />
         <ContentHeader title={<Skeleton className="h-7 w-48" />} />
+        <Skeleton className="h-48 w-full" />
       </>
     ),
     Failure: ({ ctx }) => (
       <ContentHeader
         title="Something went wrong"
-        description="Unable to load property settings. Please try again."
+        description="Unable to load property sharing. Please try again."
         action={
           <Button variant="outline" onClick={() => void ctx.refetch()}>
             Retry
@@ -53,8 +57,14 @@ export function PropertySharingCell({
       return (
         <>
           <PropertyHeader property={property} />
-          <ContentHeader title={"Property sharing"} />
-          <PropertySharing property={property} />
+          <PropertySharing
+            key={property.id}
+            property={property}
+            canManage={PORTFOLIO_POLICIES["property:manage-sharing"](
+              user.data,
+              property
+            )}
+          />
         </>
       )
     },
