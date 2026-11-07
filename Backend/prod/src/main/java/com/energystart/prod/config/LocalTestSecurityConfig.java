@@ -1,5 +1,7 @@
 package com.energystart.prod.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -23,6 +25,9 @@ public class LocalTestSecurityConfig {
                 .build();
 
         http
+                // Browsers still enforce CORS when this local profile bypasses auth.
+                // Reuse the same frontend-origin policy as the authenticated profile.
+                .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .anonymous(anonymous -> anonymous.principal(localUser))
                 .authorizeHttpRequests(auth -> auth

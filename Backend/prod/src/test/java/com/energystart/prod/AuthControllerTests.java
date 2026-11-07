@@ -17,12 +17,13 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(properties = "FRONTEND_ORIGIN=http://localhost:5173")
 class AuthControllerTests {
 
     @Autowired
@@ -40,6 +41,53 @@ class AuthControllerTests {
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
+    }
+
+    @Test
+    void frontendPreflightDoesNotRequireAuthentication() throws Exception {
+        for (String method : new String[] { "GET", "POST", "PUT", "PATCH", "DELETE" }) {
+            mockMvc.perform(options("/api/auth/me")
+                            .header("Origin", "http://localhost:5173")
+                            .header("Access-Control-Request-Method", method)
+                            .header("Access-Control-Request-Headers", "authorization,content-type"))
+                    .andExpect(status().isOk())
+                    .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:5173"))
+                    .andExpect(header().string("Access-Control-Allow-Credentials", "true"))
+                    .andExpect(header().string("Access-Control-Allow-Headers",
+                            org.hamcrest.Matchers.containsString("authorization")))
+                    .andExpect(header().string("Access-Control-Allow-Headers",
+                            org.hamcrest.Matchers.containsString("content-type")));
+        }
+    }
+
+    @Test
+    void untrustedOriginIsRejected() throws Exception {
+        mockMvc.perform(options("/api/auth/me")
+                        .header("Origin", "http://untrusted.example")
+                        .header("Access-Control-Request-Method", "GET")
+                        .header("Access-Control-Request-Headers", "authorization"))
+                .andExpect(status().isForbidden())
+                .andExpect(header().doesNotExist("Access-Control-Allow-Origin"));
+    }
+
+    @Test
+    void frontendRequestStillRequiresAuthenticationWithReadableError() throws Exception {
+        mockMvc.perform(get("/api/auth/me")
+                        .header("Origin", "http://localhost:5173"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:5173"))
+                .andExpect(header().string("Access-Control-Allow-Credentials", "true"));
+    }
+
+    @Test
+    void authenticatedFrontendRequestSucceeds() throws Exception {
+        mockMvc.perform(get("/api/auth/me")
+                        .header("Origin", "http://localhost:5173")
+                        .with(jwt().jwt(token -> token.subject("user_test_sergio"))))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:5173"))
+                .andExpect(header().string("Access-Control-Allow-Credentials", "true"))
+                .andExpect(jsonPath("$.userId").value("user_test_sergio"));
     }
 
     @Test

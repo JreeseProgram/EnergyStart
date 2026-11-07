@@ -18,6 +18,16 @@ For POST/PUT requests use `Content-Type: application/json`. In the local-only `l
 
 ## Endpoint index
 
+### Frontend browser access
+
+API routes allow credentialed cross-origin requests from `http://localhost:5173` by default.
+Set the backend's `FRONTEND_ORIGIN` environment variable to use a different exact origin
+(scheme, host, and port, without a trailing slash). This applies to both security profiles.
+Allowed request headers are `Authorization`, `Content-Type`, and `Accept`; allowed methods
+are GET, HEAD, POST, PUT, PATCH, DELETE, and OPTIONS. CORS preflight requests do not require
+a token. Outside `local-test`, actual API requests still require
+`Authorization: Bearer <WorkOS access token>`.
+
 | Method | Endpoint | Description | Success status |
 | --- | --- | --- | --- |
 | POST | `/api/users` | Create user | `201` |

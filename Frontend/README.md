@@ -30,12 +30,13 @@ client IDs and redirect URI configuration.
 ```dotenv
 VITE_APP_WORKOS_CLIENT_ID=client_replace_with_team_client_id
 VITE_APP_REDIRECT_URI=http://localhost:5173/app
+VITE_APP_API_URL=http://localhost:8080/api
 ```
 
 Confirm the redirect URI is allowed for that WorkOS application. Ask a Landry for
 dashboard access if needed, although he should place in Discord for everyone. These values are exposed to the browser; use a client ID,
 never an API key. [Environment configuration](src/config/env.ts) validates these
-settings and supplies defaults, which the values above override.
+settings; all three values are required and have no defaults.
 
 ### Start the development server
 
@@ -45,6 +46,86 @@ pnpm dev
 
 The default address is `http://localhost:5173`. Keep the local URL consistent with
 the configured authentication redirect. Restart Vite after changing `.env.local`.
+
+## Run with the authenticated backend
+
+Use **Java 21** and a running MongoDB instance (local or a development database).
+From the repository root, start the backend in a separate terminal:
+
+```bash
+cd Backend/prod
+export MONGODB_URI='mongodb://localhost:27017/energystart'
+export WORKOS_CLIENT_ID='client_replace_with_team_client_id'
+export FRONTEND_ORIGIN='http://localhost:5173'
+./mvnw spring-boot:run
+```
+
+On Windows PowerShell, set variables with `$env:NAME = 'value'` and run
+`.\mvnw.cmd spring-boot:run`. Supply these variables in the backend process environment;
+Spring does not automatically load the frontend's `.env.local`.
+
+`WORKOS_CLIENT_ID` must match `VITE_APP_WORKOS_CLIENT_ID`. The backend defaults to
+issuer `https://api.workos.com/user_management/<WORKOS_CLIENT_ID>`; set
+`WORKOS_ISSUER` only if the team's WorkOS environment uses a different issuer.
+For `/api/auth/me/profile`, also supply `WORKOS_API_KEY` in the backend environment.
+That secret is not needed for `/api/auth/me` and must never appear in a `VITE_`
+variable or a committed file.
+
+Start the frontend with `pnpm dev` from `Frontend/`. Its API URL must be
+`VITE_APP_API_URL=http://localhost:8080/api`. Keep port 5173 available; if using
+another port, update the frontend redirect URI, WorkOS allowed redirect URI,
+and backend `FRONTEND_ORIGIN` together. The origin must include scheme, host,
+and port, without a trailing slash.
+
+Use the normal backend profile for authentication checks. The `local-test`
+profile bypasses authentication and cannot verify this integration. The service
+bundle currently combines WorkOS auth with mock portfolio services: changing the
+API URL does not switch portfolio data to the backend. Select implementations in
+`src/hooks/use-services.ts`; `useTestServices()` supplies a fully mocked bundle.
+There is no runtime mock/real environment switch.
+
+### Authentication smoke check
+
+With both apps running, sign in through the frontend. Because portfolio services
+are still mocked, use this temporary browser DevTools check on the frontend page
+to exercise the shared API client without adding a production diagnostic route:
+
+```js
+const { api } = await import('/src/lib/api-client.ts')
+await api.get('/auth/me') // Returns { userId: ... } for the signed-in WorkOS user.
+```
+
+Do not print or copy access tokens. Confirm the returned user ID matches the
+signed-in account. Check rejection independently from that same frontend page:
+
+```js
+await fetch('http://localhost:8080/api/auth/me').then(r => r.status) // 401
+await fetch('http://localhost:8080/api/auth/me', {
+  headers: { Authorization: 'Bearer invalid-test-token' },
+}).then(r => r.status) // 401; its OPTIONS preflight should succeed.
+```
+
+In the Network panel, confirm the preflight allows the frontend origin and
+Authorization header. A `401` from the shared client shows a persistent,
+dismissible session-expired message with a **Sign in** action; it does not
+redirect or replay the failed request. A temporary token-fetch failure asks the
+user to retry without claiming the session has expired. A `403` shows a permission
+message; network and server failures show retry guidance. Cancelled requests
+produce no toast.
+
+### Troubleshooting
+
+- **Missing API_URL:** use `VITE_APP_API_URL`, not `VITE_API_URL`, and restart Vite.
+- **CORS/network error:** confirm the backend is running and `FRONTEND_ORIGIN`
+  exactly matches the frontend URL, including `localhost` versus `127.0.0.1`.
+- **401 while signed in:** check matching WorkOS client IDs, issuer configuration,
+  token expiration, and backend access to WorkOS signing keys. Use **Sign in**
+  to authenticate again. Do not enable `local-test` to hide the failure.
+- **404:** check that the API base URL includes `/api` exactly once.
+- **Profile lookup fails:** configure the backend-only `WORKOS_API_KEY`; verify
+  basic authentication separately with `/api/auth/me`.
+- **Portfolio still shows sample data:** expected until each portfolio service
+  is explicitly replaced in the service bundle.
 
 ## Technologies and libraries
 

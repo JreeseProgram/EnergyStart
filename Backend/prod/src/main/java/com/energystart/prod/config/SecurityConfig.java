@@ -30,6 +30,9 @@ public class SecurityConfig {
             throws Exception {
 
         http
+                // Apply CorsConfig before authentication: preflight has no token,
+                // while actual API requests still require one. Errors also get CORS headers.
+                .cors(withDefaults())
                 // Requests use Bearer tokens instead of session cookies.
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
