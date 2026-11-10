@@ -1,23 +1,34 @@
 
 package com.energystart.prod.service;
 
+import com.energystart.prod.dto.PropertyUserResponse;
+import com.energystart.prod.dto.WorkOsUserResponse;
 import com.energystart.prod.model.Property;
 import com.energystart.prod.repos.PropertyRepo;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.ArrayList;
 
 @Service
 public class PropertyService {
 
-    private final PropertyRepo propertyRepo;
 
-    public PropertyService(PropertyRepo propertyRepo) {
+    private final PropertyRepo propertyRepo;
+    private final WorkOsUserService workOsUserService;
+
+    public PropertyService(
+            PropertyRepo propertyRepo,
+            WorkOsUserService workOsUserService) {
+
         this.propertyRepo = propertyRepo;
+        this.workOsUserService = workOsUserService;
     }
+
 
     public Property addProperty(Property request, String userId) {
         requireUser(userId);
@@ -78,6 +89,79 @@ public class PropertyService {
 
         return copy(existing);
     }
+
+
+    public List<PropertyUserResponse> getPropertyUsers(
+            String propertyId,
+            String requestingUserId) {
+
+        // Confirm the user is authorized.
+        Property property = requireAccess(
+                propertyId, requestingUserId);
+
+        List<PropertyUserResponse> users = new ArrayList<>();
+
+        // Look up each assigned user in WorkOS.
+        for (String userId : property.getAuthorizedUserIds()) {
+
+            WorkOsUserResponse workOsUser =
+                    workOsUserService.getUserById(userId);
+
+            users.add(new PropertyUserResponse(
+                    workOsUser.id(),
+                    workOsUser.email(),
+                    workOsUser.firstName(),
+                    workOsUser.lastName()
+            ));
+        }
+
+        return users;
+    }
+
+
+
+    public PropertyUserResponse shareProperty(
+            String propertyId,
+            String email,
+            String requestingUserId) {
+
+        // 1. Verify the requesting user has access.
+        Property property = requireAccess(
+                propertyId, requestingUserId);
+
+        // 2. Find the WorkOS user by email.
+        WorkOsUserResponse workOsUser =
+                workOsUserService.getUserByEmail(email);
+
+        // 3. Create a mutable copy of the assigned users.
+        List<String> authorizedUsers = new ArrayList<>(
+                property.getAuthorizedUserIds()
+        );
+
+        // 4. Prevent duplicate assignments.
+        if (authorizedUsers.contains(workOsUser.id())) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "User already has access to this property.");
+        }
+
+        // 5. Add the new user ID.
+        authorizedUsers.add(workOsUser.id());
+
+        // 6. Save the updated property in MongoDB.
+        property.setAuthorizedUserIds(authorizedUsers);
+        propertyRepo.save(property);
+
+        // 7. Return the new user's information.
+        return new PropertyUserResponse(
+                workOsUser.id(),
+                workOsUser.email(),
+                workOsUser.firstName(),
+                workOsUser.lastName()
+        );
+    }
+
+
 
     // Check both the property ID and authorized user in the repository query.
     private Property requireAccess(String id, String userId) {

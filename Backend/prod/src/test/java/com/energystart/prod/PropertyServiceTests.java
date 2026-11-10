@@ -3,7 +3,9 @@ package com.energystart.prod;
 import com.energystart.prod.model.Property;
 import com.energystart.prod.repos.PropertyRepo;
 import com.energystart.prod.service.PropertyService;
+import com.energystart.prod.service.WorkOsUserService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,7 +19,9 @@ import static org.mockito.Mockito.*;
 class PropertyServiceTests {
 
     private final PropertyRepo repository = mock(PropertyRepo.class);
-    private final PropertyService service = new PropertyService(repository);
+    @Mock
+    private WorkOsUserService workOsUserService;
+    private final PropertyService service = new PropertyService(repository,workOsUserService);
 
     private Property request() {
         return new Property(null, 1001, "Test Office Building","123 Main Street", "Orlando", "FL", 32801, "Test property");
