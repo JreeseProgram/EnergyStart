@@ -56,7 +56,7 @@ class EnergyReportTests {
     @Test
     void testConvenienceStoreScore(){
 
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-conv-store",
@@ -134,7 +134,7 @@ class EnergyReportTests {
 
     @Test
     void testDataCenterScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Data-center",
@@ -205,7 +205,7 @@ class EnergyReportTests {
 
     @Test
     void testHospitalScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-hospital",
@@ -277,7 +277,7 @@ class EnergyReportTests {
 
     @Test
     void testHotelScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Hotel",
@@ -352,7 +352,7 @@ class EnergyReportTests {
 
     @Test
     void testSchoolScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-School",
@@ -427,7 +427,7 @@ class EnergyReportTests {
 
     @Test
     void testMedicalOfficeScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Medical-Office",
@@ -500,7 +500,7 @@ class EnergyReportTests {
 
     @Test
     void testMultiFamilyHousingScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Multi-Family-Housing",
@@ -574,7 +574,7 @@ class EnergyReportTests {
 
     @Test
     void testOfficeScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-office",
@@ -647,7 +647,7 @@ class EnergyReportTests {
 
     @Test
     void testCourthouseScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Courthouse",
@@ -720,7 +720,7 @@ class EnergyReportTests {
 
     @Test
     void testBankBranchGT50000Score(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Bank-Branch",
@@ -794,7 +794,7 @@ class EnergyReportTests {
 
     @Test
     void testBankBranchLTE50000Score(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Bank-Branch-Small",
@@ -868,7 +868,7 @@ class EnergyReportTests {
 
     @Test
     void testFinancialOfficeGT50000Score(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Financial-Office",
@@ -942,7 +942,7 @@ class EnergyReportTests {
 
     @Test
     void testFinancialOfficeLTE50000Score(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Financial-Office-Small",
@@ -1016,7 +1016,7 @@ class EnergyReportTests {
 
     @Test
     void testRetailScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Retail",
@@ -1093,7 +1093,7 @@ class EnergyReportTests {
 
     @Test
     void testSupermarketScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Supermarket",
@@ -1168,7 +1168,7 @@ class EnergyReportTests {
 
     @Test
     void testWholesaleScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Wholesale",
@@ -1245,7 +1245,7 @@ class EnergyReportTests {
 
     @Test
     void testSeniorCommunity(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Senior-Living",
@@ -1326,7 +1326,7 @@ class EnergyReportTests {
 
     @Test
     void testVehicleDealershipScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Vehicle-Dealership",
@@ -1399,7 +1399,7 @@ class EnergyReportTests {
 
     @Test
     void testWarehouseScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Warehouse",
@@ -1473,7 +1473,7 @@ class EnergyReportTests {
 
     @Test
     void testRefrigeratedWarehouseScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Refrigerated-Warehouse",
@@ -1547,7 +1547,7 @@ class EnergyReportTests {
 
     @Test
     void testDistributionCenterScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Distribution-Center",
@@ -1621,7 +1621,7 @@ class EnergyReportTests {
 
     @Test
     void testWorshipFacilityScore(){
-        String targetDate = "2026-08";
+        String targetDate = "1900-08";
 
         Property property = new Property(
                 "Test-Energy-Score-Worship-Facility",
