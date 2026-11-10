@@ -2,6 +2,9 @@ package com.energystart.prod.controller;
 
 import com.energystart.prod.model.Property;
 import com.energystart.prod.service.PropertyService;
+import com.energystart.prod.dto.PropertyUserResponse;
+import com.energystart.prod.dto.SharePropertyRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,6 +32,27 @@ public class PropertyController {
         return propertyService.addProperty(property, requireUserId(jwt));
     }
 
+
+    @PostMapping("/{id}/users")
+    public ResponseEntity<PropertyUserResponse> shareProperty(
+            @PathVariable String id,
+            @RequestBody SharePropertyRequest request,
+            @AuthenticationPrincipal Jwt jwt) {
+
+        PropertyUserResponse addedUser =
+                propertyService.shareProperty(
+                        id,
+                        request.email(),
+                        requireUserId(jwt)
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(addedUser);
+    }
+
+
+
     @GetMapping
     public List<Property> getAllProperties(
             @AuthenticationPrincipal Jwt jwt) {
@@ -41,6 +65,20 @@ public class PropertyController {
             @AuthenticationPrincipal Jwt jwt) {
         return propertyService.getPropertyById(id, requireUserId(jwt));
     }
+
+
+    @GetMapping("/{id}/users")
+    public List<PropertyUserResponse> getPropertyUsers(
+            @PathVariable String id,
+            @AuthenticationPrincipal Jwt jwt) {
+
+        return propertyService.getPropertyUsers(
+                id,
+                requireUserId(jwt)
+        );
+    }
+
+
 
     @PutMapping("/{id}")
     public Property updateProperty(
