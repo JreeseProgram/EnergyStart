@@ -24,7 +24,7 @@ public class EnergyMeterReadings {
     /**
       * Constructor used for building w/o id
      */
-    public EnergyMeterReadings(String associatedMeterID, String date, float meterKBtu,
+    public EnergyMeterReadings(EnergyMeterRepo repo, String associatedMeterID, String date, float meterKBtu,
                                float rawUse, float siteEUI, float sourceEUI) {
         this.setAssociatedMeterID(associatedMeterID);
         this.setDate(date);
@@ -32,13 +32,13 @@ public class EnergyMeterReadings {
         this.setRawUse(rawUse);
         this.setSiteEUI(siteEUI);
         this.setSourceEUI(sourceEUI);
-        this.calcKBtu();
+        this.calcKBtu(repo);
     }
 
     /**
      * All-Args constructor
      */
-    public EnergyMeterReadings(String id, String associatedMeterID, String date, float meterKBtu,
+    public EnergyMeterReadings(EnergyMeterRepo repo, String id, String associatedMeterID, String date, float meterKBtu,
                                float rawUse, float siteEUI, float sourceEUI) {
         this.setId(id);
         this.setAssociatedMeterID(associatedMeterID);
@@ -47,11 +47,12 @@ public class EnergyMeterReadings {
         this.setRawUse(rawUse);
         this.setSiteEUI(siteEUI);
         this.setSourceEUI(sourceEUI);
-        this.calcKBtu();
+        this.calcKBtu(repo);
     }
 
-    public void calcKBtu(){
-        this.setMeterKBtu(EnergyMeter.calculateKBtu(this.getRawUse()));
+    public void calcKBtu(EnergyMeterRepo repo){
+        EnergyMeter meter = repo.findByID(this.getAssociatedMeterID());
+        this.setMeterKBtu(meter.calculateKBtu(this.getRawUse()));
     }
 
     //Custom Methods

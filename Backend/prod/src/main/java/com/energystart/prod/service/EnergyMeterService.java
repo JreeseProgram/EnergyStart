@@ -80,11 +80,6 @@ public class EnergyMeterService {
                     "An associated property ID is required.");
         }
 
-        if (meter.getDate() == null) {
-            throw new IllegalArgumentException(
-                    "A meter date is required.");
-        }
-
         if (meter.getMeterSelected() == null) {
             throw new IllegalArgumentException(
                     "A meter type is required.");
@@ -95,10 +90,5 @@ public class EnergyMeterService {
                     "A unit of measure is required.");
         }
 
-        if (meter.getRawUse() < 0 ||
-                !Float.isFinite(meter.getRawUse())) {
-            throw new IllegalArgumentException(
-                    "Raw energy usage must be a finite, nonnegative number.");
-        }
     }
 }

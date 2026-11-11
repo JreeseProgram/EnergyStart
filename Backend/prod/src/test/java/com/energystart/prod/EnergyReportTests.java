@@ -1,9 +1,11 @@
 package com.energystart.prod;
 
 import com.energystart.prod.energy.EnergyMeter;
+import com.energystart.prod.energy.EnergyMeterReadings;
 import com.energystart.prod.energy.EnergyReport;
 import com.energystart.prod.energy.report_types.*;
 import com.energystart.prod.model.Property;
+import com.energystart.prod.repos.EnergyMeterReadingsRepo;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.EnergyReportRepo;
 import com.energystart.prod.repos.PropertyRepo;
@@ -26,6 +28,8 @@ class EnergyReportTests {
     PropertyRepo propertyRepo;
     @Autowired
     private EnergyReportRepo energyReportRepo;
+    @Autowired
+    EnergyMeterReadingsRepo meterReadingsRepo;
 
     @Test
     void testRetrieveCDDHDD1() {

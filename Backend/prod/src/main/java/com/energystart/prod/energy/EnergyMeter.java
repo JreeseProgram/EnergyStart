@@ -1,13 +1,11 @@
 package com.energystart.prod.energy;
 
-import com.energystart.prod.repos.EnergyReportRepo;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.stereotype.Service;
 
 
-import java.util.List;
 import java.util.Map;
 
 @Document
@@ -60,7 +58,7 @@ public class EnergyMeter {
     @Id
     private String ID;
     private String associatedPropertyID;
-    private String meterID;
+    private String meterName;
     private TYPE_OF_METER meterSelected;
     private TYPE_OF_MEASURE unitOfMeasure;
     private boolean inUse;
@@ -673,33 +671,38 @@ public class EnergyMeter {
     //Constructor from input (no meter ID)
     public EnergyMeter(TYPE_OF_METER meterSelected,
                        TYPE_OF_MEASURE unitOfMeasure,
-                       String date,
+                       String meterName,
                        boolean inUse,
-                       boolean isDelivered,
-                       float rawUse){
+                       boolean isDelivered){
         setMeterSelected(meterSelected);
         setUnitOfMeasure(unitOfMeasure);
+        setMeterName(meterName);
         setInUse(inUse);
         setDelivered(isDelivered);
     }
 
 
     //Constructor with all elements
-    public EnergyMeter(long ID,
-                       long meterID,
+    public EnergyMeter(String ID,
+                       String meterName,
                        TYPE_OF_METER meterSelected,
                        TYPE_OF_MEASURE unitOfMeasure,
                        boolean inUse,
-                       boolean isDelivered,
-                       float meterKBtu,
-                       float rawUse) {
+                       boolean isDelivered) {
+        this.setID(ID);
+        this.setMeterName(meterName);
+        this.setMeterSelected(meterSelected);
+        this.setUnitOfMeasure(unitOfMeasure);
+        this.setInUse(inUse);
+        this.setDelivered(isDelivered);
+
 
     }
 
 
     //Custom Methods
     //TODO: Add Error Handling to incompatible Keys
-    public static float calculateKBtu(float rawUse){
+    public float calculateKBtu(float rawUse){
         float result = kBtuMultipliers.get(
                 new key(meterSelected, unitOfMeasure)
         );
@@ -726,12 +729,12 @@ public class EnergyMeter {
         this.associatedPropertyID = associatedReportID;
     }
 
-    public String getMeterID() {
-        return meterID;
+    public String getMeterName() {
+        return meterName;
     }
 
-    public void setMeterID(String meterID) {
-        this.meterID = meterID;
+    public void setMeterName(String meterName) {
+        this.meterName = meterName;
     }
 
     public TYPE_OF_METER getMeterSelected() {
