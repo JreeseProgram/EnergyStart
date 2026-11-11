@@ -60,22 +60,18 @@ public class EnergyMeter {
     @Id
     private String ID;
     private String associatedPropertyID;
-    private String date; //YYYY-MM
     private String meterID;
     private TYPE_OF_METER meterSelected;
     private TYPE_OF_MEASURE unitOfMeasure;
     private boolean inUse;
     private boolean isDelivered;
-    private float meterKBtu;
-    private float rawUse;
-    private float siteEUI;
-    private float sourceEUI;
+
 
 
     //This is used to calculate
     private record key(TYPE_OF_METER a, TYPE_OF_MEASURE b) {}
     @Transient
-    private final Map<key, Float> kBtuMultipliers = Map.ofEntries(
+    private static final Map<key, Float> kBtuMultipliers = Map.ofEntries(
             //Electric Grid
             Map.entry(new key(
                     TYPE_OF_METER.ELECTRIC_GRID,
@@ -683,11 +679,8 @@ public class EnergyMeter {
                        float rawUse){
         setMeterSelected(meterSelected);
         setUnitOfMeasure(unitOfMeasure);
-        setDate(date);
         setInUse(inUse);
         setDelivered(isDelivered);
-        setRawUse(rawUse);
-        calculateKBtu();
     }
 
 
@@ -706,66 +699,14 @@ public class EnergyMeter {
 
     //Custom Methods
     //TODO: Add Error Handling to incompatible Keys
-    protected void calculateKBtu(){
+    public static float calculateKBtu(float rawUse){
         float result = kBtuMultipliers.get(
                 new key(meterSelected, unitOfMeasure)
         );
-        setMeterKBtu(rawUse * result);
+        return (rawUse * result);
     }
 
     //TODO: update with potentially better error handling
-    public void calcEUI(EnergyReportRepo repo){
-        //Get square footage
-        int sqrFootage = 0;
-        List<EnergyReport> reports = repo.findAllByRelatedPropertyID(getAssociatedPropertyID());
-
-
-        if (reports.isEmpty()){
-            System.out.println("No associated Reports");
-            return;
-        }
-
-        for(EnergyReport report : reports){
-            sqrFootage += report.getGrossFloorArea();
-        }
-
-        //Calc site EUI
-        setSiteEUI((this.meterKBtu/sqrFootage));
-        //Calc Source EUI
-        switch(this.meterSelected){
-            case TYPE_OF_METER.ELECTRIC_GRID:
-                setSourceEUI(this.siteEUI * 2.8f);
-                break;
-            case TYPE_OF_METER.ELECTRIC_SOLAR:
-            case TYPE_OF_METER.ELECTRIC_WIND:
-            case TYPE_OF_METER.WOOD:
-            case TYPE_OF_METER.COKE:
-            case TYPE_OF_METER.COAL_ANTHRACITE:
-            case TYPE_OF_METER.COAL_BITUMINOUS:
-                setSourceEUI(this.siteEUI);
-                break;
-            case TYPE_OF_METER.NATURAL_GAS:
-                setSourceEUI(this.siteEUI * 1.05f);
-                break;
-            case TYPE_OF_METER.FUEL_OIL_1:
-            case TYPE_OF_METER.FUEL_OIL_2:
-            case TYPE_OF_METER.FUEL_OIL_4:
-            case TYPE_OF_METER.FUEL_OIL_5_AND_6:
-            case TYPE_OF_METER.DIESEL:
-            case TYPE_OF_METER.KEROSENE:
-            case TYPE_OF_METER.PROPANE:
-                setSourceEUI(this.siteEUI * 1.01f);
-                break;
-            case TYPE_OF_METER.DISTRICT_STEAM:
-            case TYPE_OF_METER.DISTRICT_HOT_WATER:
-                setSourceEUI(this.siteEUI * 1.2f);
-                break;
-            case TYPE_OF_METER.DISTRICT_CHILLED_WATER:
-                setSourceEUI(this.siteEUI * 0.91f);
-                break;
-        }
-
-    }
 
     //Getters and Setters
 
@@ -783,14 +724,6 @@ public class EnergyMeter {
 
     public void setAssociatedPropertyID(String associatedReportID) {
         this.associatedPropertyID = associatedReportID;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
     public String getMeterID() {
@@ -831,37 +764,5 @@ public class EnergyMeter {
 
     public void setDelivered(boolean delivered) {
         isDelivered = delivered;
-    }
-
-    public float getMeterKBtu() {
-        return meterKBtu;
-    }
-
-    public void setMeterKBtu(float meterKBtu) {
-        this.meterKBtu = meterKBtu;
-    }
-
-    public float getRawUse() {
-        return rawUse;
-    }
-
-    public void setRawUse(float rawUse) {
-        this.rawUse = rawUse;
-    }
-
-    public float getSiteEUI() {
-        return siteEUI;
-    }
-
-    public void setSiteEUI(float siteEUI) {
-        this.siteEUI = siteEUI;
-    }
-
-    public float getSourceEUI() {
-        return sourceEUI;
-    }
-
-    public void setSourceEUI(float sourceEUI) {
-        this.sourceEUI = sourceEUI;
     }
 }

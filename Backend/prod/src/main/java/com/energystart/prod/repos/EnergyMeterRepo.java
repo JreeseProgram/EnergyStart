@@ -15,4 +15,6 @@ public interface EnergyMeterRepo extends MongoRepository<EnergyMeter,String> {
             String low,
             String high
     );
+
+    EnergyMeter findByID(String id);
 }
