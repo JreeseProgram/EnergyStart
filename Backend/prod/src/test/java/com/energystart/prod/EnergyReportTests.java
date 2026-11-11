@@ -1,9 +1,11 @@
 package com.energystart.prod;
 
 import com.energystart.prod.energy.EnergyMeter;
+import com.energystart.prod.energy.EnergyMeterReading;
 import com.energystart.prod.energy.EnergyReport;
 import com.energystart.prod.energy.report_types.*;
 import com.energystart.prod.model.Property;
+import com.energystart.prod.repos.EnergyMeterReadingRepo;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.EnergyReportRepo;
 import com.energystart.prod.repos.PropertyRepo;
@@ -26,6 +28,10 @@ class EnergyReportTests {
     PropertyRepo propertyRepo;
     @Autowired
     private EnergyReportRepo energyReportRepo;
+    @Autowired
+    EnergyMeterReadingRepo meterReadingsRepo;
+    @Autowired
+    private EnergyMeterRepo energyMeterRepo;
 
     @Test
     void testRetrieveCDDHDD1() {
@@ -83,18 +89,16 @@ class EnergyReportTests {
         EnergyMeter meterElec = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.ELECTRIC_GRID,
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
-                targetDate,
+                "Elec Meter",
                 true,
-                false,
-                490000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
-                targetDate,
+                "gas meter",
                 true,
-                true,
-                5446.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-conv-store");
@@ -105,19 +109,36 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         csr = energyReportRepo.save(csr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                490000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                5446.0f
+        );
+
+        elecMeterReading = meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading = meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 480,
                 9285
+
         );
 
         int result = property.getEnergyScore();
@@ -125,6 +146,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(csr.getID());
 
         assertEquals(53, result);
@@ -158,16 +181,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                15000000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                20000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Data-center");
@@ -178,15 +199,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         dcr = energyReportRepo.save(dcr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                15000000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                20000.0f
+        );
+
+        elecMeterReading = meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading = meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 -1,
@@ -198,6 +235,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(dcr.getID());
 
         assertEquals(72, result);
@@ -230,16 +269,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                10500000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                450000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-hospital");
@@ -250,15 +287,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         hr = energyReportRepo.save(hr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                10500000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                450000.0f
+        );
+
+        elecMeterReading = meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading = meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1600,
@@ -270,6 +323,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(hr.getID());
 
         assertEquals(82, result);
@@ -305,16 +360,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                4500000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                110000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Hotel");
@@ -325,15 +378,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         hr = energyReportRepo.save(hr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                4500000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                110000.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1388,
@@ -345,6 +414,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(hr.getID());
 
         assertEquals(63, result);
@@ -380,16 +451,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                700000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                20000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-School");
@@ -400,15 +469,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         sr = energyReportRepo.save(sr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                700000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                20000.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1046,
@@ -420,6 +505,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(sr.getID());
 
         assertEquals(81, result);
@@ -453,16 +540,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                703400.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                42000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Medical-Office");
@@ -473,15 +558,32 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         mor = energyReportRepo.save(mor);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                703400.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                42000.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1074,
@@ -493,6 +595,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(mor.getID());
 
         assertEquals(78, result);
@@ -527,16 +631,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                2100000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                800.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Multi-Family-Housing");
@@ -547,15 +649,32 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         mfhr = energyReportRepo.save(mfhr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                2100000.0f
+        );
+
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                800.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1287,
@@ -567,6 +686,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(mfhr.getID());
 
         assertEquals(63, result);
@@ -600,16 +721,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                3500000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                4000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-office");
@@ -620,15 +739,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         or = energyReportRepo.save(or);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                3500000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                4000.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1046,
@@ -640,6 +775,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(or.getID());
 
         assertEquals(57, result);
@@ -673,16 +810,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                3500000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                4000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Courthouse");
@@ -693,15 +828,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         cr = energyReportRepo.save(cr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                3500000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                4000.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1046,
@@ -713,6 +864,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(cr.getID());
 
         assertEquals(57, result);
@@ -747,16 +900,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                3500000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                4000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Bank-Branch");
@@ -767,15 +918,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         bbr = energyReportRepo.save(bbr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                3500000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                4000.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1046,
@@ -787,6 +954,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(bbr.getID());
 
         assertEquals(57, result);
@@ -821,16 +990,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                3500000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                4000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Bank-Branch-Small");
@@ -841,15 +1008,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         bbr = energyReportRepo.save(bbr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                3500000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                4000.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1046,
@@ -861,6 +1044,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(bbr.getID());
 
         assertEquals(6, result);
@@ -895,16 +1080,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                3500000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                4000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Financial-Office");
@@ -915,15 +1098,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         fr = energyReportRepo.save(fr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                3500000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                4000.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1046,
@@ -935,6 +1134,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(fr.getID());
 
         assertEquals(57, result);
@@ -969,16 +1170,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                3500000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                4000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Financial-Office-Small");
@@ -989,15 +1188,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         fr = energyReportRepo.save(fr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                3500000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                4000.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1046,
@@ -1009,6 +1224,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(fr.getID());
 
         assertEquals(6, result);
@@ -1046,16 +1263,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                480000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                200.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Retail");
@@ -1066,15 +1281,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         rsr = energyReportRepo.save(rsr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                480000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                200.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 2300,
@@ -1086,6 +1317,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(rsr.getID());
 
         assertEquals(79, result);
@@ -1121,16 +1354,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                960000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                200.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Supermarket");
@@ -1141,15 +1372,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         sr = energyReportRepo.save(sr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                960000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                200.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 2300,
@@ -1161,6 +1408,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(sr.getID());
 
         assertEquals(89, result);
@@ -1193,40 +1442,53 @@ class EnergyReportTests {
 
         );
         wr.setRelatedPropertyID("Test-Energy-Score-Wholesale");
+
         EnergyMeter meterElec = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.ELECTRIC_GRID,
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                960000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                200.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Wholesale");
         meterGas.setAssociatedPropertyID("Test-Energy-Score-Wholesale");
 
-
-
         property = propertyRepo.save(property);
         wr = energyReportRepo.save(wr);
-
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
 
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
 
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                960000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                200.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
+
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 2300,
@@ -1238,6 +1500,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(wr.getID());
 
         assertEquals(89, result);
@@ -1279,16 +1543,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                3070000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                166000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Senior-Living");
@@ -1299,15 +1561,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         scr = energyReportRepo.save(scr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                3070000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                166000.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1300,
@@ -1319,6 +1597,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(scr.getID());
 
         assertEquals(65, result);
@@ -1352,16 +1632,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                439625.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                12000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Vehicle-Dealership");
@@ -1372,15 +1650,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         vdr = energyReportRepo.save(vdr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                439625.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                12000.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 3663,
@@ -1392,6 +1686,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(vdr.getID());
 
         assertEquals(76, result);
@@ -1426,16 +1722,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                850000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                35000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Warehouse");
@@ -1446,15 +1740,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         wr = energyReportRepo.save(wr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                850000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                35000.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1343,
@@ -1466,6 +1776,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(wr.getID());
 
         assertEquals(58, result);
@@ -1500,16 +1812,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                850000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                35000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Refrigerated-Warehouse");
@@ -1520,15 +1830,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         wrr = energyReportRepo.save(wrr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                850000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                35000.0f
+        );
+
+        elecMeterReading = meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading = meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1343,
@@ -1540,6 +1866,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(wrr.getID());
 
         assertEquals(58, result);
@@ -1574,16 +1902,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                850000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                35000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Distribution-Center");
@@ -1594,15 +1920,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         dcr = energyReportRepo.save(dcr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                850000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                35000.0f
+        );
+
+        elecMeterReading = meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading = meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1343,
@@ -1614,6 +1956,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(dcr.getID());
 
         assertEquals(58, result);
@@ -1648,16 +1992,14 @@ class EnergyReportTests {
                 EnergyMeter.TYPE_OF_MEASURE.kWh,
                 targetDate,
                 true,
-                false,
-                85000.0f
+                false
         );
         EnergyMeter meterGas = new EnergyMeter(
                 EnergyMeter.TYPE_OF_METER.NATURAL_GAS,
                 EnergyMeter.TYPE_OF_MEASURE.Therms,
                 targetDate,
                 true,
-                true,
-                2000.0f
+                true
         );
 
         meterElec.setAssociatedPropertyID("Test-Energy-Score-Worship-Facility");
@@ -1668,15 +2010,31 @@ class EnergyReportTests {
         property = propertyRepo.save(property);
         wfr = energyReportRepo.save(wfr);
 
-        meterElec.calcEUI(energyReportRepo);
-        meterGas.calcEUI(energyReportRepo);
-
         meterElec = meterRepo.save(meterElec);
         meterGas = meterRepo.save(meterGas);
+
+        EnergyMeterReading elecMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterElec.getID(),
+                targetDate,
+                85000.0f
+        );
+        EnergyMeterReading gasMeterReading = new EnergyMeterReading(
+                energyMeterRepo,
+                energyReportRepo,
+                meterGas.getID(),
+                targetDate,
+                2000.0f
+        );
+
+        elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
+        gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
         property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
+                meterReadingsRepo,
                 targetDate,
                 targetDate,
                 1325,
@@ -1688,6 +2046,8 @@ class EnergyReportTests {
         propertyRepo.deleteById(property.getId());
         meterRepo.deleteById(meterElec.getID());
         meterRepo.deleteById(meterGas.getID());
+        meterReadingsRepo.deleteById(elecMeterReading.getId());
+        meterReadingsRepo.deleteById(gasMeterReading.getId());
         energyReportRepo.deleteById(wfr.getID());
 
         assertEquals(69, result);
