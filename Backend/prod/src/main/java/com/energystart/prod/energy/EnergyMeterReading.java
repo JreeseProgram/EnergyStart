@@ -7,8 +7,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Document("EnergyMeterReadings")
-public class EnergyMeterReadings {
+@Document("EnergyMeterReading")
+public class EnergyMeterReading {
 
     @Id
     private String id;
@@ -20,12 +20,29 @@ public class EnergyMeterReadings {
     private float sourceEUI;
 
     //Constructors
-    public EnergyMeterReadings() {}
+    public EnergyMeterReading() {}
+
+    /**
+     *
+     * @param repo used to calc KBtu and EUI
+     * @param repo2 used to calc EUI
+     * @param associatedMeterID used to link the reading to a meter
+     * @param date timestamp for when this was made
+     * @param rawUse total value of what is used
+     */
+    public EnergyMeterReading(EnergyMeterRepo repo, EnergyReportRepo repo2, String associatedMeterID, String date,
+                              float rawUse) {
+        this.setAssociatedMeterID(associatedMeterID);
+        this.setDate(date);
+        this.setRawUse(rawUse);
+        this.calcKBtu(repo);
+        this.calcEUI(repo2, repo);
+    }
     /**
       * Constructor used for building w/o id
      */
-    public EnergyMeterReadings(EnergyMeterRepo repo, String associatedMeterID, String date, float meterKBtu,
-                               float rawUse, float siteEUI, float sourceEUI) {
+    public EnergyMeterReading(EnergyMeterRepo repo, String associatedMeterID, String date, float meterKBtu,
+                              float rawUse, float siteEUI, float sourceEUI) {
         this.setAssociatedMeterID(associatedMeterID);
         this.setDate(date);
         this.setMeterKBtu(meterKBtu);
@@ -38,8 +55,8 @@ public class EnergyMeterReadings {
     /**
      * All-Args constructor
      */
-    public EnergyMeterReadings(EnergyMeterRepo repo, String id, String associatedMeterID, String date, float meterKBtu,
-                               float rawUse, float siteEUI, float sourceEUI) {
+    public EnergyMeterReading(EnergyMeterRepo repo, String id, String associatedMeterID, String date, float meterKBtu,
+                              float rawUse, float siteEUI, float sourceEUI) {
         this.setId(id);
         this.setAssociatedMeterID(associatedMeterID);
         this.setDate(date);

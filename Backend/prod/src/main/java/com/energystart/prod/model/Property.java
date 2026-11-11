@@ -1,9 +1,11 @@
 package com.energystart.prod.model;
 
 import com.energystart.prod.energy.EnergyMeter;
+import com.energystart.prod.energy.EnergyMeterReading;
 import com.energystart.prod.energy.EnergyReport;
 import com.energystart.prod.energy.EnergyStarLookupTable;
 import com.energystart.prod.energy.report_types.DataCenterReport;
+import com.energystart.prod.repos.EnergyMeterReadingRepo;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.EnergyReportRepo;
 import org.springframework.data.annotation.Id;
@@ -54,6 +56,7 @@ public class Property {
     //Custom methods
     public void calculateEnergyScore(EnergyReportRepo energyReportRepo,
                                      EnergyMeterRepo energyMeterRepo,
+                                     EnergyMeterReadingRepo energyMeterReadingRepo,
                                      String startDate, String endDate,
                                      int cdd, int hdd) {
         float energyScore = -1f;
@@ -89,10 +92,14 @@ public class Property {
         }
 
         //access energy meters and extract pertinent info
-        List<EnergyMeter> energyMeters = energyMeterRepo.findByAssociatedPropertyIDAndDateBetween
-                (this.getId(), startDate, endDate);
+        List<EnergyMeter> energyMeters = energyMeterRepo.findAllByAssociatedPropertyID(this.getId());
+
+        List<EnergyMeterReading> energyMeterReadings = new ArrayList<>();
         for (EnergyMeter energyMeter : energyMeters) {
-            totalSourceKBtu += energyMeter.getSourceEUI() * totalsqft;
+            energyMeterReadings.addAll(energyMeterReadingRepo.findAllByAssociatedMeterID(energyMeter.getID()));
+        }
+        for ( EnergyMeterReading reading: energyMeterReadings) {
+            totalSourceKBtu += reading.getSourceEUI() * totalsqft;
         }
 
         float EER = totalSourceKBtu / totalPredictedKBtu;
