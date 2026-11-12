@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface EnergyMeterReadingRepo extends MongoRepository<EnergyMeterReading, String> {
     List<EnergyMeterReading> findAllByAssociatedMeterID(String associatedMeterID);
+
+    List<EnergyMeterReading> findAllByAssociatedMeterIDInAndDateBetween(List<String> associatedMeterID, String startDate, String endDate);
 }

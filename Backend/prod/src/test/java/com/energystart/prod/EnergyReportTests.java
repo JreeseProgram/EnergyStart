@@ -130,7 +130,7 @@ class EnergyReportTests {
         elecMeterReading = meterReadingsRepo.save(elecMeterReading);
         gasMeterReading = meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -140,7 +140,7 @@ class EnergyReportTests {
                 9285
 
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -220,7 +220,7 @@ class EnergyReportTests {
         elecMeterReading = meterReadingsRepo.save(elecMeterReading);
         gasMeterReading = meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -229,7 +229,7 @@ class EnergyReportTests {
                 -1,
                 -1
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -308,7 +308,7 @@ class EnergyReportTests {
         elecMeterReading = meterReadingsRepo.save(elecMeterReading);
         gasMeterReading = meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -317,7 +317,7 @@ class EnergyReportTests {
                 1600,
                 3400
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -399,7 +399,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -408,7 +408,7 @@ class EnergyReportTests {
                 1388,
                 4532
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -490,7 +490,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -499,7 +499,7 @@ class EnergyReportTests {
                 1046,
                 4937
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -580,7 +580,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -589,7 +589,7 @@ class EnergyReportTests {
                 1074,
                 6126
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -671,7 +671,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -680,7 +680,7 @@ class EnergyReportTests {
                 1287,
                 4710
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -760,7 +760,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -769,7 +769,7 @@ class EnergyReportTests {
                 1046,
                 4937
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -849,7 +849,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -858,7 +858,7 @@ class EnergyReportTests {
                 1046,
                 4937
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -939,7 +939,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -948,7 +948,7 @@ class EnergyReportTests {
                 1046,
                 4937
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -1029,7 +1029,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -1038,7 +1038,7 @@ class EnergyReportTests {
                 1046,
                 4937
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -1119,7 +1119,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -1128,7 +1128,7 @@ class EnergyReportTests {
                 1046,
                 4937
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -1209,7 +1209,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -1218,7 +1218,7 @@ class EnergyReportTests {
                 1046,
                 4937
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -1302,7 +1302,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -1311,7 +1311,7 @@ class EnergyReportTests {
                 2300,
                 3850
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -1393,7 +1393,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -1402,7 +1402,7 @@ class EnergyReportTests {
                 2300,
                 3850
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -1485,7 +1485,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -1494,7 +1494,7 @@ class EnergyReportTests {
                 2300,
                 3850
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -1582,7 +1582,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -1591,7 +1591,7 @@ class EnergyReportTests {
                 1300,
                 4200
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -1671,7 +1671,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -1680,7 +1680,7 @@ class EnergyReportTests {
                 3663,
                 1904
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -1761,7 +1761,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -1771,6 +1771,7 @@ class EnergyReportTests {
                 5806
         );
 
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -1851,7 +1852,7 @@ class EnergyReportTests {
         elecMeterReading = meterReadingsRepo.save(elecMeterReading);
         gasMeterReading = meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -1860,7 +1861,7 @@ class EnergyReportTests {
                 1343,
                 5806
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -1941,7 +1942,7 @@ class EnergyReportTests {
         elecMeterReading = meterReadingsRepo.save(elecMeterReading);
         gasMeterReading = meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -1950,7 +1951,7 @@ class EnergyReportTests {
                 1343,
                 5806
         );
-
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
@@ -2031,7 +2032,7 @@ class EnergyReportTests {
         elecMeterReading =  meterReadingsRepo.save(elecMeterReading);
         gasMeterReading =  meterReadingsRepo.save(gasMeterReading);
 
-        property.calculateEnergyScore(
+        int score = property.calculateEnergyScore(
                 energyReportRepo,
                 meterRepo,
                 meterReadingsRepo,
@@ -2041,6 +2042,7 @@ class EnergyReportTests {
                 3558
         );
 
+        property.setEnergyScore(score);
         int result = property.getEnergyScore();
 
         propertyRepo.deleteById(property.getId());
