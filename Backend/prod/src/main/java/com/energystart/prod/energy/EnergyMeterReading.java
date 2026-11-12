@@ -14,7 +14,7 @@ public class EnergyMeterReading {
     private String id;
     private String associatedMeterID;
     private String date; //YYYY-MM
-    private float cost;
+    private float cost = 0;
     private float meterKBtu;
     private float rawUse;
     private float siteEUI;
