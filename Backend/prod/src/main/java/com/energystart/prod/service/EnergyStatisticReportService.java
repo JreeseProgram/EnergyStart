@@ -1,6 +1,9 @@
 package com.energystart.prod.service;
 
 import com.energystart.prod.dto.FrontendLinkingDTO;
+import com.energystart.prod.energy.EnergyMeter;
+import com.energystart.prod.energy.EnergyMeterReading;
+import com.energystart.prod.energy.EnergyReport;
 import com.energystart.prod.model.Property;
 import com.energystart.prod.repos.EnergyMeterReadingRepo;
 import com.energystart.prod.repos.EnergyMeterRepo;
@@ -14,8 +17,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class EnergyStatisticReportService {
@@ -55,16 +58,114 @@ public class EnergyStatisticReportService {
         String propertyId = property.getId();
         LocalDateTime startDateTime = LocalDateTime.now();
 
+        List<EnergyMeter> energyMeters = energyMeterRepo.findAllByAssociatedPropertyID(propertyId);
+
+
+        List<String> meterIDs = energyMeters.stream()
+                .map(EnergyMeter::getID)
+                .toList();
+
+        List<EnergyMeterReading> meterReadings = energyMeterReadingRepo.findAllByAssociatedMeterIDInAndDateBetween(
+                meterIDs,
+                startDate.toString(),
+                endDate.toString()
+        );
+
+        List<FrontendLinkingDTO.PortfolioMonthlyPerformance> allPerformance = new ArrayList<>();
+        float aggregateSiteEUI = 0f;
+        float aggregateSourceEUI = 0f;
+        //Creates an organized map that is easy to iterate
+        Map<String, List<EnergyMeterReading>> readingSortedByMonth = meterReadings.stream()
+                .collect(Collectors.groupingBy(EnergyMeterReading::getDate));
+
+        for (YearMonth current = startDate; !current.isAfter(endDate); current = current.plusMonths(1)) {
+            float siteEnergy = (float) readingSortedByMonth.getOrDefault(current.toString(),List.of()).stream()
+                    .mapToDouble(EnergyMeterReading::getSiteEUI)
+                    .sum();
+            float sourceEnergy = (float) readingSortedByMonth.getOrDefault(current.toString(),List.of()).stream()
+                    .mapToDouble(EnergyMeterReading::getSourceEUI)
+                    .sum();
+
+            aggregateSiteEUI += siteEnergy;
+            aggregateSourceEUI += sourceEnergy;
+
+            allPerformance.add(new FrontendLinkingDTO.PortfolioMonthlyPerformance(
+                    current.toString(),
+                    siteEnergy,
+                    sourceEnergy
+            ));
+        }
+
 
         //Determine if We send Energy Score or EUI
+        int energyScore = 0;
         long months = ChronoUnit.MONTHS.between(startDate, endDate) + 1; //+1 makes it inclusive
-        if (months >= 12) {
+        List<String> disqualifiers = new ArrayList<>();
+        Map<String, Long> readingCounts = meterReadings.stream()
+                .collect(Collectors.groupingBy(
+                        EnergyMeterReading::getAssociatedMeterID,
+                        Collectors.counting()
+                ));
+
+        for (EnergyMeter meter : energyMeters){
+            long count = readingCounts.getOrDefault(meter.getID(), 0L);
+
+            if(!meter.isDelivered() && count < months){
+                disqualifiers.add(String.format(
+                        "%s does not have data for every month",
+                        meter.getMeterName()
+                        )
+                );
+            }
+        }
+        if (months >= 12 && disqualifiers.isEmpty()) {
+            Integer[] cddhdd = EnergyReport.retrieveCDDHDD(
+                    property.getZipcode(),
+                    startDate.atDay(1),
+                    endDate.atEndOfMonth());
+            energyScore = property.calculateEnergyScore(
+                    energyReportRepo,
+                    energyMeterRepo,
+                    energyMeterReadingRepo,
+                    startDate.toString(),
+                    endDate.toString(),
+                    cddhdd[0],
+                    cddhdd[1]
+            );
 
         }
         else{
-            
+            disqualifiers.add("Query was for less than 12 months; Energy star score requires 12 months of data");
         }
 
+        int totalSqft = energyReportRepo.findAllByRelatedPropertyID(propertyId).stream()
+                .mapToInt(EnergyReport::getGrossFloorArea)
+                .sum();
+
+        return new FrontendLinkingDTO.EnergyReport(
+                id,
+                propertyId,
+                startDate.toString(),
+                endDate.toString(),
+                LocalDateTime.now(),
+                aggregateSiteEUI,
+                aggregateSourceEUI,
+                energyScore,
+                disqualifiers,
+                new FrontendLinkingDTO.EnergyReport.PropertySnapshot(
+                        property.getPropertyName(),
+                        property.getStreetAddress(),
+                        property.getCity(),
+                        property.getState(),
+                        property.getZipcode().toString()
+                ),
+                new FrontendLinkingDTO.EnergyReport.Snapshot(
+                        "portfolio-prototype-v1",
+                        LocalDateTime.now(),
+                        totalSqft,
+                        allPerformance
+                )
+        );
     }
 
     private void requireUser(String userId) {

@@ -11,7 +11,10 @@ public class FrontendLinkingDTO {
             String startMonth,
             String endMonth,
             LocalDateTime generatedAt,
-            int result,
+            float aggregateSiteEUI,
+            float aggregateSourceEUI,
+            int energyScore,
+            List<String> disqualifiers,
             PropertySnapshot propertySnapshot,
             Snapshot snapshot
 
@@ -34,8 +37,7 @@ public class FrontendLinkingDTO {
     public record PortfolioMonthlyPerformance(
             String month,
             float siteEnergyKbtu,
-            float sourceEnergyKbtu,
-            int energyStarScore
+            float sourceEnergyKbtu
     ){}
 
     public record PortfolioPerformanceInput(
