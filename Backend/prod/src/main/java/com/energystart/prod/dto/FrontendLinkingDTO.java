@@ -54,6 +54,7 @@ public class FrontendLinkingDTO {
     ){}
 
     public record Property(
+            String id,
             String humanReadablePropertyId,
             String city,
             int energyStarScore,
