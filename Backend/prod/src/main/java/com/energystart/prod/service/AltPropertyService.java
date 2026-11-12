@@ -52,21 +52,7 @@ public class AltPropertyService {
                         endDate.toString()
                 )
         );
-        int energyScore = 0;
-        long months = ChronoUnit.MONTHS.between(startDate, endDate) + 1; //+1 makes it inclusive
-        if (months >= 12) {
-            Integer[] cddhdd = EnergyReport.retrieveCDDHDD(dbProperty.getZipcode(),startDate.atDay(1),endDate.atEndOfMonth());
-            energyScore = dbProperty.calculateEnergyScore(
-                    energyReportRepo,
-                    energyMeterRepo,
-                    energyMeterReadingRepo,
-                    startDate.toString(),
-                    endDate.toString(),
-                    cddhdd[0],
-                    cddhdd[1]
-            );
 
-        }
         String largestType = "None";
         int largestValue = 0;
         int totalSqft = 0;
@@ -79,8 +65,24 @@ public class AltPropertyService {
             }
         }
 
-        if(!(((float)largestValue/totalSqft)>0.5)){
+        if(!(((float)largestValue/totalSqft)>0.5) ){
             largestType = "None";
+        }
+
+        int energyScore = 0;
+        long months = ChronoUnit.MONTHS.between(startDate, endDate) + 1; //+1 makes it inclusive
+        if (months >= 12 && !largestType.equals("None")) {
+            Integer[] cddhdd = EnergyReport.retrieveCDDHDD(dbProperty.getZipcode(),startDate.atDay(1),endDate.atEndOfMonth());
+            energyScore = dbProperty.calculateEnergyScore(
+                    energyReportRepo,
+                    energyMeterRepo,
+                    energyMeterReadingRepo,
+                    startDate.toString(),
+                    endDate.toString(),
+                    cddhdd[0],
+                    cddhdd[1]
+            );
+
         }
         float siteEUI = 0f;
         float sourceEUI = 0f;
