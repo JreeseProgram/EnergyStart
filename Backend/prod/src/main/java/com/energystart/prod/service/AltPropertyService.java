@@ -9,7 +9,10 @@ import com.energystart.prod.repos.EnergyMeterReadingRepo;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import com.energystart.prod.repos.EnergyReportRepo;
 import com.energystart.prod.repos.PropertyRepo;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
@@ -22,22 +25,28 @@ public class AltPropertyService {
     private final EnergyReportRepo energyReportRepo;
     private final EnergyMeterReadingRepo energyMeterReadingRepo;
     private final PropertyRepo propertyRepo;
+    private final WorkOsUserService workOsUserService;
 
     public AltPropertyService(EnergyMeterRepo energyMeterRepo,
                               EnergyReportRepo energyReportRepo,
                               EnergyMeterReadingRepo energyMeterReadingRepo,
-                              PropertyRepo propertyRepo) {
+                              PropertyRepo propertyRepo,
+                              WorkOsUserService workOsUserService) {
         this.energyMeterRepo = energyMeterRepo;
         this.energyReportRepo = energyReportRepo;
         this.energyMeterReadingRepo = energyMeterReadingRepo;
         this.propertyRepo = propertyRepo;
+        this.workOsUserService = workOsUserService;
     }
 
     //GET request
-    public FrontendLinkingDTO.Property getProperty(String id, YearMonth startDate, YearMonth endDate) {
+    public FrontendLinkingDTO.Property getProperty(String id, YearMonth startDate, YearMonth endDate, String userId) {
         FrontendLinkingDTO.Property property;
-
         Property dbProperty = propertyRepo.findById(id).get();
+
+        requireUser(userId);
+        verifyUser(userId, dbProperty);
+
         List<EnergyReport>  energyReports = energyReportRepo.findAllByRelatedPropertyID(dbProperty.getId());
         List<EnergyMeter> energyMeters = energyMeterRepo.findAllByAssociatedPropertyID(dbProperty.getId());
         List<EnergyMeterReading> energyMeterReadings = new ArrayList<>();
@@ -112,6 +121,26 @@ public class AltPropertyService {
                 totalSqft
         );
         return property;
+    }
+
+    @PostMapping()
+    private void requireUser(String userId) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "You must be logged in to do this action");
+        }
+    }
+
+    private void verifyUser(String userId, Property property){
+        List<String> users = property.getAuthorizedUserIds();
+
+        if (!users.contains(userId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "You do not have access to this, Ask the owner for access"
+                    );
+        }
     }
 
 
