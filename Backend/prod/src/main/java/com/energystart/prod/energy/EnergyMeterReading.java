@@ -14,6 +14,7 @@ public class EnergyMeterReading {
     private String id;
     private String associatedMeterID;
     private String date; //YYYY-MM
+    private float cost;
     private float meterKBtu;
     private float rawUse;
     private float siteEUI;
@@ -39,12 +40,25 @@ public class EnergyMeterReading {
         this.calcEUI(repo2, repo);
     }
     /**
-      * Constructor used for building w/o id
+      * Constructor used for building w/o id or cost
      */
     public EnergyMeterReading(EnergyMeterRepo repo, String associatedMeterID, String date, float meterKBtu,
                               float rawUse, float siteEUI, float sourceEUI) {
         this.setAssociatedMeterID(associatedMeterID);
         this.setDate(date);
+        this.setMeterKBtu(meterKBtu);
+        this.setRawUse(rawUse);
+        this.setSiteEUI(siteEUI);
+        this.setSourceEUI(sourceEUI);
+        this.calcKBtu(repo);
+    }
+
+    public EnergyMeterReading(EnergyMeterRepo repo, String associatedMeterID, String date,
+                              float meterKBtu, float rawUse, float cost,
+                              float siteEUI, float sourceEUI) {
+        this.setAssociatedMeterID(associatedMeterID);
+        this.setDate(date);
+        this.setCost(cost);
         this.setMeterKBtu(meterKBtu);
         this.setRawUse(rawUse);
         this.setSiteEUI(siteEUI);
@@ -151,6 +165,14 @@ public class EnergyMeterReading {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public float getCost() {
+        return cost;
+    }
+
+    public void setCost(float cost) {
+        this.cost = cost;
     }
 
     public float getMeterKBtu() {
