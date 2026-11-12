@@ -123,7 +123,6 @@ public class AltPropertyService {
         return property;
     }
 
-    @PostMapping()
     private void requireUser(String userId) {
         if (userId == null || userId.isBlank()) {
             throw new ResponseStatusException(

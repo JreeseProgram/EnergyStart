@@ -38,6 +38,11 @@ public class FrontendLinkingDTO {
             int energyStarScore
     ){}
 
+    public record PortfolioPerformanceInput(
+            List<String> propertyIds,
+            LocalDateTime asOf
+    ){}
+
     public record PortfolioPropertyPerformance(
             String propertyId,
             int floorAreaSqft,
