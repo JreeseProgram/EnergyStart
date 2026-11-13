@@ -2,10 +2,13 @@ import z from "zod"
 import { isAxiosError } from "axios"
 import { api } from "@/lib/api-client"
 import { UserId } from "@/features/portfolio/models/user.models"
+import { defaultReportPeriod } from "@/features/portfolio/utils/energy-report-labels"
+
 import {
   PropertyId,
   Property,
 } from "@/features/portfolio/models/property.models"
+
 import {
   CreatePropertyInput,
   AddPropertyUserInput,
@@ -16,7 +19,6 @@ import {
   PropertyUpdateRefreshError,
   type PropertyService,
 } from "@/features/portfolio/services/property.service"
-import { defaultReportPeriod } from "@/features/portfolio/utils/energy-report-labels"
 
 const PropertyIds = z.array(z.object({ id: PropertyId }))
 const PropertyReference = z.object({ id: PropertyId })
