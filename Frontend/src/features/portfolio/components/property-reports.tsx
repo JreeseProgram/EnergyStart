@@ -21,6 +21,7 @@ export function PropertyReports({
   const scopedReports = reports.filter(
     (report) => report.propertyId === property.id
   )
+
   return (
     <>
       <ContentHeader
@@ -32,14 +33,18 @@ export function PropertyReports({
           </Button>
         }
       />
+
       <p className="flex items-center gap-2 text-sm text-muted-foreground">
         <Badge variant="outline">Simulated results</Badge>Reports use prototype
         history, not meter readings or official calculations.
       </p>
+
       <EnergyReportsTable reports={scopedReports} onOpen={setSelected} />
+
       <p className="text-xs text-muted-foreground">
         Reports stay available during navigation and may reset on refresh.
       </p>
+
       {generating && (
         <EnergyReportModal
           propertyId={property.id}
@@ -50,6 +55,7 @@ export function PropertyReports({
           }}
         />
       )}
+
       {selected && (
         <EnergyReportDetailsModal
           report={selected}

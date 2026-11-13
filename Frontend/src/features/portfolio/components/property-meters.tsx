@@ -1,4 +1,14 @@
 import { useId, useState } from "react"
+import { Plus, Pencil, ChevronLeft, ChevronRight } from "lucide-react"
+import { ContentHeader } from "@/components/layouts/content-header"
+import type { Property } from "@/features/portfolio/models/property.models"
+import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
+import { EnergyMeterModal } from "@/features/portfolio/modals/energy-meter.modal"
+import { EnergyMeterDetailsModal } from "@/features/portfolio/modals/energy-meter-details.modal"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+
 import {
   createColumnHelper,
   createPaginatedRowModel,
@@ -7,11 +17,7 @@ import {
   tableFeatures,
   useTable,
 } from "@tanstack/react-table"
-import { Plus, Pencil, ChevronLeft, ChevronRight } from "lucide-react"
-import { ContentHeader } from "@/components/layouts/content-header"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
+
 import {
   Select,
   SelectContent,
@@ -19,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+
 import {
   Table,
   TableHeader,
@@ -28,10 +35,7 @@ import {
   TableCell,
   TableCaption,
 } from "@/components/ui/table"
-import type { Property } from "@/features/portfolio/models/property.models"
-import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
-import { EnergyMeterModal } from "@/features/portfolio/modals/energy-meter.modal"
-import { EnergyMeterDetailsModal } from "@/features/portfolio/modals/energy-meter-details.modal"
+
 import {
   latestReading,
   meterDate,
@@ -42,6 +46,7 @@ const features = tableFeatures({
   rowPaginationFeature,
   paginatedRowModel: createPaginatedRowModel(),
 })
+
 const helper = createColumnHelper<typeof features, EnergyMeter>()
 
 export function PropertyMeters({
@@ -137,6 +142,7 @@ export function PropertyMeters({
       ),
     }),
   ])
+
   const table = useTable({
     features,
     data: meters,

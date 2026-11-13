@@ -5,7 +5,11 @@ import { PropertyMeters } from "@/features/portfolio/components/property-meters"
 import type { Property } from "@/features/portfolio/models/property.models"
 import { createCell } from "@/lib/react-query"
 
-export function EnergyMetersListCell({ property }: { property: Property }) {
+export function EnergyMetersListCell({
+  property,
+}: {
+  property: Property
+}) {
   const query = useEnergyMeters(property.id)
   return createCell(query, {
     Loading: () => (

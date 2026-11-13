@@ -9,15 +9,18 @@ import type { Property } from "@/features/portfolio/models/property.models"
 import { PROPERTY_TYPES } from "@/features/portfolio/utils/form-constants"
 
 export function PropertySettings({ property }: { property: Property }) {
-  const propertyType = PROPERTY_TYPES.find(
-    (type) => type.value === property.propertyType
-  )?.label
+  const propertyType =
+    PROPERTY_TYPES.find((type) => type.value === property.propertyType)
+      ?.label ?? "Not specified"
+
   const details = [
-    ["Property name", property.name],
+    ["Property name", property.name ?? "Not specified"],
     ["Primary property type", propertyType],
     [
       "Address",
-      `${property.streetAddress}, ${property.city}, ${property.state}, ${property.zip}`,
+      [property.streetAddress, property.city, property.state, property.zip]
+        .filter(Boolean)
+        .join(", ") || "Address unavailable",
     ],
     ["Property notes", property.notes || "No notes added."],
   ]
@@ -44,11 +47,13 @@ export function PropertySettings({ property }: { property: Property }) {
           </dl>
         </CardContent>
       </Card>
+
       <Card className="rounded-2xl">
         <CardHeader>
           <CardTitle>Property ID</CardTitle>
           <CardDescription>The identifier for this property.</CardDescription>
         </CardHeader>
+
         <CardContent>
           <p className="text-base font-medium break-all">
             {property.humanReadablePropertyId || property.id}

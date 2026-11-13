@@ -1,6 +1,12 @@
 import type { PropertyPerformanceMetrics } from "@/features/portfolio/utils/get-portfolio-performance"
 import { useId, useState } from "react"
 import { Link } from "react-router"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { paths } from "@/config/paths"
+import type { Property } from "@/features/portfolio/models/property.models"
+import { PROPERTY_TYPES } from "@/features/portfolio/utils/form-constants"
+
 import {
   ArrowRight,
   ChevronLeft,
@@ -8,8 +14,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+
 import {
   Card,
   CardContent,
@@ -18,6 +23,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+
 import {
   Select,
   SelectContent,
@@ -25,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+
 import {
   Table,
   TableBody,
@@ -34,9 +41,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { paths } from "@/config/paths"
-import type { Property } from "@/features/portfolio/models/property.models"
-import { PROPERTY_TYPES } from "@/features/portfolio/utils/form-constants"
 
 const pageSizes = [5, 10, 20, 50].map((size) => ({
   label: String(size),
@@ -58,6 +62,7 @@ export function PortfolioPropertiesTable({
     page * pagination.size,
     (page + 1) * pagination.size
   )
+
   const setPage = (next: number) =>
     setPagination((current) => ({
       ...current,
@@ -113,11 +118,9 @@ export function PortfolioPropertiesTable({
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline">
-                    {
-                      PROPERTY_TYPES.find(
-                        (type) => type.value === property.propertyType
-                      )?.label
-                    }
+                    {PROPERTY_TYPES.find(
+                      (type) => type.value === property.propertyType
+                    )?.label ?? "Not specified"}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
@@ -165,9 +168,11 @@ export function PortfolioPropertiesTable({
             </SelectContent>
           </Select>
         </div>
+
         <span role="status" className="text-sm tabular-nums">
           Page {page + 1} of {pageCount}
         </span>
+
         <nav aria-label="Properties table pagination" className="flex gap-2">
           <Button
             variant="outline"

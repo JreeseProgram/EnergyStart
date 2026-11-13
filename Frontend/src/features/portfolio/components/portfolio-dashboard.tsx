@@ -1,5 +1,10 @@
 import { useState } from "react"
+import type { Property } from "@/features/portfolio/models/property.models"
+import type { PortfolioPerformance } from "@/features/portfolio/models/portfolio-performance.models"
+import { PortfolioPropertiesTable } from "@/features/portfolio/components/portfolio-properties-table"
+import { PortfolioPerformanceChart } from "@/features/portfolio/components/portfolio-performance-chart"
 import { Badge } from "@/components/ui/badge"
+
 import {
   Card,
   CardContent,
@@ -7,10 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import type { Property } from "@/features/portfolio/models/property.models"
-import type { PortfolioPerformance } from "@/features/portfolio/models/portfolio-performance.models"
-import { PortfolioPropertiesTable } from "@/features/portfolio/components/portfolio-properties-table"
-import { PortfolioPerformanceChart } from "@/features/portfolio/components/portfolio-performance-chart"
+
 import {
   getPortfolioPerformance,
   type PortfolioMetric,
@@ -28,6 +30,7 @@ export function PortfolioDashboard({
   const [months, setMonths] = useState<PortfolioMonths>(12)
   const summary = getPortfolioPerformance(performance, months)
   const change = summary.energyChangePercent
+
   const cards = [
     {
       label: "Portfolio size",
@@ -100,6 +103,7 @@ export function PortfolioDashboard({
           </Card>
         ))}
       </div>
+
       <PortfolioPerformanceChart
         performance={summary}
         metric={metric}
@@ -107,6 +111,7 @@ export function PortfolioDashboard({
         onMetricChange={setMetric}
         onMonthsChange={setMonths}
       />
+
       <PortfolioPropertiesTable
         properties={properties}
         metrics={summary.propertyMetrics}

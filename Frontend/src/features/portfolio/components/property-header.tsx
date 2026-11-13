@@ -9,9 +9,13 @@ export function PropertyHeader({ property }: { property: Property }) {
         <MapPinned />
       </div>
       <div>
-        <h2 className="text-2xl font-bold">{property.name}</h2>
+        <h2 className="text-2xl font-bold">
+          {property.name ?? "Unnamed property"}
+        </h2>
         <p className="text-sm text-muted-foreground">
-          {property.streetAddress}, {property.city}, {property.state}
+          {[property.streetAddress, property.city, property.state]
+            .filter(Boolean)
+            .join(", ") || "Address unavailable"}
         </p>
       </div>
     </div>

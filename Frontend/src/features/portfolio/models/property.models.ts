@@ -1,9 +1,7 @@
-import { User } from "@/features/portfolio/models/user.models"
-import { BaseEntity } from "@/models/shared.models"
 import z from "zod"
 
 export type PropertyId = z.infer<typeof PropertyId>
-export const PropertyId = z.uuid().brand("PropertyId")
+export const PropertyId = z.string().min(1).brand("PropertyId")
 
 export type PropertyType = z.infer<typeof PropertyType>
 export const PropertyType = z.enum(
@@ -32,40 +30,23 @@ export const PropertyType = z.enum(
   "Select a property type"
 )
 
-export type AuditComplianceStatus = z.infer<typeof AuditComplianceStatus>
-export const AuditComplianceStatus = z.enum([
-  "PARTICIPATING",
-  "NOT_PARTICIPATING",
-  "APPROVED_FOR_EXEMPTION",
-] as const)
-
-export const PropertyAssignment = z.object({
-  user: User,
-  assignedAt: z.iso.datetime(),
+// Matches FrontendLinkingDTO.Property for list and API detail responses.
+export const Property = z.object({
+  id: PropertyId,
+  humanReadablePropertyId: z.string().nullable(),
+  city: z.string().nullable(),
+  energyStarScore: z.number().int(),
+  name: z.string().nullable(),
+  notes: z.string().nullable(),
+  authUsers: z.array(z.string()),
+  propertyType: z.union([PropertyType, z.literal("None")]),
+  state: z.string().nullable(),
+  streetAddress: z.string().nullable(),
+  zip: z.string().nullable(),
+  reportingYear: z.string().nullable(),
+  siteEui: z.number(),
+  sourceEui: z.number(),
+  energyUse: z.number(),
+  grossFloorArea: z.number().int(),
 })
-export type PropertyAssignment = z.infer<typeof PropertyAssignment>
-
 export type Property = z.infer<typeof Property>
-export const Property = BaseEntity(PropertyId).extend({
-  humanReadablePropertyId: z.string().optional(),
-  city: z.string("Enter the city the property is located in"),
-  energyStarScore: z.number().optional().default(0),
-  name: z.string("Enter the name of the property"),
-  notes: z.string().optional(),
-  owner: User,
-  // Read-only snapshot; sharing changes use dedicated service operations.
-  assignments: z.array(PropertyAssignment).default([]),
-  propertyType: PropertyType,
-  state: z.string("Enter the city the property is located in"),
-  streetAddress: z.string("Enter a the property street address"),
-  zip: z.string("Enter the property zip code"),
-  auditComplianceStatus:
-    AuditComplianceStatus.optional().default("NOT_PARTICIPATING"),
-  reportingYear: z.string(),
-  siteEui: z.number().optional(),
-  sourceEui: z.number().optional(),
-  annualGHG: z.number().optional(), // Annual Greenhouse Gas Emissions
-  energyUse: z.number().optional(),
-  // Read-only summary supplied by the service/backend, never a metadata input.
-  grossFloorArea: z.number().nonnegative(),
-})

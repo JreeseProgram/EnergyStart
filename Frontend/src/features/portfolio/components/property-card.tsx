@@ -32,11 +32,8 @@ export function PropertyCard({ property }: { property: Property }) {
           </CardIcon>
           <CardTitle>{property.name}</CardTitle>
           <CardDescription>
-            {
-              PROPERTY_TYPES.find(
-                (type) => type.value === property.propertyType
-              )?.label
-            }
+            {PROPERTY_TYPES.find((type) => type.value === property.propertyType)
+              ?.label ?? "Not specified"}
             <br />
             {property.city}, {property.state}
           </CardDescription>

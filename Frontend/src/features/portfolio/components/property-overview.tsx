@@ -1,3 +1,8 @@
+import { Button } from "@/components/ui/button"
+import { paths } from "@/config/paths"
+import { Link } from "react-router"
+import type { Property } from "@/features/portfolio/models/property.models"
+
 import {
   Card,
   CardContent,
@@ -5,14 +10,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { paths } from "@/config/paths"
-import type { Property } from "@/features/portfolio/models/property.models"
-import { Link } from "react-router"
 
 export function PropertyOverview({ property }: { property: Property }) {
   const score =
     property.energyStarScore > 0 ? property.energyStarScore : undefined
+
   const metrics = [
     {
       label: "Energy Star Score",
@@ -46,13 +48,15 @@ export function PropertyOverview({ property }: { property: Property }) {
       description: "Energy total supplied for this property",
     },
   ]
+
   const hasPerformance = metrics.some((metric) => metric.value !== undefined)
 
   return (
     <>
       <p className="text-sm text-muted-foreground">
-        Prototype metrics · Reporting year {property.reportingYear}. Values come
-        from the property data and are not official report results.
+        Prototype metrics · Reporting year{" "}
+        {property.reportingYear ?? "unavailable"}. Values come from the property
+        data and are not official report results.
       </p>
       <div className="grid grid-cols-4 gap-4">
         {metrics.map((metric) => (

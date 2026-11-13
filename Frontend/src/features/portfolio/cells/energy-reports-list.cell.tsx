@@ -5,7 +5,11 @@ import { PropertyReports } from "@/features/portfolio/components/property-report
 import type { Property } from "@/features/portfolio/models/property.models"
 import { createCell } from "@/lib/react-query"
 
-export function EnergyReportsListCell({ property }: { property: Property }) {
+export function EnergyReportsListCell({
+  property,
+}: {
+  property: Property
+}) {
   const query = useEnergyReports(property.id)
   return createCell(query, {
     Loading: () => (
