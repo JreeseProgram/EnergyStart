@@ -1,4 +1,7 @@
+com\energystart\prod\service\EnergyMeterService.class
 com\energystart\prod\energy\report_types\BankBranchReport.class
+com\energystart\prod\repos\EnergyMeterReadingRepo.class
+com\energystart\prod\dto\buildinguse\types\OfficeBuildingUseDTO.class
 com\energystart\prod\energy\report_types\ConvenienceStoreReport.class
 com\energystart\prod\energy\report_types\DistributionCenterReport.class
 com\energystart\prod\energy\report_types\WorshipFacilityReport.class
@@ -8,6 +11,7 @@ com\energystart\prod\service\WorkOsUserService.class
 com\energystart\prod\energy\report_types\RetailStoreReport.class
 com\energystart\prod\energy\report_types\DataCenterReport.class
 com\energystart\prod\energy\report_types\WarehouseReport.class
+com\energystart\prod\energy\EnergyMeterReading$1.class
 com\energystart\prod\dto\WorkOsUserResponse.class
 com\energystart\prod\energy\report_types\FinancialOfficeReport.class
 com\energystart\prod\energy\report_types\SupermarketReport.class
@@ -15,6 +19,7 @@ com\energystart\prod\model\User.class
 com\energystart\prod\energy\report_types\MultifamilyHousingReport.class
 com\energystart\prod\energy\report_types\WarehouseRefrigeratedReport.class
 com\energystart\prod\config\SecurityConfig.class
+com\energystart\prod\dto\buildinguse\BuildingUseType.class
 com\energystart\prod\service\EnergyReportService.class
 com\energystart\prod\model\BuildingMetrics.class
 com\energystart\prod\energy\report_types\OfficeReport.class
@@ -24,6 +29,7 @@ com\energystart\prod\controller\UserController.class
 com\energystart\prod\controller\AuthController.class
 com\energystart\prod\config\LocalTestSecurityConfig.class
 com\energystart\prod\repos\UserRepo.class
+com\energystart\prod\config\CorsConfig.class
 com\energystart\prod\energy\EnergyStarLookupTable$Range.class
 com\energystart\prod\energy\EnergyMeter$key.class
 com\energystart\prod\energy\EnergyMeter$TYPE_OF_METER.class
@@ -31,12 +37,15 @@ com\energystart\prod\repos\EnergyMeterRepo.class
 com\energystart\prod\energy\report_types\HotelReport.class
 com\energystart\prod\controller\EnergyReportController.class
 com\energystart\prod\energy\report_types\MedicalOfficeReport.class
+com\energystart\prod\controller\EnergyMeterController.class
 com\energystart\prod\energy\report_types\HospitalReport.class
 com\energystart\prod\energy\EnergyMeter.class
 com\energystart\prod\energy\EnergyReport.class
+com\energystart\prod\dto\PropertyUserResponse.class
 com\energystart\prod\energy\report_types\SeniorLivingCommunityReport.class
 com\energystart\prod\service\WorkOsUserService$UserListResponse.class
 com\energystart\prod\repos\PropertyRepo.class
+com\energystart\prod\energy\EnergyMeterReading.class
 com\energystart\prod\energy\report_types\VehicleDealershipReport.class
 com\energystart\prod\ProdApplication.class
 com\energystart\prod\energy\report_types\SchoolReport.class
@@ -46,3 +55,5 @@ com\energystart\prod\energy\report_types\CourtHouseReport.class
 com\energystart\prod\energy\report_types\WholesaleClubReport.class
 com\energystart\prod\controller\AuthController$AuthenticatedUserResponse.class
 com\energystart\prod\controller\PropertyController.class
+com\energystart\prod\dto\buildinguse\BuildingUseDTO.class
+com\energystart\prod\dto\SharePropertyRequest.class
