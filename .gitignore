@@ -1,6 +1,11 @@
 # IDE settings
 /.idea/
 
+# Local Docker Compose credentials
+/.env
+/.env.*
+!/.env.example
+
 # VS Code settings
 /.vscode/
 
