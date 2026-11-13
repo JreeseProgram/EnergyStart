@@ -15,7 +15,7 @@ public class PortfolioPerformanceController {
 
     private final PortfolioPerformanceService portfolioPerformanceService;
 
-    public PortfolioPerformanceController(PortfolioPerformanceController portfolioPerformanceController, PortfolioPerformanceService portfolioPerformanceService) {
+    public PortfolioPerformanceController(PortfolioPerformanceService portfolioPerformanceService) {
         this.portfolioPerformanceService = portfolioPerformanceService;
     }
 
