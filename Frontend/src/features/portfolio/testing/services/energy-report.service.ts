@@ -80,7 +80,10 @@ export function createEnergyReportTestService(
             history.floorAreaSqFt
           break
         case "ENERGY_STAR_SCORE":
-          result = points[points.length - 1].energyStarScore
+          if (points[points.length - 1].energyStarScore === null) {
+            throw new Error("No score is available for this period.")
+          }
+          result = points[points.length - 1].energyStarScore!
           break
       }
       const report = EnergyReport.parse({

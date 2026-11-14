@@ -75,6 +75,10 @@ export function getPortfolioPerformance(
         : []
     })
     const area = available.reduce((sum, item) => sum + item.area, 0)
+    const scored = available.filter(
+      (item) => item.point.energyStarScore !== null
+    )
+    const scoredArea = scored.reduce((sum, item) => sum + item.area, 0)
     return {
       month,
       siteEui: area
@@ -87,11 +91,11 @@ export function getPortfolioPerformance(
             0
           ) / area
         : null,
-      energyStarScore: area
-        ? available.reduce(
-            (sum, item) => sum + item.point.energyStarScore * item.area,
+      energyStarScore: scoredArea
+        ? scored.reduce(
+            (sum, item) => sum + item.point.energyStarScore! * item.area,
             0
-          ) / area
+          ) / scoredArea
         : null,
     }
   })
@@ -99,13 +103,16 @@ export function getPortfolioPerformance(
   const complete = data.properties.filter((property) =>
     periodMetrics(property, months)
   )
-  const totalArea = complete.reduce(
-    (sum, property) => sum + property.floorAreaSqFt!,
-    0
-  )
-  const aggregate = (metric: PortfolioMetric) =>
-    totalArea
-      ? complete.reduce(
+  const aggregate = (metric: PortfolioMetric) => {
+    const available = complete.filter(
+      (property) => propertyMetrics[property.propertyId][metric] !== null
+    )
+    const totalArea = available.reduce(
+      (sum, property) => sum + property.floorAreaSqFt!,
+      0
+    )
+    return totalArea
+      ? available.reduce(
           (sum, property) =>
             sum +
             propertyMetrics[property.propertyId][metric]! *
@@ -113,6 +120,7 @@ export function getPortfolioPerformance(
           0
         ) / totalArea
       : null
+  }
   const comparable = complete.flatMap((property) => {
     const previous = periodMetrics(property, previousMonths)
     return previous
@@ -140,15 +148,23 @@ export function getPortfolioPerformance(
         ? ((currentEnergy - priorEnergy) / priorEnergy) * 100
         : null,
     propertiesWithHistory: complete.length,
-    currentMeters: data.properties.reduce(
-      (sum, property) => sum + property.currentMeterCount,
-      0
+    currentMeters: sumKnown(
+      data.properties.map((property) => property.currentMeterCount)
     ),
-    totalMeters: data.properties.reduce(
-      (sum, property) => sum + property.meterCount,
-      0
+    totalMeters: sumKnown(
+      data.properties.map((property) => property.meterCount)
     ),
-    readyProperties: data.properties.filter((property) => property.reportReady)
-      .length,
+    readyProperties: sumKnown(
+      data.properties.map((property) =>
+        property.reportReady === null ? null : Number(property.reportReady)
+      )
+    ),
   }
+}
+
+function sumKnown(values: (number | null)[]): number | null {
+  return values.reduce<number | null>(
+    (sum, value) => (sum === null || value === null ? null : sum + value),
+    0
+  )
 }

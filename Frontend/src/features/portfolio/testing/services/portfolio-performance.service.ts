@@ -59,7 +59,6 @@ export function usePortfolioPerformanceService(): PortfolioPerformanceService {
       )
 
       return PortfolioPerformance.parse({
-        simulated: true,
         asOf,
         properties: [...new Set(propertyIds)].map((propertyId) => {
           const fixture = fixtures.find(

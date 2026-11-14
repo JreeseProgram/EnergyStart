@@ -29,6 +29,12 @@ export function PortfolioDashboard({
   const [metric, setMetric] = useState<PortfolioMetric>("siteEui")
   const [months, setMonths] = useState<PortfolioMonths>(12)
   const summary = getPortfolioPerformance(performance, months)
+
+  // Both counts must be available to show coverage and overdue readings;
+  // this distinguishes missing data from a valid count of zero meters.
+  const hasTotalAndCurrentMeterCounts =
+    summary.totalMeters !== null && summary.currentMeters !== null
+
   const change = summary.energyChangePercent
 
   const cards = [
@@ -55,18 +61,26 @@ export function PortfolioDashboard({
     },
     {
       label: "Data coverage",
-      value: summary.totalMeters
-        ? `${summary.currentMeters} of ${summary.totalMeters}`
-        : "No meters",
-      unit: summary.totalMeters ? "meters" : "",
+      value: !hasTotalAndCurrentMeterCounts
+        ? "No data"
+        : summary.totalMeters
+          ? `${summary.currentMeters} of ${summary.totalMeters}`
+          : "No meters",
+      unit:
+        hasTotalAndCurrentMeterCounts && summary.totalMeters ? "meters" : "",
       title: "Current meter readings",
-      detail: summary.totalMeters
-        ? `${summary.totalMeters - summary.currentMeters} meter readings are overdue`
-        : "Add meters and readings to track coverage",
+      detail: !hasTotalAndCurrentMeterCounts
+        ? "Meter coverage is unavailable"
+        : summary.totalMeters
+          ? `${summary.totalMeters - summary.currentMeters!} meter readings are overdue`
+          : "Add meters and readings to track coverage",
     },
     {
       label: "Report readiness",
-      value: `${summary.readyProperties} of ${properties.length}`,
+      value:
+        summary.readyProperties === null
+          ? "No data"
+          : `${summary.readyProperties} of ${properties.length}`,
       unit: "properties",
       title: "Properties ready to report",
       detail: "Simulated readiness, not official eligibility",
