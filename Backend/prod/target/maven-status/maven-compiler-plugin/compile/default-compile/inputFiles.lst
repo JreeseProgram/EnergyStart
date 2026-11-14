@@ -11,6 +11,7 @@ C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energysta
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\BankBranchBuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\ConvenienceStoreBuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\CourtHouseBuildingUseDTO.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\DataCenterBuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\DistributionCenterBuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\FinancialOfficeBuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\HospitalBuildingUseDTO.java
@@ -23,6 +24,10 @@ C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energysta
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\SeniorLivingBuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\SupermarketBuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\VehicleDealershipBuildingUseDTO.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\WarehouseBuildingUseDTO.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\WarehouseRefrigeratedBuildingUseDTO.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\WholesaleClubBuildingUseDTO.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\WorshipFacilityBuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\PropertyUserResponse.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\SharePropertyRequest.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\WorkOsUserResponse.java

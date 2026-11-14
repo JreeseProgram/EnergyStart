@@ -14,6 +14,7 @@ com\energystart\prod\energy\report_types\RetailStoreReport.class
 com\energystart\prod\mapper\BuildingUseMapper.class
 com\energystart\prod\dto\buildinguse\types\BankBranchBuildingUseDTO.class
 com\energystart\prod\dto\buildinguse\types\RetailStoreBuildingUseDTO.class
+com\energystart\prod\dto\buildinguse\types\WarehouseBuildingUseDTO.class
 com\energystart\prod\dto\buildinguse\types\MedicalOfficeBuildingUseDTO.class
 com\energystart\prod\energy\report_types\DataCenterReport.class
 com\energystart\prod\dto\buildinguse\types\ConvenienceStoreBuildingUseDTO.class
@@ -29,6 +30,7 @@ com\energystart\prod\energy\report_types\WarehouseRefrigeratedReport.class
 com\energystart\prod\config\SecurityConfig.class
 com\energystart\prod\dto\buildinguse\BuildingUseType.class
 com\energystart\prod\service\EnergyReportService.class
+com\energystart\prod\dto\buildinguse\types\WorshipFacilityBuildingUseDTO.class
 com\energystart\prod\model\BuildingMetrics.class
 com\energystart\prod\dto\buildinguse\types\DistributionCenterBuildingUseDTO.class
 com\energystart\prod\energy\report_types\OfficeReport.class
@@ -36,10 +38,13 @@ com\energystart\prod\service\UserService.class
 com\energystart\prod\energy\EnergyMeter$TYPE_OF_MEASURE.class
 com\energystart\prod\controller\UserController.class
 com\energystart\prod\controller\AuthController.class
+com\energystart\prod\dto\buildinguse\types\WholesaleClubBuildingUseDTO.class
+com\energystart\prod\dto\buildinguse\types\WarehouseRefrigeratedBuildingUseDTO.class
 com\energystart\prod\config\LocalTestSecurityConfig.class
 com\energystart\prod\repos\UserRepo.class
 com\energystart\prod\config\CorsConfig.class
 com\energystart\prod\energy\EnergyStarLookupTable$Range.class
+com\energystart\prod\mapper\BuildingUseMapper$1.class
 com\energystart\prod\dto\buildinguse\types\CourtHouseBuildingUseDTO.class
 com\energystart\prod\energy\EnergyMeter$key.class
 com\energystart\prod\energy\EnergyMeter$TYPE_OF_METER.class
@@ -68,6 +73,7 @@ com\energystart\prod\repos\EnergyReportRepo.class
 com\energystart\prod\energy\report_types\CourtHouseReport.class
 com\energystart\prod\energy\report_types\WholesaleClubReport.class
 com\energystart\prod\controller\AuthController$AuthenticatedUserResponse.class
+com\energystart\prod\dto\buildinguse\types\DataCenterBuildingUseDTO.class
 com\energystart\prod\controller\PropertyController.class
 com\energystart\prod\dto\buildinguse\BuildingUseDTO.class
 com\energystart\prod\dto\SharePropertyRequest.class

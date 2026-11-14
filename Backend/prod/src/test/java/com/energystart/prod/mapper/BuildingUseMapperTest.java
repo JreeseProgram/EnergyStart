@@ -44,6 +44,24 @@ import com.energystart.prod.energy.report_types.SeniorLivingCommunityReport;
 import com.energystart.prod.dto.buildinguse.types.SupermarketBuildingUseDTO;
 import com.energystart.prod.energy.report_types.SupermarketReport;
 
+import com.energystart.prod.dto.buildinguse.types.VehicleDealershipBuildingUseDTO;
+import com.energystart.prod.energy.report_types.VehicleDealershipReport;
+
+import com.energystart.prod.dto.buildinguse.types.WarehouseBuildingUseDTO;
+import com.energystart.prod.energy.report_types.WarehouseReport;
+
+import com.energystart.prod.dto.buildinguse.types.WarehouseRefrigeratedBuildingUseDTO;
+import com.energystart.prod.energy.report_types.WarehouseRefrigeratedReport;
+
+import com.energystart.prod.dto.buildinguse.types.WholesaleClubBuildingUseDTO;
+import com.energystart.prod.energy.report_types.WholesaleClubReport;
+
+import com.energystart.prod.dto.buildinguse.types.WorshipFacilityBuildingUseDTO;
+import com.energystart.prod.energy.report_types.WorshipFacilityReport;
+
+import com.energystart.prod.dto.buildinguse.types.DataCenterBuildingUseDTO;
+import com.energystart.prod.energy.report_types.DataCenterReport;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -1543,6 +1561,635 @@ class BuildingUseMapperTest {
         );
     }
 
+
+
+    @Test
+    void shouldConvertVehicleDealershipDTOToReport() {
+
+        VehicleDealershipBuildingUseDTO dto =
+                new VehicleDealershipBuildingUseDTO(
+                        null,
+                        null,
+                        "property-dealership-001",
+                        BuildingUseType.VEHICLE_DEALERSHIP,
+                        50000.0,
+                        8000.0,
+                        2015,
+                        120,
+                        35,
+                        85.0,
+                        70.0
+                );
+
+        VehicleDealershipReport report =
+                mapper.toVehicleDealershipReport(dto);
+
+        assertEquals(
+                "property-dealership-001",
+                report.getRelatedPropertyID()
+        );
+
+        assertEquals(50000, report.getGrossFloorArea());
+        assertEquals(8000, report.getParkingSize());
+        assertEquals(2015, report.getYearOfConstruction());
+
+        assertEquals(120, report.getAvgNumVehiclesInInventory());
+        assertEquals(35, report.getNumOfWorkersMainShift());
+        assertEquals(85.0f, report.getPercentCooled());
+        assertEquals(70.0f, report.getPercentHeated());
+    }
+
+    @Test
+    void shouldConvertVehicleDealershipReportToDTO() {
+
+        VehicleDealershipReport report =
+                new VehicleDealershipReport();
+
+        report.setID("dealership-report-123");
+        report.setRelatedPropertyID("property-dealership-001");
+        report.setGrossFloorArea(50000);
+        report.setParkingSize(8000);
+        report.setYearOfConstruction(2015);
+
+        report.setAvgNumVehiclesInInventory(120);
+        report.setNumOfWorkersMainShift(35);
+        report.setPercentCooled(85.0f);
+        report.setPercentHeated(70.0f);
+
+        VehicleDealershipBuildingUseDTO dto =
+                mapper.toVehicleDealershipDTO(report);
+
+        assertEquals("dealership-report-123", dto.id());
+        assertEquals(
+                "property-dealership-001",
+                dto.propertyId()
+        );
+        assertEquals(
+                BuildingUseType.VEHICLE_DEALERSHIP,
+                dto.buildingUseType()
+        );
+
+        assertEquals(50000.0, dto.grossFloorArea());
+        assertEquals(8000.0, dto.parkingSize());
+        assertEquals(2015, dto.yearOfConstruction());
+
+        assertEquals(120, dto.avgNumVehiclesInInventory());
+        assertEquals(35, dto.numOfWorkersMainShift());
+        assertEquals(85.0, dto.percentCooled());
+        assertEquals(70.0, dto.percentHeated());
+
+        assertNull(dto.createdAt());
+    }
+
+    @Test
+    void shouldRejectIncorrectVehicleDealershipType() {
+
+        VehicleDealershipBuildingUseDTO dto =
+                new VehicleDealershipBuildingUseDTO(
+                        null,
+                        null,
+                        "property-dealership-001",
+                        BuildingUseType.OFFICE,
+                        50000.0,
+                        8000.0,
+                        2015,
+                        120,
+                        35,
+                        85.0,
+                        70.0
+                );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> mapper.toVehicleDealershipReport(dto)
+        );
+    }
+
+
+
+    @Test
+    void shouldConvertWarehouseDTOToReport() {
+
+        WarehouseBuildingUseDTO dto =
+                new WarehouseBuildingUseDTO(
+                        null,
+                        null,
+                        "property-warehouse-001",
+                        BuildingUseType.WAREHOUSE,
+                        80000.0,
+                        5000.0,
+                        2010,
+                        45,
+                        20.0,
+                        75.0,
+                        60.0,
+                        80.0
+                );
+
+        WarehouseReport report =
+                mapper.toWarehouseReport(dto);
+
+        assertEquals(
+                "property-warehouse-001",
+                report.getRelatedPropertyID()
+        );
+
+        assertEquals(80000, report.getGrossFloorArea());
+        assertEquals(5000, report.getParkingSize());
+        assertEquals(2010, report.getYearOfConstruction());
+
+        assertEquals(45, report.getNumOfWorkersMainShift());
+        assertEquals(20.0f, report.getPercentColdStorage());
+        assertEquals(75.0f, report.getPercentCooled());
+        assertEquals(60.0f, report.getPercentHeated());
+        assertEquals(80, report.getWeeklyOperatingHours());
+    }
+
+    @Test
+    void shouldConvertWarehouseReportToDTO() {
+
+        WarehouseReport report = new WarehouseReport();
+
+        report.setID("warehouse-report-123");
+        report.setRelatedPropertyID("property-warehouse-001");
+        report.setGrossFloorArea(80000);
+        report.setParkingSize(5000);
+        report.setYearOfConstruction(2010);
+
+        report.setNumOfWorkersMainShift(45);
+        report.setPercentColdStorage(20.0f);
+        report.setPercentCooled(75.0f);
+        report.setPercentHeated(60.0f);
+        report.setWeeklyOperatingHours(80);
+
+        WarehouseBuildingUseDTO dto =
+                mapper.toWarehouseDTO(report);
+
+        assertEquals("warehouse-report-123", dto.id());
+        assertEquals(
+                "property-warehouse-001",
+                dto.propertyId()
+        );
+        assertEquals(
+                BuildingUseType.WAREHOUSE,
+                dto.buildingUseType()
+        );
+
+        assertEquals(80000.0, dto.grossFloorArea());
+        assertEquals(5000.0, dto.parkingSize());
+        assertEquals(2010, dto.yearOfConstruction());
+
+        assertEquals(45, dto.numOfWorkersMainShift());
+        assertEquals(20.0, dto.percentColdStorage());
+        assertEquals(75.0, dto.percentCooled());
+        assertEquals(60.0, dto.percentHeated());
+        assertEquals(80.0, dto.weeklyOperatingHours());
+
+        assertNull(dto.createdAt());
+    }
+
+    @Test
+    void shouldRejectInvalidWarehouseOperatingHours() {
+
+        WarehouseBuildingUseDTO dto =
+                new WarehouseBuildingUseDTO(
+                        null,
+                        null,
+                        "property-warehouse-001",
+                        BuildingUseType.WAREHOUSE,
+                        80000.0,
+                        5000.0,
+                        2010,
+                        45,
+                        20.0,
+                        75.0,
+                        60.0,
+                        169.0
+                );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> mapper.toWarehouseReport(dto)
+        );
+    }
+
+
+    @Test
+    void shouldConvertWarehouseRefrigeratedDTOToReport() {
+
+        WarehouseRefrigeratedBuildingUseDTO dto =
+                new WarehouseRefrigeratedBuildingUseDTO(
+                        null,
+                        null,
+                        "property-refrigerated-001",
+                        BuildingUseType.WAREHOUSE_REFRIGERATED,
+                        90000.0,
+                        6000.0,
+                        2014,
+                        100.0,
+                        50,
+                        60.0,
+                        40.0,
+                        80.0
+                );
+
+        WarehouseRefrigeratedReport report =
+                mapper.toWarehouseRefrigeratedReport(dto);
+
+        assertEquals(
+                "property-refrigerated-001",
+                report.getRelatedPropertyID()
+        );
+
+        assertEquals(90000, report.getGrossFloorArea());
+        assertEquals(6000, report.getParkingSize());
+        assertEquals(2014, report.getYearOfConstruction());
+
+        assertEquals(100, report.getWeeklyOperatingHours());
+        assertEquals(50, report.getNumOfWorkersMainShift());
+        assertEquals(60.0f, report.getPercentColdStorage());
+        assertEquals(40.0f, report.getPercentHeated());
+        assertEquals(80.0f, report.getPercentCooled());
+    }
+
+    @Test
+    void shouldConvertWarehouseRefrigeratedReportToDTO() {
+
+        WarehouseRefrigeratedReport report =
+                new WarehouseRefrigeratedReport();
+
+        report.setID("refrigerated-report-123");
+        report.setRelatedPropertyID("property-refrigerated-001");
+        report.setGrossFloorArea(90000);
+        report.setParkingSize(6000);
+        report.setYearOfConstruction(2014);
+
+        report.setWeeklyOperatingHours(100);
+        report.setNumOfWorkersMainShift(50);
+        report.setPercentColdStorage(60.0f);
+        report.setPercentHeated(40.0f);
+        report.setPercentCooled(80.0f);
+
+        WarehouseRefrigeratedBuildingUseDTO dto =
+                mapper.toWarehouseRefrigeratedDTO(report);
+
+        assertEquals("refrigerated-report-123", dto.id());
+        assertEquals(
+                "property-refrigerated-001",
+                dto.propertyId()
+        );
+        assertEquals(
+                BuildingUseType.WAREHOUSE_REFRIGERATED,
+                dto.buildingUseType()
+        );
+
+        assertEquals(90000.0, dto.grossFloorArea());
+        assertEquals(6000.0, dto.parkingSize());
+        assertEquals(2014, dto.yearOfConstruction());
+
+        assertEquals(100.0, dto.weeklyOperatingHours());
+        assertEquals(50, dto.numOfWorkersMainShift());
+        assertEquals(60.0, dto.percentColdStorage());
+        assertEquals(40.0, dto.percentHeated());
+        assertEquals(80.0, dto.percentCooled());
+
+        assertNull(dto.createdAt());
+    }
+
+    @Test
+    void shouldRejectInvalidWarehouseRefrigeratedOperatingHours() {
+
+        WarehouseRefrigeratedBuildingUseDTO dto =
+                new WarehouseRefrigeratedBuildingUseDTO(
+                        null,
+                        null,
+                        "property-refrigerated-001",
+                        BuildingUseType.WAREHOUSE_REFRIGERATED,
+                        90000.0,
+                        6000.0,
+                        2014,
+                        169.0,
+                        50,
+                        60.0,
+                        40.0,
+                        80.0
+                );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> mapper.toWarehouseRefrigeratedReport(dto)
+        );
+    }
+
+
+    @Test
+    void shouldConvertWholesaleClubDTOToReport() {
+
+        WholesaleClubBuildingUseDTO dto =
+                new WholesaleClubBuildingUseDTO(
+                        null,
+                        null,
+                        "property-wholesale-001",
+                        BuildingUseType.WHOLESALE_CLUB,
+                        120000.0,
+                        10000.0,
+                        2012,
+                        true,
+                        false,
+                        12,
+                        65,
+                        80.0,
+                        40.0,
+                        90.0
+                );
+
+        WholesaleClubReport report =
+                mapper.toWholesaleClubReport(dto);
+
+        assertEquals(
+                "property-wholesale-001",
+                report.getRelatedPropertyID()
+        );
+
+        assertEquals(120000, report.getGrossFloorArea());
+        assertEquals(10000, report.getParkingSize());
+        assertEquals(2012, report.getYearOfConstruction());
+
+        assertEquals(true, report.isHasExteriorEntrance());
+        assertEquals(false, report.isSingleStore());
+        assertEquals(12, report.getNumOfFreezers());
+        assertEquals(65, report.getNumOfWorkersMainShift());
+        assertEquals(80.0f, report.getPercentCooled());
+        assertEquals(40.0f, report.getPercentHeated());
+        assertEquals(90, report.getWeeklyOperatingHours());
+    }
+
+    @Test
+    void shouldConvertWholesaleClubReportToDTO() {
+
+        WholesaleClubReport report = new WholesaleClubReport();
+
+        report.setID("wholesale-report-123");
+        report.setRelatedPropertyID("property-wholesale-001");
+        report.setGrossFloorArea(120000);
+        report.setParkingSize(10000);
+        report.setYearOfConstruction(2012);
+
+        report.setHasExteriorEntrance(true);
+        report.setSingleStore(false);
+        report.setNumOfFreezers(12);
+        report.setNumOfWorkersMainShift(65);
+        report.setPercentCooled(80.0f);
+        report.setPercentHeated(40.0f);
+        report.setWeeklyOperatingHours(90);
+
+        WholesaleClubBuildingUseDTO dto =
+                mapper.toWholesaleClubDTO(report);
+
+        assertEquals("wholesale-report-123", dto.id());
+        assertEquals(
+                "property-wholesale-001",
+                dto.propertyId()
+        );
+        assertEquals(
+                BuildingUseType.WHOLESALE_CLUB,
+                dto.buildingUseType()
+        );
+
+        assertEquals(120000.0, dto.grossFloorArea());
+        assertEquals(10000.0, dto.parkingSize());
+        assertEquals(2012, dto.yearOfConstruction());
+
+        assertEquals(true, dto.hasExteriorEntrance());
+        assertEquals(false, dto.isSingleStore());
+        assertEquals(12, dto.numOfFreezers());
+        assertEquals(65, dto.numOfWorkersMainShift());
+        assertEquals(80.0, dto.percentCooled());
+        assertEquals(40.0, dto.percentHeated());
+        assertEquals(90.0, dto.weeklyOperatingHours());
+
+        assertNull(dto.createdAt());
+    }
+
+    @Test
+    void shouldRejectInvalidWholesaleClubOperatingHours() {
+
+        WholesaleClubBuildingUseDTO dto =
+                new WholesaleClubBuildingUseDTO(
+                        null,
+                        null,
+                        "property-wholesale-001",
+                        BuildingUseType.WHOLESALE_CLUB,
+                        120000.0,
+                        10000.0,
+                        2012,
+                        true,
+                        false,
+                        12,
+                        65,
+                        80.0,
+                        40.0,
+                        169.0
+                );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> mapper.toWholesaleClubReport(dto)
+        );
+    }
+
+
+
+    @Test
+    void shouldConvertWorshipFacilityDTOToReport() {
+
+        WorshipFacilityBuildingUseDTO dto =
+                new WorshipFacilityBuildingUseDTO(
+                        null,
+                        null,
+                        "property-worship-001",
+                        BuildingUseType.WORSHIP_FACILITY,
+                        25000.0,
+                        3000.0,
+                        2005,
+                        1500.0,
+                        75.0,
+                        60.0,
+                        450,
+                        45.0
+                );
+
+        WorshipFacilityReport report =
+                mapper.toWorshipFacilityReport(dto);
+
+        assertEquals(
+                "property-worship-001",
+                report.getRelatedPropertyID()
+        );
+
+        assertEquals(25000, report.getGrossFloorArea());
+        assertEquals(3000, report.getParkingSize());
+        assertEquals(2005, report.getYearOfConstruction());
+
+        assertEquals(1500, report.getGrossFloorAreaForFoodPrep());
+        assertEquals(75.0f, report.getPercentCooled());
+        assertEquals(60.0f, report.getPercentHeated());
+        assertEquals(450, report.getSeatingCapacity());
+        assertEquals(45, report.getWeeklyOperatingHours());
+    }
+
+    @Test
+    void shouldConvertWorshipFacilityReportToDTO() {
+
+        WorshipFacilityReport report = new WorshipFacilityReport();
+
+        report.setID("worship-report-123");
+        report.setRelatedPropertyID("property-worship-001");
+        report.setGrossFloorArea(25000);
+        report.setParkingSize(3000);
+        report.setYearOfConstruction(2005);
+
+        report.setGrossFloorAreaForFoodPrep(1500);
+        report.setPercentCooled(75.0f);
+        report.setPercentHeated(60.0f);
+        report.setSeatingCapacity(450);
+        report.setWeeklyOperatingHours(45);
+
+        WorshipFacilityBuildingUseDTO dto =
+                mapper.toWorshipFacilityDTO(report);
+
+        assertEquals("worship-report-123", dto.id());
+        assertEquals(
+                "property-worship-001",
+                dto.propertyId()
+        );
+        assertEquals(
+                BuildingUseType.WORSHIP_FACILITY,
+                dto.buildingUseType()
+        );
+
+        assertEquals(25000.0, dto.grossFloorArea());
+        assertEquals(3000.0, dto.parkingSize());
+        assertEquals(2005, dto.yearOfConstruction());
+
+        assertEquals(1500.0, dto.grossFloorAreaForFoodPrep());
+        assertEquals(75.0, dto.percentCooled());
+        assertEquals(60.0, dto.percentHeated());
+        assertEquals(450, dto.seatingCapacity());
+        assertEquals(45.0, dto.weeklyOperatingHours());
+
+        assertNull(dto.createdAt());
+    }
+
+    @Test
+    void shouldRejectInvalidWorshipFacilityOperatingHours() {
+
+        WorshipFacilityBuildingUseDTO dto =
+                new WorshipFacilityBuildingUseDTO(
+                        null,
+                        null,
+                        "property-worship-001",
+                        BuildingUseType.WORSHIP_FACILITY,
+                        25000.0,
+                        3000.0,
+                        2005,
+                        1500.0,
+                        75.0,
+                        60.0,
+                        450,
+                        169.0
+                );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> mapper.toWorshipFacilityReport(dto)
+        );
+    }
+
+
+
+    @Test
+    void shouldConvertDataCenterDTOToReport() {
+
+        DataCenterBuildingUseDTO dto =
+                new DataCenterBuildingUseDTO(
+                        null,
+                        null,
+                        "property-datacenter-001",
+                        BuildingUseType.DATA_CENTER,
+                        75000.0,
+                        5000.0,
+                        2018,
+                        2500000.0
+                );
+
+        DataCenterReport report =
+                mapper.toDataCenterReport(dto);
+
+        assertEquals(
+                "property-datacenter-001",
+                report.getRelatedPropertyID()
+        );
+
+        assertEquals(75000, report.getGrossFloorArea());
+        assertEquals(5000, report.getParkingSize());
+        assertEquals(2018, report.getYearOfConstruction());
+        assertEquals(2500000.0f, report.getAnnualITEnergy());
+    }
+
+    @Test
+    void shouldConvertDataCenterReportToDTO() {
+
+        DataCenterReport report = new DataCenterReport();
+
+        report.setID("datacenter-report-123");
+        report.setRelatedPropertyID("property-datacenter-001");
+        report.setGrossFloorArea(75000);
+        report.setParkingSize(5000);
+        report.setYearOfConstruction(2018);
+        report.setAnnualITEnergy(2500000.0f);
+
+        DataCenterBuildingUseDTO dto =
+                mapper.toDataCenterDTO(report);
+
+        assertEquals("datacenter-report-123", dto.id());
+        assertEquals(
+                "property-datacenter-001",
+                dto.propertyId()
+        );
+        assertEquals(
+                BuildingUseType.DATA_CENTER,
+                dto.buildingUseType()
+        );
+
+        assertEquals(75000.0, dto.grossFloorArea());
+        assertEquals(5000.0, dto.parkingSize());
+        assertEquals(2018, dto.yearOfConstruction());
+        assertEquals(2500000.0, dto.annualITEnergy());
+
+        assertNull(dto.createdAt());
+    }
+
+    @Test
+    void shouldRejectInvalidDataCenterAnnualITEnergy() {
+
+        DataCenterBuildingUseDTO dto =
+                new DataCenterBuildingUseDTO(
+                        null,
+                        null,
+                        "property-datacenter-001",
+                        BuildingUseType.DATA_CENTER,
+                        75000.0,
+                        5000.0,
+                        2018,
+                        -100.0
+                );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> mapper.toDataCenterReport(dto)
+        );
+    }
 
 
 }
