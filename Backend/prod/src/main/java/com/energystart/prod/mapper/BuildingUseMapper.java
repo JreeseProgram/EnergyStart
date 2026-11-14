@@ -1,0 +1,2632 @@
+
+package com.energystart.prod.mapper;
+
+import com.energystart.prod.dto.buildinguse.BuildingUseType;
+import com.energystart.prod.dto.buildinguse.types.OfficeBuildingUseDTO;
+import com.energystart.prod.energy.report_types.OfficeReport;
+
+import com.energystart.prod.dto.buildinguse.types.BankBranchBuildingUseDTO;
+import com.energystart.prod.energy.report_types.BankBranchReport;
+
+import com.energystart.prod.dto.buildinguse.types.CourtHouseBuildingUseDTO;
+import com.energystart.prod.energy.report_types.CourtHouseReport;
+
+import com.energystart.prod.dto.buildinguse.types.FinancialOfficeBuildingUseDTO;
+import com.energystart.prod.energy.report_types.FinancialOfficeReport;
+
+import com.energystart.prod.dto.buildinguse.types.HospitalBuildingUseDTO;
+import com.energystart.prod.energy.report_types.HospitalReport;
+
+import com.energystart.prod.dto.buildinguse.types.MedicalOfficeBuildingUseDTO;
+import com.energystart.prod.energy.report_types.MedicalOfficeReport;
+
+import com.energystart.prod.dto.buildinguse.types.ConvenienceStoreBuildingUseDTO;
+import com.energystart.prod.energy.report_types.ConvenienceStoreReport;
+
+import com.energystart.prod.dto.buildinguse.types.DistributionCenterBuildingUseDTO;
+import com.energystart.prod.energy.report_types.DistributionCenterReport;
+
+import com.energystart.prod.dto.buildinguse.types.HotelBuildingUseDTO;
+import com.energystart.prod.energy.report_types.HotelReport;
+
+import com.energystart.prod.dto.buildinguse.types.MultifamilyHousingBuildingUseDTO;
+import com.energystart.prod.energy.report_types.MultifamilyHousingReport;
+
+import com.energystart.prod.dto.buildinguse.types.RetailStoreBuildingUseDTO;
+import com.energystart.prod.energy.report_types.RetailStoreReport;
+
+import com.energystart.prod.dto.buildinguse.types.SchoolBuildingUseDTO;
+import com.energystart.prod.energy.report_types.SchoolReport;
+
+import com.energystart.prod.dto.buildinguse.types.SeniorLivingBuildingUseDTO;
+import com.energystart.prod.energy.report_types.SeniorLivingCommunityReport;
+
+import com.energystart.prod.dto.buildinguse.types.SupermarketBuildingUseDTO;
+import com.energystart.prod.energy.report_types.SupermarketReport;
+
+import com.energystart.prod.dto.buildinguse.types.VehicleDealershipBuildingUseDTO;
+import com.energystart.prod.energy.report_types.VehicleDealershipReport;
+
+import com.energystart.prod.dto.buildinguse.types.WarehouseBuildingUseDTO;
+import com.energystart.prod.energy.report_types.WarehouseReport;
+
+import com.energystart.prod.dto.buildinguse.types.WarehouseRefrigeratedBuildingUseDTO;
+import com.energystart.prod.energy.report_types.WarehouseRefrigeratedReport;
+
+import com.energystart.prod.dto.buildinguse.types.WholesaleClubBuildingUseDTO;
+import com.energystart.prod.energy.report_types.WholesaleClubReport;
+
+import com.energystart.prod.dto.buildinguse.types.WorshipFacilityBuildingUseDTO;
+import com.energystart.prod.energy.report_types.WorshipFacilityReport;
+
+import com.energystart.prod.dto.buildinguse.types.DataCenterBuildingUseDTO;
+import com.energystart.prod.energy.report_types.DataCenterReport;
+
+import com.energystart.prod.dto.buildinguse.BuildingUseDTO;
+import com.energystart.prod.energy.EnergyReport;
+
+
+
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class BuildingUseMapper {
+
+
+    /**
+     * Convert any frontend BuildingUseDTO into its corresponding
+     * backend EnergyReport subclass.
+     *
+     * The buildingUseType determines which existing mapper method
+     * handles the conversion.
+     */
+    public EnergyReport toEnergyReport(BuildingUseDTO dto) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Building use DTO cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() == null) {
+            throw new IllegalArgumentException(
+                    "buildingUseType is required."
+            );
+        }
+
+        return switch (dto.buildingUseType()) {
+
+            case OFFICE ->
+                    toOfficeReport((OfficeBuildingUseDTO) dto);
+
+            case BANK_BRANCH ->
+                    toBankBranchReport((BankBranchBuildingUseDTO) dto);
+
+            case COURT_HOUSE ->
+                    toCourtHouseReport((CourtHouseBuildingUseDTO) dto);
+
+            case FINANCIAL_OFFICE ->
+                    toFinancialOfficeReport((FinancialOfficeBuildingUseDTO) dto);
+
+            case HOSPITAL ->
+                    toHospitalReport((HospitalBuildingUseDTO) dto);
+
+            case MEDICAL_OFFICE ->
+                    toMedicalOfficeReport((MedicalOfficeBuildingUseDTO) dto);
+
+            case CONVENIENCE_STORE ->
+                    toConvenienceStoreReport((ConvenienceStoreBuildingUseDTO) dto);
+
+            case DISTRIBUTION_CENTER ->
+                    toDistributionCenterReport((DistributionCenterBuildingUseDTO) dto);
+
+            case HOTEL ->
+                    toHotelReport((HotelBuildingUseDTO) dto);
+
+            case MULTIFAMILY_HOUSING ->
+                    toMultifamilyHousingReport((MultifamilyHousingBuildingUseDTO) dto);
+
+            case RETAIL_STORE ->
+                    toRetailStoreReport((RetailStoreBuildingUseDTO) dto);
+
+            case SCHOOL ->
+                    toSchoolReport((SchoolBuildingUseDTO) dto);
+
+            case SENIOR_LIVING ->
+                    toSeniorLivingReport((SeniorLivingBuildingUseDTO) dto);
+
+            case SUPERMARKET ->
+                    toSupermarketReport((SupermarketBuildingUseDTO) dto);
+
+            case VEHICLE_DEALERSHIP ->
+                    toVehicleDealershipReport((VehicleDealershipBuildingUseDTO) dto);
+
+            case WAREHOUSE ->
+                    toWarehouseReport((WarehouseBuildingUseDTO) dto);
+
+            case WAREHOUSE_REFRIGERATED ->
+                    toWarehouseRefrigeratedReport((WarehouseRefrigeratedBuildingUseDTO) dto);
+
+            case WHOLESALE_CLUB ->
+                    toWholesaleClubReport((WholesaleClubBuildingUseDTO) dto);
+
+            case WORSHIP_FACILITY ->
+                    toWorshipFacilityReport((WorshipFacilityBuildingUseDTO) dto);
+
+            case DATA_CENTER ->
+                    toDataCenterReport((DataCenterBuildingUseDTO) dto);
+        };
+    }
+
+
+    /**
+     * Convert a backend EnergyReport into the corresponding
+     * frontend BuildingUseDTO.
+     */
+    public BuildingUseDTO toBuildingUseDTO(EnergyReport report) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Energy report cannot be null."
+            );
+        }
+
+        if (report instanceof OfficeReport office) {
+            return toOfficeDTO(office);
+        }
+
+        if (report instanceof BankBranchReport bankBranch) {
+            return toBankBranchDTO(bankBranch);
+        }
+
+        if (report instanceof CourtHouseReport courtHouse) {
+            return toCourtHouseDTO(courtHouse);
+        }
+
+        if (report instanceof FinancialOfficeReport financialOffice) {
+            return toFinancialOfficeDTO(financialOffice);
+        }
+
+        if (report instanceof HospitalReport hospital) {
+            return toHospitalDTO(hospital);
+        }
+
+        if (report instanceof MedicalOfficeReport medicalOffice) {
+            return toMedicalOfficeDTO(medicalOffice);
+        }
+
+        if (report instanceof ConvenienceStoreReport convenienceStore) {
+            return toConvenienceStoreDTO(convenienceStore);
+        }
+
+        if (report instanceof DistributionCenterReport distributionCenter) {
+            return toDistributionCenterDTO(distributionCenter);
+        }
+
+        if (report instanceof HotelReport hotel) {
+            return toHotelDTO(hotel);
+        }
+
+        if (report instanceof MultifamilyHousingReport multifamilyHousing) {
+            return toMultifamilyHousingDTO(multifamilyHousing);
+        }
+
+        if (report instanceof RetailStoreReport retailStore) {
+            return toRetailStoreDTO(retailStore);
+        }
+
+        if (report instanceof SchoolReport school) {
+            return toSchoolDTO(school);
+        }
+
+        if (report instanceof SeniorLivingCommunityReport seniorLiving) {
+            return toSeniorLivingDTO(seniorLiving);
+        }
+
+        if (report instanceof SupermarketReport supermarket) {
+            return toSupermarketDTO(supermarket);
+        }
+
+        if (report instanceof VehicleDealershipReport vehicleDealership) {
+            return toVehicleDealershipDTO(vehicleDealership);
+        }
+
+        if (report instanceof WarehouseReport warehouse) {
+            return toWarehouseDTO(warehouse);
+        }
+
+        if (report instanceof WarehouseRefrigeratedReport refrigeratedWarehouse) {
+            return toWarehouseRefrigeratedDTO(refrigeratedWarehouse);
+        }
+
+        if (report instanceof WholesaleClubReport wholesaleClub) {
+            return toWholesaleClubDTO(wholesaleClub);
+        }
+
+        if (report instanceof WorshipFacilityReport worshipFacility) {
+            return toWorshipFacilityDTO(worshipFacility);
+        }
+
+        if (report instanceof DataCenterReport dataCenter) {
+            return toDataCenterDTO(dataCenter);
+        }
+
+        throw new IllegalArgumentException(
+                "Unsupported energy report type: "
+                        + report.getClass().getSimpleName()
+        );
+    }
+
+
+    // Convert a frontend-facing Office DTO into an OfficeReport.
+    public OfficeReport toOfficeReport(OfficeBuildingUseDTO dto) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Office building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.OFFICE) {
+            throw new IllegalArgumentException(
+                    "Building use type must be OFFICE."
+            );
+        }
+
+        OfficeReport report = new OfficeReport();
+
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        report.setNumOfComputers(
+                requireNonnegativeInteger(dto.numOfComputers(), "numOfComputers")
+        );
+
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(dto.percentCooled(), "percentCooled")
+        );
+
+        int weeklyHours = requireWholeNumber(
+                dto.weeklyOperatingHours(),
+                "weeklyOperatingHours"
+        );
+
+        if (weeklyHours > 168) {
+            throw new IllegalArgumentException(
+                    "weeklyOperatingHours cannot exceed 168."
+            );
+        }
+
+        report.setWeeklyOperatingHours(weeklyHours);
+
+        return report;
+    }
+
+    // Convert an existing OfficeReport into a frontend-facing DTO.
+    public OfficeBuildingUseDTO toOfficeDTO(OfficeReport report) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Office report cannot be null."
+            );
+        }
+
+        return new OfficeBuildingUseDTO(
+                report.getID(),
+                null, // EnergyReport does not currently store createdAt.
+                report.getRelatedPropertyID(),
+                BuildingUseType.OFFICE,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.getNumOfComputers(),
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentCooled(),
+                (double) report.getWeeklyOperatingHours()
+        );
+    }
+
+    private int requireWholeNumber(Double value, String fieldName) {
+
+        if (value == null ||
+                !Double.isFinite(value) ||
+                value < 0 ||
+                value > Integer.MAX_VALUE ||
+                Math.rint(value) != value) {
+
+            throw new IllegalArgumentException(
+                    fieldName + " must be a nonnegative whole number " +
+                            "within the Java integer range."
+            );
+        }
+
+        return value.intValue();
+    }
+
+    private int requireNonnegativeInteger(Integer value, String fieldName) {
+
+        if (value == null || value < 0) {
+            throw new IllegalArgumentException(
+                    fieldName + " must be a nonnegative integer."
+            );
+        }
+
+        return value;
+    }
+
+    private float requirePercentage(Double value, String fieldName) {
+
+        if (value == null ||
+                !Double.isFinite(value) ||
+                value < 0 ||
+                value > 100) {
+
+            throw new IllegalArgumentException(
+                    fieldName + " must be between 0 and 100."
+            );
+        }
+
+        return value.floatValue();
+    }
+
+    private float requireNonnegativeFloat(Double value, String fieldName) {
+
+        if (value == null
+                || !Double.isFinite(value)
+                || value < 0
+                || value > Float.MAX_VALUE) {
+
+            throw new IllegalArgumentException(
+                    fieldName + " must be a finite, nonnegative number."
+            );
+        }
+
+        return value.floatValue();
+    }
+
+
+    /**
+     * Converts a Bank Branch DTO into the backend BankBranchReport.
+     */
+    public BankBranchReport toBankBranchReport(
+            BankBranchBuildingUseDTO dto) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Bank Branch building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.BANK_BRANCH) {
+            throw new IllegalArgumentException(
+                    "Building use type must be BANK_BRANCH."
+            );
+        }
+
+        BankBranchReport report = new BankBranchReport();
+
+        // Common building-use fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(
+                        dto.grossFloorArea(),
+                        "grossFloorArea"
+                )
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(
+                        dto.parkingSize(),
+                        "parkingSize"
+                )
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Bank Branch-specific fields
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setNumOfComputers(
+                requireNonnegativeInteger(
+                        dto.numOfComputers(),
+                        "numOfComputers"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        int weeklyHours = requireWholeNumber(
+                dto.weeklyOperatingHours(),
+                "weeklyOperatingHours"
+        );
+
+        if (weeklyHours > 168) {
+            throw new IllegalArgumentException(
+                    "weeklyOperatingHours cannot exceed 168."
+            );
+        }
+
+        report.setWeeklyOperatingHours(weeklyHours);
+
+        return report;
+    }
+
+    /**
+     * Converts a backend BankBranchReport into a frontend DTO.
+     */
+    public BankBranchBuildingUseDTO toBankBranchDTO(
+            BankBranchReport report) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Bank Branch report cannot be null."
+            );
+        }
+
+        return new BankBranchBuildingUseDTO(
+                report.getID(),
+                null, // createdAt is not persisted yet.
+                report.getRelatedPropertyID(),
+                BuildingUseType.BANK_BRANCH,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.getNumOfWorkersMainShift(),
+                report.getNumOfComputers(),
+                (double) report.getPercentCooled(),
+                (double) report.getWeeklyOperatingHours()
+        );
+    }
+
+
+
+    /**
+     * Converts a Court House DTO received from the frontend
+     * into the backend CourtHouseReport entity.
+     */
+    public CourtHouseReport toCourtHouseReport(CourtHouseBuildingUseDTO dto) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Court House building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.COURT_HOUSE) {
+            throw new IllegalArgumentException(
+                    "Building use type must be COURT_HOUSE."
+            );
+        }
+
+        CourtHouseReport report = new CourtHouseReport();
+
+        // Common fields inherited from EnergyReport
+        report.setRelatedPropertyID(dto.propertyId());
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Court House-specific fields
+        report.setNumOfComputers(
+                requireNonnegativeInteger(
+                        dto.numOfComputers(),
+                        "numOfComputers"
+                )
+        );
+
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        int weeklyHours = requireWholeNumber(
+                dto.weeklyOperatingHours(),
+                "weeklyOperatingHours"
+        );
+
+        if (weeklyHours > 168) {
+            throw new IllegalArgumentException(
+                    "weeklyOperatingHours cannot exceed 168."
+            );
+        }
+
+        report.setWeeklyOperatingHours(weeklyHours);
+
+        return report;
+    }
+
+    /**
+     * Converts a backend CourtHouseReport entity
+     * into the DTO expected by the frontend.
+     */
+    public CourtHouseBuildingUseDTO toCourtHouseDTO(CourtHouseReport report) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Court House report cannot be null."
+            );
+        }
+
+        return new CourtHouseBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.COURT_HOUSE,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.getNumOfComputers(),
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentCooled(),
+                (double) report.getWeeklyOperatingHours()
+        );
+    }
+
+
+
+    /**
+     * Converts a Financial Office DTO into a backend report.
+     */
+    public FinancialOfficeReport toFinancialOfficeReport(
+            FinancialOfficeBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Financial Office building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.FINANCIAL_OFFICE) {
+            throw new IllegalArgumentException(
+                    "Building use type must be FINANCIAL_OFFICE."
+            );
+        }
+
+        FinancialOfficeReport report = new FinancialOfficeReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Financial Office-specific fields
+        report.setNumOfComputers(
+                requireNonnegativeInteger(
+                        dto.numOfComputers(),
+                        "numOfComputers"
+                )
+        );
+
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        int weeklyHours = requireWholeNumber(
+                dto.weeklyOperatingHours(),
+                "weeklyOperatingHours"
+        );
+
+        if (weeklyHours > 168) {
+            throw new IllegalArgumentException(
+                    "weeklyOperatingHours cannot exceed 168."
+            );
+        }
+
+        report.setWeeklyOperatingHours(weeklyHours);
+
+        return report;
+    }
+
+    /**
+     * Converts a backend FinancialOfficeReport
+     * into the frontend-facing DTO.
+     */
+    public FinancialOfficeBuildingUseDTO toFinancialOfficeDTO(
+            FinancialOfficeReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Financial Office report cannot be null."
+            );
+        }
+
+        return new FinancialOfficeBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.FINANCIAL_OFFICE,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.getNumOfComputers(),
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentCooled(),
+                (double) report.getWeeklyOperatingHours()
+        );
+    }
+
+
+
+    /**
+     * Converts a Hospital DTO into the backend HospitalReport.
+     */
+    public HospitalReport toHospitalReport(HospitalBuildingUseDTO dto) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Hospital building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.HOSPITAL) {
+            throw new IllegalArgumentException(
+                    "Building use type must be HOSPITAL."
+            );
+        }
+
+        HospitalReport report = new HospitalReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Hospital-specific fields
+        report.setNumOfFullTimeWorkers(
+                requireNonnegativeInteger(
+                        dto.numOfFullTimeWorkers(),
+                        "numOfFullTimeWorkers"
+                )
+        );
+
+        report.setNumOfMRIMachines(
+                requireNonnegativeInteger(
+                        dto.numOfMRIMachines(),
+                        "numOfMRIMachines"
+                )
+        );
+
+        report.setNumOfStaffedBeds(
+                requireNonnegativeInteger(
+                        dto.numOfStaffedBeds(),
+                        "numOfStaffedBeds"
+                )
+        );
+
+        return report;
+    }
+
+    /**
+     * Converts a backend HospitalReport into a frontend DTO.
+     */
+    public HospitalBuildingUseDTO toHospitalDTO(HospitalReport report) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Hospital report cannot be null."
+            );
+        }
+
+        return new HospitalBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.HOSPITAL,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.getNumOfFullTimeWorkers(),
+                report.getNumOfMRIMachines(),
+                report.getNumOfStaffedBeds()
+        );
+    }
+
+
+
+    /**
+     * Converts a Medical Office DTO into a backend MedicalOfficeReport.
+     */
+    public MedicalOfficeReport toMedicalOfficeReport(
+            MedicalOfficeBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Medical Office building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.MEDICAL_OFFICE) {
+            throw new IllegalArgumentException(
+                    "Building use type must be MEDICAL_OFFICE."
+            );
+        }
+
+        MedicalOfficeReport report = new MedicalOfficeReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Medical Office-specific fields
+        report.setNumOfMRIMachines(
+                requireNonnegativeInteger(
+                        dto.numOfMRIMachines(),
+                        "numOfMRIMachines"
+                )
+        );
+
+        report.setNumOfSurgicalBeds(
+                requireNonnegativeInteger(
+                        dto.numOfSurgicalBeds(),
+                        "numOfSurgicalBeds"
+                )
+        );
+
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        int weeklyHours = requireWholeNumber(
+                dto.weeklyOperatingHours(),
+                "weeklyOperatingHours"
+        );
+
+        if (weeklyHours > 168) {
+            throw new IllegalArgumentException(
+                    "weeklyOperatingHours cannot exceed 168."
+            );
+        }
+
+        report.setWeeklyOperatingHours(weeklyHours);
+
+        return report;
+    }
+
+    /**
+     * Converts a backend MedicalOfficeReport
+     * into the frontend-facing DTO.
+     */
+    public MedicalOfficeBuildingUseDTO toMedicalOfficeDTO(
+            MedicalOfficeReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Medical Office report cannot be null."
+            );
+        }
+
+        return new MedicalOfficeBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.MEDICAL_OFFICE,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.getNumOfMRIMachines(),
+                report.getNumOfSurgicalBeds(),
+                report.getNumOfWorkersMainShift(),
+                (double) report.getWeeklyOperatingHours()
+        );
+    }
+
+
+
+    /**
+     * Converts a Convenience Store DTO into a backend report.
+     */
+    public ConvenienceStoreReport toConvenienceStoreReport(
+            ConvenienceStoreBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Convenience Store building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.CONVENIENCE_STORE) {
+            throw new IllegalArgumentException(
+                    "Building use type must be CONVENIENCE_STORE."
+            );
+        }
+
+        ConvenienceStoreReport report = new ConvenienceStoreReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Convenience Store-specific fields
+        report.setAreaOfWalkInFreezer(
+                requireNonnegativeFloat(
+                        dto.areaOfWalkInFreezer(),
+                        "areaOfWalkInFreezer"
+                )
+        );
+
+        report.setLengthOfFreezerUnit(
+                requireNonnegativeFloat(
+                        dto.lengthOfFreezerUnit(),
+                        "lengthOfFreezerUnit"
+                )
+        );
+
+        report.setNumOfCookingEquipment(
+                requireNonnegativeInteger(
+                        dto.numOfCookingEquipment(),
+                        "numOfCookingEquipment"
+                )
+        );
+
+        report.setNumOfFullTimeWorkers(
+                requireNonnegativeInteger(
+                        dto.numOfFullTimeWorkers(),
+                        "numOfFullTimeWorkers"
+                )
+        );
+
+        report.setNumOfHeatingUnits(
+                requireNonnegativeInteger(
+                        dto.numOfHeatingUnits(),
+                        "numOfHeatingUnits"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(dto.percentCooled(), "percentCooled")
+        );
+
+        report.setPercentHeated(
+                requirePercentage(dto.percentHeated(), "percentHeated")
+        );
+
+        return report;
+    }
+
+    /**
+     * Converts a backend Convenience Store report into a DTO.
+     */
+    public ConvenienceStoreBuildingUseDTO toConvenienceStoreDTO(
+            ConvenienceStoreReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Convenience Store report cannot be null."
+            );
+        }
+
+        return new ConvenienceStoreBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.CONVENIENCE_STORE,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                (double) report.getAreaOfWalkInFreezer(),
+                (double) report.getLengthOfFreezerUnit(),
+                report.getNumOfCookingEquipment(),
+                report.getNumOfFullTimeWorkers(),
+                report.getNumOfHeatingUnits(),
+                (double) report.getPercentCooled(),
+                (double) report.getPercentHeated()
+        );
+    }
+
+
+
+    /**
+     * Converts a Distribution Center DTO into a backend report.
+     */
+    public DistributionCenterReport toDistributionCenterReport(
+            DistributionCenterBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Distribution Center building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.DISTRIBUTION_CENTER) {
+            throw new IllegalArgumentException(
+                    "Building use type must be DISTRIBUTION_CENTER."
+            );
+        }
+
+        DistributionCenterReport report = new DistributionCenterReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Distribution Center-specific fields
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentColdStorage(
+                requirePercentage(
+                        dto.percentColdStorage(),
+                        "percentColdStorage"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        report.setPercentHeated(
+                requirePercentage(
+                        dto.percentHeated(),
+                        "percentHeated"
+                )
+        );
+
+        int weeklyHours = requireWholeNumber(
+                dto.weeklyOperatingHours(),
+                "weeklyOperatingHours"
+        );
+
+        if (weeklyHours > 168) {
+            throw new IllegalArgumentException(
+                    "weeklyOperatingHours cannot exceed 168."
+            );
+        }
+
+        report.setWeeklyOperatingHours(weeklyHours);
+
+        return report;
+    }
+
+    /**
+     * Converts a backend Distribution Center report into a DTO.
+     */
+    public DistributionCenterBuildingUseDTO toDistributionCenterDTO(
+            DistributionCenterReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Distribution Center report cannot be null."
+            );
+        }
+
+        return new DistributionCenterBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.DISTRIBUTION_CENTER,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentColdStorage(),
+                (double) report.getPercentCooled(),
+                (double) report.getPercentHeated(),
+                (double) report.getWeeklyOperatingHours()
+        );
+    }
+
+
+
+    /**
+     * Converts a Hotel DTO into a backend HotelReport.
+     */
+    public HotelReport toHotelReport(HotelBuildingUseDTO dto) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Hotel building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.HOTEL) {
+            throw new IllegalArgumentException(
+                    "Building use type must be HOTEL."
+            );
+        }
+
+        HotelReport report = new HotelReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Hotel-specific fields
+        if (dto.hasCookingFacilities() == null) {
+            throw new IllegalArgumentException(
+                    "hasCookingFacilities is required."
+            );
+        }
+
+        report.setHasCookingFacilities(dto.hasCookingFacilities());
+
+        report.setNumCommercialFreezer(
+                requireNonnegativeInteger(
+                        dto.numCommercialFreezer(),
+                        "numCommercialFreezer"
+                )
+        );
+
+        report.setNumOfRooms(
+                requireNonnegativeInteger(
+                        dto.numOfRooms(),
+                        "numOfRooms"
+                )
+        );
+
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        report.setPercentHeated(
+                requirePercentage(
+                        dto.percentHeated(),
+                        "percentHeated"
+                )
+        );
+
+        return report;
+    }
+
+    /**
+     * Converts a backend HotelReport into a frontend-facing DTO.
+     */
+    public HotelBuildingUseDTO toHotelDTO(HotelReport report) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Hotel report cannot be null."
+            );
+        }
+
+        return new HotelBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.HOTEL,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.isHasCookingFacilities(),
+                report.getNumCommercialFreezer(),
+                report.getNumOfRooms(),
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentCooled(),
+                (double) report.getPercentHeated()
+        );
+    }
+
+
+
+    /**
+     * Converts a Multifamily Housing DTO into a backend report.
+     */
+    public MultifamilyHousingReport toMultifamilyHousingReport(
+            MultifamilyHousingBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Multifamily Housing building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.MULTIFAMILY_HOUSING) {
+            throw new IllegalArgumentException(
+                    "Building use type must be MULTIFAMILY_HOUSING."
+            );
+        }
+
+        MultifamilyHousingReport report =
+                new MultifamilyHousingReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Optional rise-unit counts
+        int lowRise = dto.lowRiseUnits() == null
+                ? 0
+                : requireWholeNumber(dto.lowRiseUnits(), "lowRiseUnits");
+
+        int midRise = dto.midRiseUnits() == null
+                ? 0
+                : requireWholeNumber(dto.midRiseUnits(), "midRiseUnits");
+
+        int highRise = dto.highRiseUnits() == null
+                ? 0
+                : requireWholeNumber(dto.highRiseUnits(), "highRiseUnits");
+
+        // Prevent division by zero in the regression calculation.
+        if ((long) lowRise + midRise + highRise == 0) {
+            throw new IllegalArgumentException(
+                    "At least one rise-unit count must be greater than zero."
+            );
+        }
+
+        report.setLowRiseUnits(lowRise);
+        report.setMidRiseUnits(midRise);
+        report.setHighRiseUnits(highRise);
+
+        report.setNumOfBedrooms(
+                requireNonnegativeInteger(
+                        dto.numOfBedrooms(),
+                        "numOfBedrooms"
+                )
+        );
+
+        report.setNumOfResidentialUnits(
+                requireNonnegativeInteger(
+                        dto.numOfResidentialUnits(),
+                        "numOfResidentialUnits"
+                )
+        );
+
+        return report;
+    }
+
+    /**
+     * Converts a backend Multifamily Housing report into a DTO.
+     */
+    public MultifamilyHousingBuildingUseDTO toMultifamilyHousingDTO(
+            MultifamilyHousingReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Multifamily Housing report cannot be null."
+            );
+        }
+
+        return new MultifamilyHousingBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.MULTIFAMILY_HOUSING,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                (double) report.getLowRiseUnits(),
+                (double) report.getMidRiseUnits(),
+                (double) report.getHighRiseUnits(),
+                report.getNumOfBedrooms(),
+                report.getNumOfResidentialUnits()
+        );
+    }
+
+
+    /**
+     * Converts a Retail Store DTO into a backend RetailStoreReport.
+     */
+    public RetailStoreReport toRetailStoreReport(
+            RetailStoreBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Retail Store building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.RETAIL_STORE) {
+            throw new IllegalArgumentException(
+                    "Building use type must be RETAIL_STORE."
+            );
+        }
+
+        RetailStoreReport report = new RetailStoreReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Retail Store-specific fields
+        if (dto.hasExteriorEntrance() == null) {
+            throw new IllegalArgumentException(
+                    "hasExteriorEntrance is required."
+            );
+        }
+
+        report.setHasExteriorEntrance(dto.hasExteriorEntrance());
+
+        if (dto.isSingleStore() == null) {
+            throw new IllegalArgumentException(
+                    "isSingleStore is required."
+            );
+        }
+
+        report.setSingleStore(dto.isSingleStore());
+
+        report.setNumOfFreezers(
+                requireNonnegativeInteger(
+                        dto.numOfFreezers(),
+                        "numOfFreezers"
+                )
+        );
+
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        report.setPercentHeated(
+                requirePercentage(
+                        dto.percentHeated(),
+                        "percentHeated"
+                )
+        );
+
+        int weeklyHours = requireNonnegativeInteger(
+                dto.weeklyOperatingHours(),
+                "weeklyOperatingHours"
+        );
+
+        if (weeklyHours > 168) {
+            throw new IllegalArgumentException(
+                    "weeklyOperatingHours cannot exceed 168."
+            );
+        }
+
+        report.setWeeklyOperatingHours(weeklyHours);
+
+        return report;
+    }
+
+    /**
+     * Converts a backend RetailStoreReport into a Retail Store DTO.
+     */
+    public RetailStoreBuildingUseDTO toRetailStoreDTO(
+            RetailStoreReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Retail Store report cannot be null."
+            );
+        }
+
+        return new RetailStoreBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.RETAIL_STORE,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.isHasExteriorEntrance(),
+                report.isSingleStore(),
+                report.getNumOfFreezers(),
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentCooled(),
+                (double) report.getPercentHeated(),
+                report.getWeeklyOperatingHours()
+        );
+    }
+
+
+
+    /**
+     * Converts a School DTO into the backend SchoolReport model.
+     */
+    public SchoolReport toSchoolReport(SchoolBuildingUseDTO dto) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "School building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.SCHOOL) {
+            throw new IllegalArgumentException(
+                    "Building use type must be SCHOOL."
+            );
+        }
+
+        SchoolReport report = new SchoolReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // School-specific fields
+        if (dto.doesWorkWeekend() == null) {
+            throw new IllegalArgumentException(
+                    "doesWorkWeekend is required."
+            );
+        }
+
+        report.setDoesWorkWeekend(dto.doesWorkWeekend());
+
+        if (dto.hasCookingFacilities() == null) {
+            throw new IllegalArgumentException(
+                    "hasCookingFacilities is required."
+            );
+        }
+
+        report.setHasCookingFacilities(dto.hasCookingFacilities());
+
+        if (dto.isHighSchool() == null) {
+            throw new IllegalArgumentException(
+                    "isHighSchool is required."
+            );
+        }
+
+        report.setHighSchool(dto.isHighSchool());
+
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        report.setPercentHeated(
+                requirePercentage(
+                        dto.percentHeated(),
+                        "percentHeated"
+                )
+        );
+
+        return report;
+    }
+
+    /**
+     * Converts a backend SchoolReport into a School DTO.
+     */
+    public SchoolBuildingUseDTO toSchoolDTO(SchoolReport report) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "School report cannot be null."
+            );
+        }
+
+        return new SchoolBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.SCHOOL,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.isDoesWorkWeekend(),
+                report.isHasCookingFacilities(),
+                report.isHighSchool(),
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentCooled(),
+                (double) report.getPercentHeated()
+        );
+    }
+
+
+    /**
+     * Converts a Senior Living DTO into a backend report.
+     */
+    public SeniorLivingCommunityReport toSeniorLivingReport(
+            SeniorLivingBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Senior Living building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.SENIOR_LIVING) {
+            throw new IllegalArgumentException(
+                    "Building use type must be SENIOR_LIVING."
+            );
+        }
+
+        SeniorLivingCommunityReport report =
+                new SeniorLivingCommunityReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Senior Living-specific fields
+        report.setAvgNumResidents(
+                requireNonnegativeInteger(
+                        dto.avgNumResidents(),
+                        "avgNumResidents"
+                )
+        );
+
+        int capacity = requireNonnegativeInteger(
+                dto.maxResidentCapacity(),
+                "maxResidentCapacity"
+        );
+
+        if (capacity == 0) {
+            throw new IllegalArgumentException(
+                    "maxResidentCapacity must be greater than zero."
+            );
+        }
+
+        if (dto.avgNumResidents() > capacity) {
+            throw new IllegalArgumentException(
+                    "avgNumResidents cannot exceed maxResidentCapacity."
+            );
+        }
+
+        report.setMaxResidentCapacity(capacity);
+
+        report.setNumOfComputers(
+                requireNonnegativeInteger(
+                        dto.numOfComputers(),
+                        "numOfComputers"
+                )
+        );
+
+        report.setNumCommercialFreezer(
+                requireNonnegativeInteger(
+                        dto.numCommercialFreezer(),
+                        "numCommercialFreezer"
+                )
+        );
+
+        report.setNumOfCommercialWashingMachines(
+                requireNonnegativeInteger(
+                        dto.numOfCommercialWashingMachines(),
+                        "numOfCommercialWashingMachines"
+                )
+        );
+
+        report.setNumOfResidentialLifts(
+                requireNonnegativeInteger(
+                        dto.numOfResidentialLifts(),
+                        "numOfResidentialLifts"
+                )
+        );
+
+        report.setNumOfResidentialUnits(
+                requireNonnegativeInteger(
+                        dto.numOfResidentialUnits(),
+                        "numOfResidentialUnits"
+                )
+        );
+
+        report.setNumOfResidentialWashingMachines(
+                requireNonnegativeInteger(
+                        dto.numOfResidentialWashingMachines(),
+                        "numOfResidentialWashingMachines"
+                )
+        );
+
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        report.setPercentHeated(
+                requirePercentage(
+                        dto.percentHeated(),
+                        "percentHeated"
+                )
+        );
+
+        return report;
+    }
+
+    /**
+     * Converts a backend Senior Living report into a DTO.
+     */
+    public SeniorLivingBuildingUseDTO toSeniorLivingDTO(
+            SeniorLivingCommunityReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Senior Living report cannot be null."
+            );
+        }
+
+        return new SeniorLivingBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.SENIOR_LIVING,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.getAvgNumResidents(),
+                report.getMaxResidentCapacity(),
+                report.getNumOfComputers(),
+                report.getNumCommercialFreezer(),
+                report.getNumOfCommercialWashingMachines(),
+                report.getNumOfResidentialLifts(),
+                report.getNumOfResidentialUnits(),
+                report.getNumOfResidentialWashingMachines(),
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentCooled(),
+                (double) report.getPercentHeated()
+        );
+    }
+
+
+
+    /**
+     * Converts a Supermarket DTO into the backend SupermarketReport.
+     */
+    public SupermarketReport toSupermarketReport(
+            SupermarketBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Supermarket building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.SUPERMARKET) {
+            throw new IllegalArgumentException(
+                    "Building use type must be SUPERMARKET."
+            );
+        }
+
+        SupermarketReport report = new SupermarketReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Supermarket-specific fields
+        report.setNumOfFreezers(
+                requireNonnegativeInteger(
+                        dto.numOfOpenClosedFreezers(),
+                        "numOfOpenClosedFreezers"
+                )
+        );
+
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        report.setPercentHeated(
+                requirePercentage(
+                        dto.percentHeated(),
+                        "percentHeated"
+                )
+        );
+
+        int weeklyHours = requireWholeNumber(
+                dto.weeklyOperatingHours(),
+                "weeklyOperatingHours"
+        );
+
+        if (weeklyHours > 168) {
+            throw new IllegalArgumentException(
+                    "weeklyOperatingHours cannot exceed 168."
+            );
+        }
+
+        report.setWeeklyOperatingHours(weeklyHours);
+
+        return report;
+    }
+
+    /**
+     * Converts a backend SupermarketReport into a Supermarket DTO.
+     */
+    public SupermarketBuildingUseDTO toSupermarketDTO(
+            SupermarketReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Supermarket report cannot be null."
+            );
+        }
+
+        return new SupermarketBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.SUPERMARKET,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.getNumOfFreezers(),
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentCooled(),
+                (double) report.getPercentHeated(),
+                (double) report.getWeeklyOperatingHours()
+        );
+    }
+
+
+    /**
+     * Converts a Vehicle Dealership DTO into the backend report.
+     */
+    public VehicleDealershipReport toVehicleDealershipReport(
+            VehicleDealershipBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Vehicle Dealership building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.VEHICLE_DEALERSHIP) {
+            throw new IllegalArgumentException(
+                    "Building use type must be VEHICLE_DEALERSHIP."
+            );
+        }
+
+        VehicleDealershipReport report = new VehicleDealershipReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Vehicle Dealership-specific fields
+        report.setAvgNumVehiclesInInventory(
+                requireNonnegativeInteger(
+                        dto.avgNumVehiclesInInventory(),
+                        "avgNumVehiclesInInventory"
+                )
+        );
+
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        report.setPercentHeated(
+                requirePercentage(
+                        dto.percentHeated(),
+                        "percentHeated"
+                )
+        );
+
+        return report;
+    }
+
+    /**
+     * Converts the backend Vehicle Dealership report into a DTO.
+     */
+    public VehicleDealershipBuildingUseDTO toVehicleDealershipDTO(
+            VehicleDealershipReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Vehicle Dealership report cannot be null."
+            );
+        }
+
+        return new VehicleDealershipBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.VEHICLE_DEALERSHIP,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.getAvgNumVehiclesInInventory(),
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentCooled(),
+                (double) report.getPercentHeated()
+        );
+    }
+
+
+
+    /**
+     * Converts a Warehouse DTO into the backend WarehouseReport.
+     */
+    public WarehouseReport toWarehouseReport(
+            WarehouseBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Warehouse building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.WAREHOUSE) {
+            throw new IllegalArgumentException(
+                    "Building use type must be WAREHOUSE."
+            );
+        }
+
+        WarehouseReport report = new WarehouseReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Warehouse-specific fields
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentColdStorage(
+                requirePercentage(
+                        dto.percentColdStorage(),
+                        "percentColdStorage"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        report.setPercentHeated(
+                requirePercentage(
+                        dto.percentHeated(),
+                        "percentHeated"
+                )
+        );
+
+        int weeklyHours = requireWholeNumber(
+                dto.weeklyOperatingHours(),
+                "weeklyOperatingHours"
+        );
+
+        if (weeklyHours > 168) {
+            throw new IllegalArgumentException(
+                    "weeklyOperatingHours cannot exceed 168."
+            );
+        }
+
+        report.setWeeklyOperatingHours(weeklyHours);
+
+        return report;
+    }
+
+    /**
+     * Converts the backend WarehouseReport into a Warehouse DTO.
+     */
+    public WarehouseBuildingUseDTO toWarehouseDTO(
+            WarehouseReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Warehouse report cannot be null."
+            );
+        }
+
+        return new WarehouseBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.WAREHOUSE,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentColdStorage(),
+                (double) report.getPercentCooled(),
+                (double) report.getPercentHeated(),
+                (double) report.getWeeklyOperatingHours()
+        );
+    }
+
+
+
+    /**
+     * Converts a Refrigerated Warehouse DTO into the backend report.
+     */
+    public WarehouseRefrigeratedReport toWarehouseRefrigeratedReport(
+            WarehouseRefrigeratedBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Refrigerated Warehouse building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.WAREHOUSE_REFRIGERATED) {
+            throw new IllegalArgumentException(
+                    "Building use type must be WAREHOUSE_REFRIGERATED."
+            );
+        }
+
+        WarehouseRefrigeratedReport report =
+                new WarehouseRefrigeratedReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Refrigerated Warehouse-specific fields
+        int weeklyHours = requireWholeNumber(
+                dto.weeklyOperatingHours(),
+                "weeklyOperatingHours"
+        );
+
+        if (weeklyHours > 168) {
+            throw new IllegalArgumentException(
+                    "weeklyOperatingHours cannot exceed 168."
+            );
+        }
+
+        report.setWeeklyOperatingHours(weeklyHours);
+
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentColdStorage(
+                requirePercentage(
+                        dto.percentColdStorage(),
+                        "percentColdStorage"
+                )
+        );
+
+        report.setPercentHeated(
+                requirePercentage(
+                        dto.percentHeated(),
+                        "percentHeated"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        return report;
+    }
+
+    /**
+     * Converts the backend Refrigerated Warehouse report into a DTO.
+     */
+    public WarehouseRefrigeratedBuildingUseDTO toWarehouseRefrigeratedDTO(
+            WarehouseRefrigeratedReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Refrigerated Warehouse report cannot be null."
+            );
+        }
+
+        return new WarehouseRefrigeratedBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.WAREHOUSE_REFRIGERATED,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                (double) report.getWeeklyOperatingHours(),
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentColdStorage(),
+                (double) report.getPercentHeated(),
+                (double) report.getPercentCooled()
+        );
+    }
+
+
+
+    /**
+     * Converts a Wholesale Club DTO into the backend report.
+     */
+    public WholesaleClubReport toWholesaleClubReport(
+            WholesaleClubBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Wholesale Club building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.WHOLESALE_CLUB) {
+            throw new IllegalArgumentException(
+                    "Building use type must be WHOLESALE_CLUB."
+            );
+        }
+
+        if (dto.hasExteriorEntrance() == null) {
+            throw new IllegalArgumentException(
+                    "hasExteriorEntrance is required."
+            );
+        }
+
+        if (dto.isSingleStore() == null) {
+            throw new IllegalArgumentException(
+                    "isSingleStore is required."
+            );
+        }
+
+        WholesaleClubReport report = new WholesaleClubReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Wholesale Club-specific fields
+        report.setHasExteriorEntrance(dto.hasExteriorEntrance());
+        report.setSingleStore(dto.isSingleStore());
+
+        report.setNumOfFreezers(
+                requireNonnegativeInteger(
+                        dto.numOfFreezers(),
+                        "numOfFreezers"
+                )
+        );
+
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        report.setPercentHeated(
+                requirePercentage(
+                        dto.percentHeated(),
+                        "percentHeated"
+                )
+        );
+
+        int weeklyHours = requireWholeNumber(
+                dto.weeklyOperatingHours(),
+                "weeklyOperatingHours"
+        );
+
+        if (weeklyHours > 168) {
+            throw new IllegalArgumentException(
+                    "weeklyOperatingHours cannot exceed 168."
+            );
+        }
+
+        report.setWeeklyOperatingHours(weeklyHours);
+
+        return report;
+    }
+
+    /**
+     * Converts the backend Wholesale Club report into a DTO.
+     */
+    public WholesaleClubBuildingUseDTO toWholesaleClubDTO(
+            WholesaleClubReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Wholesale Club report cannot be null."
+            );
+        }
+
+        return new WholesaleClubBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.WHOLESALE_CLUB,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.isHasExteriorEntrance(),
+                report.isSingleStore(),
+                report.getNumOfFreezers(),
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentCooled(),
+                (double) report.getPercentHeated(),
+                (double) report.getWeeklyOperatingHours()
+        );
+    }
+
+
+    /**
+     * Converts a Worship Facility DTO into the backend report.
+     */
+    public WorshipFacilityReport toWorshipFacilityReport(
+            WorshipFacilityBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Worship Facility building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.WORSHIP_FACILITY) {
+            throw new IllegalArgumentException(
+                    "Building use type must be WORSHIP_FACILITY."
+            );
+        }
+
+        WorshipFacilityReport report = new WorshipFacilityReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Worship Facility-specific fields
+        report.setGrossFloorAreaForFoodPrep(
+                requireWholeNumber(
+                        dto.grossFloorAreaForFoodPrep(),
+                        "grossFloorAreaForFoodPrep"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        report.setPercentHeated(
+                requirePercentage(
+                        dto.percentHeated(),
+                        "percentHeated"
+                )
+        );
+
+        report.setSeatingCapacity(
+                requireNonnegativeInteger(
+                        dto.seatingCapacity(),
+                        "seatingCapacity"
+                )
+        );
+
+        int weeklyHours = requireWholeNumber(
+                dto.weeklyOperatingHours(),
+                "weeklyOperatingHours"
+        );
+
+        if (weeklyHours > 168) {
+            throw new IllegalArgumentException(
+                    "weeklyOperatingHours cannot exceed 168."
+            );
+        }
+
+        report.setWeeklyOperatingHours(weeklyHours);
+
+        return report;
+    }
+
+    /**
+     * Converts the backend Worship Facility report into a DTO.
+     */
+    public WorshipFacilityBuildingUseDTO toWorshipFacilityDTO(
+            WorshipFacilityReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Worship Facility report cannot be null."
+            );
+        }
+
+        return new WorshipFacilityBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.WORSHIP_FACILITY,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                (double) report.getGrossFloorAreaForFoodPrep(),
+                (double) report.getPercentCooled(),
+                (double) report.getPercentHeated(),
+                report.getSeatingCapacity(),
+                (double) report.getWeeklyOperatingHours()
+        );
+    }
+
+
+    /**
+     * Converts a Data Center DTO into the backend report.
+     */
+    public DataCenterReport toDataCenterReport(
+            DataCenterBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Data Center building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.DATA_CENTER) {
+            throw new IllegalArgumentException(
+                    "Building use type must be DATA_CENTER."
+            );
+        }
+
+        DataCenterReport report = new DataCenterReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Data Center-specific field
+        report.setAnnualITEnergy(
+                requireNonnegativeFloat(
+                        dto.annualITEnergy(),
+                        "annualITEnergy"
+                )
+        );
+
+        return report;
+    }
+
+    /**
+     * Converts the backend Data Center report into a DTO.
+     */
+    public DataCenterBuildingUseDTO toDataCenterDTO(
+            DataCenterReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Data Center report cannot be null."
+            );
+        }
+
+        return new DataCenterBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.DATA_CENTER,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                (double) report.getAnnualITEnergy()
+        );
+    }
+
+
+}

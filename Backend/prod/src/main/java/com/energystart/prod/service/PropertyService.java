@@ -162,6 +162,42 @@ public class PropertyService {
     }
 
 
+    // Remove a user's access without leaving the property with zero users.
+    public void removePropertyUser(
+            String propertyId,
+            String userIdToRemove,
+            String requestingUserId) {
+
+        // Confirm the requesting user has permission.
+        Property property = requireAccess(
+                propertyId, requestingUserId);
+
+        List<String> authorizedUsers = new ArrayList<>(
+                property.getAuthorizedUserIds()
+        );
+
+        // Confirm the target user belongs to this property.
+        if (!authorizedUsers.contains(userIdToRemove)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User is not assigned to this property.");
+        }
+
+        // Prevent removing the final authorized user.
+        if (authorizedUsers.size() <= 1) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Cannot remove the last authorized user from a property.");
+        }
+
+        authorizedUsers.remove(userIdToRemove);
+
+        property.setAuthorizedUserIds(authorizedUsers);
+        propertyRepo.save(property);
+    }
+
+
+
 
     // Check both the property ID and authorized user in the repository query.
     private Property requireAccess(String id, String userId) {
