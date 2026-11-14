@@ -32,6 +32,18 @@ import com.energystart.prod.energy.report_types.HotelReport;
 import com.energystart.prod.dto.buildinguse.types.MultifamilyHousingBuildingUseDTO;
 import com.energystart.prod.energy.report_types.MultifamilyHousingReport;
 
+import com.energystart.prod.dto.buildinguse.types.RetailStoreBuildingUseDTO;
+import com.energystart.prod.energy.report_types.RetailStoreReport;
+
+import com.energystart.prod.dto.buildinguse.types.SchoolBuildingUseDTO;
+import com.energystart.prod.energy.report_types.SchoolReport;
+
+import com.energystart.prod.dto.buildinguse.types.SeniorLivingBuildingUseDTO;
+import com.energystart.prod.energy.report_types.SeniorLivingCommunityReport;
+
+import com.energystart.prod.dto.buildinguse.types.SupermarketBuildingUseDTO;
+import com.energystart.prod.energy.report_types.SupermarketReport;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -1062,5 +1074,475 @@ class BuildingUseMapperTest {
                 () -> mapper.toMultifamilyHousingReport(dto)
         );
     }
+
+
+    @Test
+    void shouldConvertRetailStoreDTOToReport() {
+
+        RetailStoreBuildingUseDTO dto =
+                new RetailStoreBuildingUseDTO(
+                        null,
+                        null,
+                        "property-retail-001",
+                        BuildingUseType.RETAIL_STORE,
+                        45000.0,
+                        2500.0,
+                        2015,
+                        true,
+                        false,
+                        6,
+                        25,
+                        80.0,
+                        65.0,
+                        70
+                );
+
+        RetailStoreReport report =
+                mapper.toRetailStoreReport(dto);
+
+        assertEquals(
+                "property-retail-001",
+                report.getRelatedPropertyID()
+        );
+
+        assertEquals(45000, report.getGrossFloorArea());
+        assertEquals(2500, report.getParkingSize());
+        assertEquals(2015, report.getYearOfConstruction());
+
+        assertEquals(true, report.isHasExteriorEntrance());
+        assertEquals(false, report.isSingleStore());
+        assertEquals(6, report.getNumOfFreezers());
+        assertEquals(25, report.getNumOfWorkersMainShift());
+        assertEquals(80.0f, report.getPercentCooled());
+        assertEquals(65.0f, report.getPercentHeated());
+        assertEquals(70, report.getWeeklyOperatingHours());
+    }
+
+    @Test
+    void shouldConvertRetailStoreReportToDTO() {
+
+        RetailStoreReport report = new RetailStoreReport();
+
+        report.setID("retail-report-123");
+        report.setRelatedPropertyID("property-retail-001");
+        report.setGrossFloorArea(45000);
+        report.setParkingSize(2500);
+        report.setYearOfConstruction(2015);
+
+        report.setHasExteriorEntrance(true);
+        report.setSingleStore(false);
+        report.setNumOfFreezers(6);
+        report.setNumOfWorkersMainShift(25);
+        report.setPercentCooled(80.0f);
+        report.setPercentHeated(65.0f);
+        report.setWeeklyOperatingHours(70);
+
+        RetailStoreBuildingUseDTO dto =
+                mapper.toRetailStoreDTO(report);
+
+        assertEquals("retail-report-123", dto.id());
+        assertEquals(
+                "property-retail-001",
+                dto.propertyId()
+        );
+        assertEquals(
+                BuildingUseType.RETAIL_STORE,
+                dto.buildingUseType()
+        );
+
+        assertEquals(45000.0, dto.grossFloorArea());
+        assertEquals(2500.0, dto.parkingSize());
+        assertEquals(2015, dto.yearOfConstruction());
+
+        assertEquals(true, dto.hasExteriorEntrance());
+        assertEquals(false, dto.isSingleStore());
+        assertEquals(6, dto.numOfFreezers());
+        assertEquals(25, dto.numOfWorkersMainShift());
+        assertEquals(80.0, dto.percentCooled());
+        assertEquals(65.0, dto.percentHeated());
+        assertEquals(70, dto.weeklyOperatingHours());
+
+        assertNull(dto.createdAt());
+    }
+
+    @Test
+    void shouldRejectIncorrectRetailStoreType() {
+
+        RetailStoreBuildingUseDTO dto =
+                new RetailStoreBuildingUseDTO(
+                        null,
+                        null,
+                        "property-retail-001",
+                        BuildingUseType.OFFICE,
+                        45000.0,
+                        2500.0,
+                        2015,
+                        true,
+                        false,
+                        6,
+                        25,
+                        80.0,
+                        65.0,
+                        70
+                );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> mapper.toRetailStoreReport(dto)
+        );
+    }
+
+
+    @Test
+    void shouldConvertSchoolDTOToReport() {
+
+        SchoolBuildingUseDTO dto = new SchoolBuildingUseDTO(
+                null,
+                null,
+                "property-school-001",
+                BuildingUseType.SCHOOL,
+                85000.0,
+                5000.0,
+                2005,
+                true,
+                true,
+                false,
+                75,
+                85.0,
+                70.0
+        );
+
+        SchoolReport report = mapper.toSchoolReport(dto);
+
+        assertEquals(
+                "property-school-001",
+                report.getRelatedPropertyID()
+        );
+
+        assertEquals(85000, report.getGrossFloorArea());
+        assertEquals(5000, report.getParkingSize());
+        assertEquals(2005, report.getYearOfConstruction());
+
+        assertEquals(true, report.isDoesWorkWeekend());
+        assertEquals(true, report.isHasCookingFacilities());
+        assertEquals(false, report.isHighSchool());
+        assertEquals(75, report.getNumOfWorkersMainShift());
+        assertEquals(85.0f, report.getPercentCooled());
+        assertEquals(70.0f, report.getPercentHeated());
+    }
+
+    @Test
+    void shouldConvertSchoolReportToDTO() {
+
+        SchoolReport report = new SchoolReport();
+
+        report.setID("school-report-123");
+        report.setRelatedPropertyID("property-school-001");
+        report.setGrossFloorArea(85000);
+        report.setParkingSize(5000);
+        report.setYearOfConstruction(2005);
+
+        report.setDoesWorkWeekend(true);
+        report.setHasCookingFacilities(true);
+        report.setHighSchool(false);
+        report.setNumOfWorkersMainShift(75);
+        report.setPercentCooled(85.0f);
+        report.setPercentHeated(70.0f);
+
+        SchoolBuildingUseDTO dto = mapper.toSchoolDTO(report);
+
+        assertEquals("school-report-123", dto.id());
+        assertEquals(
+                "property-school-001",
+                dto.propertyId()
+        );
+        assertEquals(BuildingUseType.SCHOOL, dto.buildingUseType());
+
+        assertEquals(85000.0, dto.grossFloorArea());
+        assertEquals(5000.0, dto.parkingSize());
+        assertEquals(2005, dto.yearOfConstruction());
+
+        assertEquals(true, dto.doesWorkWeekend());
+        assertEquals(true, dto.hasCookingFacilities());
+        assertEquals(false, dto.isHighSchool());
+        assertEquals(75, dto.numOfWorkersMainShift());
+        assertEquals(85.0, dto.percentCooled());
+        assertEquals(70.0, dto.percentHeated());
+
+        assertNull(dto.createdAt());
+    }
+
+    @Test
+    void shouldRejectIncorrectSchoolType() {
+
+        SchoolBuildingUseDTO dto = new SchoolBuildingUseDTO(
+                null,
+                null,
+                "property-school-001",
+                BuildingUseType.OFFICE,
+                85000.0,
+                5000.0,
+                2005,
+                true,
+                true,
+                false,
+                75,
+                85.0,
+                70.0
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> mapper.toSchoolReport(dto)
+        );
+    }
+
+
+
+    @Test
+    void shouldConvertSeniorLivingDTOToReport() {
+
+        SeniorLivingBuildingUseDTO dto =
+                new SeniorLivingBuildingUseDTO(
+                        null,
+                        null,
+                        "property-senior-001",
+                        BuildingUseType.SENIOR_LIVING,
+                        120000.0,
+                        6000.0,
+                        2012,
+                        150,
+                        200,
+                        40,
+                        5,
+                        8,
+                        4,
+                        100,
+                        25,
+                        60,
+                        85.0,
+                        90.0
+                );
+
+        SeniorLivingCommunityReport report =
+                mapper.toSeniorLivingReport(dto);
+
+        assertEquals(
+                "property-senior-001",
+                report.getRelatedPropertyID()
+        );
+
+        assertEquals(120000, report.getGrossFloorArea());
+        assertEquals(6000, report.getParkingSize());
+        assertEquals(2012, report.getYearOfConstruction());
+
+        assertEquals(150, report.getAvgNumResidents());
+        assertEquals(200, report.getMaxResidentCapacity());
+        assertEquals(40, report.getNumOfComputers());
+        assertEquals(5, report.getNumCommercialFreezer());
+        assertEquals(8, report.getNumOfCommercialWashingMachines());
+        assertEquals(4, report.getNumOfResidentialLifts());
+        assertEquals(100, report.getNumOfResidentialUnits());
+        assertEquals(25, report.getNumOfResidentialWashingMachines());
+        assertEquals(60, report.getNumOfWorkersMainShift());
+        assertEquals(85.0f, report.getPercentCooled());
+        assertEquals(90.0f, report.getPercentHeated());
+    }
+
+    @Test
+    void shouldConvertSeniorLivingReportToDTO() {
+
+        SeniorLivingCommunityReport report =
+                new SeniorLivingCommunityReport();
+
+        report.setID("senior-report-123");
+        report.setRelatedPropertyID("property-senior-001");
+        report.setGrossFloorArea(120000);
+        report.setParkingSize(6000);
+        report.setYearOfConstruction(2012);
+
+        report.setAvgNumResidents(150);
+        report.setMaxResidentCapacity(200);
+        report.setNumOfComputers(40);
+        report.setNumCommercialFreezer(5);
+        report.setNumOfCommercialWashingMachines(8);
+        report.setNumOfResidentialLifts(4);
+        report.setNumOfResidentialUnits(100);
+        report.setNumOfResidentialWashingMachines(25);
+        report.setNumOfWorkersMainShift(60);
+        report.setPercentCooled(85.0f);
+        report.setPercentHeated(90.0f);
+
+        SeniorLivingBuildingUseDTO dto =
+                mapper.toSeniorLivingDTO(report);
+
+        assertEquals("senior-report-123", dto.id());
+        assertEquals(
+                "property-senior-001",
+                dto.propertyId()
+        );
+        assertEquals(
+                BuildingUseType.SENIOR_LIVING,
+                dto.buildingUseType()
+        );
+
+        assertEquals(120000.0, dto.grossFloorArea());
+        assertEquals(6000.0, dto.parkingSize());
+        assertEquals(2012, dto.yearOfConstruction());
+
+        assertEquals(150, dto.avgNumResidents());
+        assertEquals(200, dto.maxResidentCapacity());
+        assertEquals(40, dto.numOfComputers());
+        assertEquals(5, dto.numCommercialFreezer());
+        assertEquals(8, dto.numOfCommercialWashingMachines());
+        assertEquals(4, dto.numOfResidentialLifts());
+        assertEquals(100, dto.numOfResidentialUnits());
+        assertEquals(25, dto.numOfResidentialWashingMachines());
+        assertEquals(60, dto.numOfWorkersMainShift());
+        assertEquals(85.0, dto.percentCooled());
+        assertEquals(90.0, dto.percentHeated());
+
+        assertNull(dto.createdAt());
+    }
+
+    @Test
+    void shouldRejectInvalidSeniorLivingCapacity() {
+
+        SeniorLivingBuildingUseDTO dto =
+                new SeniorLivingBuildingUseDTO(
+                        null,
+                        null,
+                        "property-senior-001",
+                        BuildingUseType.SENIOR_LIVING,
+                        120000.0,
+                        6000.0,
+                        2012,
+                        250,
+                        200,
+                        40,
+                        5,
+                        8,
+                        4,
+                        100,
+                        25,
+                        60,
+                        85.0,
+                        90.0
+                );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> mapper.toSeniorLivingReport(dto)
+        );
+    }
+
+
+    @Test
+    void shouldConvertSupermarketDTOToReport() {
+
+        SupermarketBuildingUseDTO dto =
+                new SupermarketBuildingUseDTO(
+                        null,
+                        null,
+                        "property-supermarket-001",
+                        BuildingUseType.SUPERMARKET,
+                        60000.0,
+                        4000.0,
+                        2016,
+                        12,
+                        35,
+                        85.0,
+                        70.0,
+                        80.0
+                );
+
+        SupermarketReport report =
+                mapper.toSupermarketReport(dto);
+
+        assertEquals(
+                "property-supermarket-001",
+                report.getRelatedPropertyID()
+        );
+
+        assertEquals(60000, report.getGrossFloorArea());
+        assertEquals(4000, report.getParkingSize());
+        assertEquals(2016, report.getYearOfConstruction());
+
+        assertEquals(12, report.getNumOfFreezers());
+        assertEquals(35, report.getNumOfWorkersMainShift());
+        assertEquals(85.0f, report.getPercentCooled());
+        assertEquals(70.0f, report.getPercentHeated());
+        assertEquals(80, report.getWeeklyOperatingHours());
+    }
+
+    @Test
+    void shouldConvertSupermarketReportToDTO() {
+
+        SupermarketReport report = new SupermarketReport();
+
+        report.setID("supermarket-report-123");
+        report.setRelatedPropertyID("property-supermarket-001");
+        report.setGrossFloorArea(60000);
+        report.setParkingSize(4000);
+        report.setYearOfConstruction(2016);
+
+        report.setNumOfFreezers(12);
+        report.setNumOfWorkersMainShift(35);
+        report.setPercentCooled(85.0f);
+        report.setPercentHeated(70.0f);
+        report.setWeeklyOperatingHours(80);
+
+        SupermarketBuildingUseDTO dto =
+                mapper.toSupermarketDTO(report);
+
+        assertEquals("supermarket-report-123", dto.id());
+        assertEquals(
+                "property-supermarket-001",
+                dto.propertyId()
+        );
+        assertEquals(
+                BuildingUseType.SUPERMARKET,
+                dto.buildingUseType()
+        );
+
+        assertEquals(60000.0, dto.grossFloorArea());
+        assertEquals(4000.0, dto.parkingSize());
+        assertEquals(2016, dto.yearOfConstruction());
+
+        assertEquals(12, dto.numOfOpenClosedFreezers());
+        assertEquals(35, dto.numOfWorkersMainShift());
+        assertEquals(85.0, dto.percentCooled());
+        assertEquals(70.0, dto.percentHeated());
+        assertEquals(80.0, dto.weeklyOperatingHours());
+
+        assertNull(dto.createdAt());
+    }
+
+    @Test
+    void shouldRejectFractionalSupermarketOperatingHours() {
+
+        SupermarketBuildingUseDTO dto =
+                new SupermarketBuildingUseDTO(
+                        null,
+                        null,
+                        "property-supermarket-001",
+                        BuildingUseType.SUPERMARKET,
+                        60000.0,
+                        4000.0,
+                        2016,
+                        12,
+                        35,
+                        85.0,
+                        70.0,
+                        80.5
+                );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> mapper.toSupermarketReport(dto)
+        );
+    }
+
+
 
 }
