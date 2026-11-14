@@ -4,6 +4,7 @@ import { useAuthService } from "@/features/auth/infrastructure/auth.service"
 import { User } from "@/features/portfolio/models/user.models"
 import { usePortfolioTestServices } from "@/testing/hooks/use-portfolio-test-services"
 import { PropertyApiService } from "@/features/portfolio/services/property-api.service"
+import { BuildingUseApiService } from "@/features/portfolio/services/building-use-api.service"
 
 export function useServices(): Services {
   const authService = useAuthService()
@@ -24,5 +25,6 @@ export function useServices(): Services {
     authService,
     ...portfolioServices,
     propertyService: new PropertyApiService(),
+    buildingUseService: new BuildingUseApiService(),
   }
 }

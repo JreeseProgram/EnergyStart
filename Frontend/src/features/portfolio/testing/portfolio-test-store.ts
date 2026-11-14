@@ -4,6 +4,7 @@ import type { PropertyId } from "@/features/portfolio/models/property.models"
 import { defaultBuildingUses } from "@/features/portfolio/testing/fixtures/building-use.fixtures"
 import { defaultProperties } from "@/features/portfolio/testing/fixtures/property.fixtures"
 import { User } from "@/features/portfolio/models/user.models"
+
 import {
   mockSharingUsers,
   testPortfolioUser,
@@ -37,7 +38,7 @@ export function createPortfolioTestStore(owner: User = testPortfolioUser) {
       })
     ),
     buildingUses: new Map(
-      defaultBuildingUses.map((use) => [use.id, BuildingUse.parse(use)])
+      defaultBuildingUses.map((use) => [use.ID, BuildingUse.parse(use)])
     ),
   }
 }
@@ -50,6 +51,10 @@ export function requireProperty(
   const property = store.properties.find(
     (property) => property.id === propertyId
   )
-  if (!property) throw new Error("Property not found")
+
+  if (!property) {
+    throw new Error("Property not found")
+  }
+
   return property
 }

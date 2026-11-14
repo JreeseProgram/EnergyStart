@@ -17,7 +17,11 @@ export function BuildingUses({
   const [buildingUse, setBuildingUse] = useState<BuildingUse | "new" | null>(
     null
   )
-  const uses = buildingUses.filter((use) => use.propertyId === propertyId)
+
+  const uses = buildingUses.filter(
+    (use) => use.relatedPropertyID === propertyId
+  )
+
   const floorArea = uses.reduce((sum, use) => sum + use.grossFloorArea, 0)
 
   return (

@@ -1,25 +1,29 @@
 import type z from "zod"
-import { useEffect, useId, type ReactNode } from "react"
+import { BuildingUseSaveRefreshError } from "@/features/portfolio/services/building-use.service"
+import { useEffect, useId, useRef, type ReactNode } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { SelectField } from "@/components/form/select-field"
 import { toast } from "@/components/ui/toast"
+import type { PropertyId } from "@/features/portfolio/models/property.models"
+import { usePortfolioUser } from "@/features/portfolio/api/get-user.api"
+import { getBuildingUseFields } from "@/features/portfolio/utils/building-use-fields"
+import { UserId } from "@/features/portfolio/models/user.models"
+import { BUILDING_USE_TYPES } from "@/features/portfolio/utils/form-constants"
+import { BuildingUseField } from "@/features/portfolio/components/building-use-field"
+
 import {
   BuildingUseDetails,
+  BuildingUseFormDetails,
   BuildingUseType,
   type BuildingUse,
 } from "@/features/portfolio/models/building-use.models"
-import type { PropertyId } from "@/features/portfolio/models/property.models"
-import { usePortfolioUser } from "@/features/portfolio/api/get-user.api"
+
 import {
   useCreateBuildingUse,
   useUpdateBuildingUse,
 } from "@/features/portfolio/api/save-building-use.api"
-import { getBuildingUseFields } from "@/features/portfolio/utils/building-use-fields"
-import { UserId } from "@/features/portfolio/models/user.models"
-import { PROPERTY_TYPES } from "@/features/portfolio/utils/form-constants"
-import { BuildingUseField } from "@/features/portfolio/components/building-use-field"
 
 type BuildingUseFormState = {
   isSubmitting: boolean
@@ -39,6 +43,7 @@ export function BuildingUseForm({
   onSubmittingChange?: (isSubmitting: boolean) => void
   children?: (state: BuildingUseFormState) => ReactNode
 }) {
+  const submissionLocked = useRef(false)
   const formId = useId()
   const user = usePortfolioUser()
   const create = useCreateBuildingUse()
@@ -50,25 +55,35 @@ export function BuildingUseForm({
     unknown,
     BuildingUseDetails
   >({
-    resolver: zodResolver(BuildingUseDetails),
+    resolver: zodResolver(BuildingUseFormDetails),
     defaultValues: buildingUse
       ? BuildingUseDetails.parse(buildingUse)
-      : { propertyId },
+      : { relatedPropertyID: propertyId },
   })
 
-  const type = useWatch({ control: form.control, name: "buildingUseType" })
+  const type = useWatch({ control: form.control, name: "reportType" })
   const fields = getBuildingUseFields(type)
   const pending = mutation.isPending
+  const savedWithoutRefresh = mutation.error instanceof BuildingUseSaveRefreshError
 
   useEffect(() => {
     onSubmittingChange?.(pending)
   }, [pending, onSubmittingChange])
 
   function submit(details: BuildingUseDetails) {
-    if (pending || !user.data) return
+    if (submissionLocked.current || pending || savedWithoutRefresh || !user.data) {
+      return
+    }
+
+    submissionLocked.current = true
 
     const input = { ...details, userId: UserId.parse(user.data.id) }
     const options = {
+      onError: (error: Error) => {
+        if (!(error instanceof BuildingUseSaveRefreshError)) {
+          submissionLocked.current = false
+        }
+      },
       onSuccess: () => {
         toast.add({
           type: "success",
@@ -77,38 +92,47 @@ export function BuildingUseForm({
         onSuccess()
       },
     }
-    if (buildingUse) update.mutate({ ...input, id: buildingUse.id }, options)
-    else create.mutate(input, options)
+
+    if (buildingUse) {
+      update.mutate({ ...input, id: buildingUse.ID }, options)
+    } else {
+      create.mutate(input, options)
+    }
   }
 
   function changeType(next: BuildingUseType) {
+    if (submissionLocked.current || savedWithoutRefresh) return
+
     const nextNames = new Set(
       getBuildingUseFields(next).map((field) => field.name)
     )
 
     for (const field of fields) {
-      if (!nextNames.has(field.name)) form.unregister(field.name)
+      if (!nextNames.has(field.name)) {
+        form.unregister(field.name)
+      }
     }
 
-    form.setValue("buildingUseType", next)
+    form.setValue("reportType", next)
     form.clearErrors()
     mutation.reset()
   }
 
   return (
-    <form id={formId} onSubmit={form.handleSubmit(submit)} noValidate>
-      <fieldset disabled={pending} className="grid gap-5">
+    <form id={formId} onSubmit={(event) => void form.handleSubmit(submit)(event)} noValidate>
+      <fieldset disabled={pending || savedWithoutRefresh} className="grid gap-5">
         <SelectField
           control={form.control}
-          name="buildingUseType"
+          name="reportType"
           label="Use type *"
-          items={PROPERTY_TYPES}
+          items={BUILDING_USE_TYPES}
           placeholder="Select a use type"
           required
           errorMessage="Select a use type"
           onValueChange={(value) => {
             if (value) changeType(value as BuildingUseType)
           }}
+          disabled={Boolean(buildingUse)}
         />
 
         <div className="grid grid-cols-2 gap-5">
@@ -124,7 +148,9 @@ export function BuildingUseForm({
 
       {mutation.isError && (
         <p role="alert" className="mt-4 text-sm text-destructive">
-          Unable to save building use. Please try again.
+          {savedWithoutRefresh
+            ? mutation.error.message
+            : "Unable to save building use. Please try again."}
         </p>
       )}
 
@@ -143,7 +169,7 @@ export function BuildingUseForm({
 
       {children?.({
         isSubmitting: pending,
-        canSubmit: !pending && Boolean(user.data),
+        canSubmit: !pending && !savedWithoutRefresh && Boolean(user.data),
       })}
     </form>
   )

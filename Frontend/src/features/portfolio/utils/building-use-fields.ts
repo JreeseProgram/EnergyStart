@@ -1,12 +1,13 @@
 import z from "zod"
 import type { FieldPath } from "react-hook-form"
+import type { BuildingUseField } from "@/features/portfolio/components/building-use-field"
+
 import {
   BuildingUseCommonFields,
   BuildingUseDetails,
   BuildingUseSpecificFields,
   type BuildingUseType,
 } from "@/features/portfolio/models/building-use.models"
-import type { BuildingUseField } from "@/features/portfolio/components/building-use-field"
 
 const labels: Record<string, string> = {
   grossFloorArea: "Gross floor area (ft²)",
@@ -29,21 +30,20 @@ const labels: Record<string, string> = {
   numCommercialFreezer: "Commercial freezers",
   numOfRooms: "Rooms",
   numOfSurgicalBeds: "Surgical beds",
-  BuildingHeight: "Building height",
+  annualITEnergy: "Annual IT energy",
   numOfBedrooms: "Bedrooms",
   numOfResidentialUnits: "Residential units",
   doesWorkWeekend: "Operates on weekends",
-  isHighSchool: "High school",
+  highSchool: "High school",
   avgNumResidents: "Average residents",
   maxResidentCapacity: "Maximum resident capacity",
   numOfCommercialWashingMachines: "Commercial washing machines",
   numOfResidentialLifts: "Residential lifts",
   numOfResidentialWashingMachines: "Residential washing machines",
-  numOfOpenClosedFreezers: "Open and closed freezers",
+  numOfFreezers: "Freezers",
   avgNumVehiclesInInventory: "Average vehicles in inventory",
   hasExteriorEntrance: "Exterior entrance",
-  isSingleStore: "Single store",
-  numOfWalkInFreezers: "Walk-in freezers",
+  singleStore: "Single store",
   grossFloorAreaForFoodPrep: "Food preparation area (ft²)",
   seatingCapacity: "Seating capacity",
   lowRiseUnits: "Number of low rise units",
@@ -72,14 +72,18 @@ function getFieldInput(
 }
 
 function getFieldLimits(
-  name: string
+  name: string,
+  schema: z.ZodType
 ): Pick<BuildingUseField, "min" | "max" | "step"> {
   switch (name) {
     case "yearOfConstruction":
-      return { min: 1, max: new Date().getFullYear(), step: 1 }
+      return { min: 1800, max: new Date().getFullYear(), step: 1 }
+
+    case "grossFloorArea":
+      return { min: 1, max: undefined, step: 1 }
 
     case "weeklyOperatingHours":
-      return { min: 0, max: 168, step: "any" }
+      return { min: 0, max: 168, step: 1 }
 
     case "maxResidentCapacity":
     case "seatingCapacity":
@@ -89,7 +93,7 @@ function getFieldLimits(
       return {
         min: 0,
         max: name.startsWith("percent") ? 100 : undefined,
-        step: name.startsWith("num") ? 1 : "any",
+        step: schema instanceof z.ZodNumber && schema.isInt ? 1 : "any",
       }
   }
 }
@@ -98,16 +102,16 @@ export function getBuildingUseFields(
   type?: BuildingUseType
 ): BuildingUseField[] {
   const specificSchema = BuildingUseSpecificFields.options.find(
-    (schema) => schema.shape.buildingUseType.value === type
+    (schema) => schema.shape.reportType.value === type
   )
   const shape = { ...BuildingUseCommonFields.shape, ...specificSchema?.shape }
 
   return Object.entries(shape)
-    .filter(([name]) => name !== "propertyId" && name !== "buildingUseType")
+    .filter(([name]) => name !== "relatedPropertyID" && name !== "reportType")
     .map(([name, schema]) => ({
       name: name as FieldPath<BuildingUseDetails>,
       label: labels[name] ?? name,
       ...getFieldInput(schema),
-      ...getFieldLimits(name),
+      ...getFieldLimits(name, schema),
     }))
 }

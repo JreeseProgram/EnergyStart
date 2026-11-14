@@ -2,16 +2,18 @@ import { use } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Services } from "@/context/services.context"
 import { getBuildingUsesQueryOptions } from "@/features/portfolio/api/get-building-uses.api"
-import type { BuildingUse } from "@/features/portfolio/models/building-use.models"
+import type { PropertyId } from "@/features/portfolio/models/property.models"
+import { BuildingUseSaveRefreshError } from "@/features/portfolio/services/building-use.service"
 
 function useBuildingUseInvalidation() {
   const queryClient = useQueryClient()
   const { buildingUseService } = use(Services)
-  return async (use: BuildingUse) => {
+
+  return async (propertyId: PropertyId) => {
     await Promise.all([
       queryClient.invalidateQueries({
         queryKey: getBuildingUsesQueryOptions({
-          input: { propertyId: use.propertyId },
+          input: { propertyId },
           buildingUseService,
         }).queryKey,
       }),
@@ -22,18 +24,32 @@ function useBuildingUseInvalidation() {
 
 export function useCreateBuildingUse() {
   const { buildingUseService } = use(Services)
-  const onSuccess = useBuildingUseInvalidation()
+  const invalidate = useBuildingUseInvalidation()
+
   return useMutation({
     mutationFn: buildingUseService.createBuildingUse,
-    onSuccess,
+    retry: false,
+    onSuccess: (use) => invalidate(use.relatedPropertyID),
+    onError: async (error) => {
+      if (error instanceof BuildingUseSaveRefreshError) {
+        await invalidate(error.propertyId)
+      }
+    },
   })
 }
 
 export function useUpdateBuildingUse() {
   const { buildingUseService } = use(Services)
-  const onSuccess = useBuildingUseInvalidation()
+  const invalidate = useBuildingUseInvalidation()
+
   return useMutation({
     mutationFn: buildingUseService.updateBuildingUse,
-    onSuccess,
+    retry: false,
+    onSuccess: (use) => invalidate(use.relatedPropertyID),
+    onError: async (error) => {
+      if (error instanceof BuildingUseSaveRefreshError) {
+        await invalidate(error.propertyId)
+      }
+    },
   })
 }

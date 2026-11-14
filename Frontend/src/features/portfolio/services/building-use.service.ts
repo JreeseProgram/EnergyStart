@@ -4,7 +4,7 @@ import { UserId } from "@/features/portfolio/models/user.models"
 import {
   BuildingUse,
   BuildingUseId,
-  BuildingUseDetails,
+  BuildingUseFormDetails,
 } from "@/features/portfolio/models/building-use.models"
 
 export interface BuildingUseService {
@@ -21,11 +21,25 @@ export type GetBuildingUsesInput = z.infer<typeof GetBuildingUsesInput>
 export const GetBuildingUsesInput = z.object({ propertyId: PropertyId })
 
 export type CreateBuildingUseInput = z.infer<typeof CreateBuildingUseInput>
-export const CreateBuildingUseInput = BuildingUseDetails.and(
+export const CreateBuildingUseInput = BuildingUseFormDetails.and(
   z.object({ userId: UserId })
 )
 
 export type UpdateBuildingUseInput = z.infer<typeof UpdateBuildingUseInput>
-export const UpdateBuildingUseInput = BuildingUseDetails.and(
+export const UpdateBuildingUseInput = BuildingUseFormDetails.and(
   z.object({ id: BuildingUseId, userId: UserId })
 )
+
+// The write succeeded; an unreadable response must not invite another write.
+export class BuildingUseSaveRefreshError extends Error {
+  readonly propertyId: PropertyId
+
+  constructor(propertyId: PropertyId, cause: unknown) {
+    super(
+      "Building use saved, but its details could not be loaded. Close this form and reload the building-use list; do not submit it again.",
+      { cause }
+    )
+    this.name = "BuildingUseSaveRefreshError"
+    this.propertyId = propertyId
+  }
+}

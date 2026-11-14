@@ -21,7 +21,7 @@ export function createPropertyTestService(
     TestPropertyRecord.parse({
       ...property,
       grossFloorArea: Array.from(store.buildingUses.values())
-        .filter((use) => use.propertyId === property.id)
+        .filter((use) => use.relatedPropertyID === property.id)
         .reduce((sum, use) => sum + use.grossFloorArea, 0),
     })
 

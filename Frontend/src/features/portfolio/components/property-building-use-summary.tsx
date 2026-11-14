@@ -1,4 +1,10 @@
 import { Button } from "@/components/ui/button"
+import { paths } from "@/config/paths"
+import type { BuildingUse } from "@/features/portfolio/models/building-use.models"
+import type { PropertyId } from "@/features/portfolio/models/property.models"
+import { BUILDING_USE_TYPES } from "@/features/portfolio/utils/form-constants"
+import { Link } from "react-router"
+
 import {
   Card,
   CardContent,
@@ -6,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+
 import {
   Table,
   TableBody,
@@ -15,11 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { paths } from "@/config/paths"
-import type { BuildingUse } from "@/features/portfolio/models/building-use.models"
-import type { PropertyId } from "@/features/portfolio/models/property.models"
-import { PROPERTY_TYPES } from "@/features/portfolio/utils/form-constants"
-import { Link } from "react-router"
 
 export function PropertyBuildingUseSummary({
   propertyId,
@@ -28,7 +30,10 @@ export function PropertyBuildingUseSummary({
   propertyId: PropertyId
   buildingUses: BuildingUse[]
 }) {
-  const uses = buildingUses.filter((use) => use.propertyId === propertyId)
+  const uses = buildingUses.filter(
+    (use) => use.relatedPropertyID === propertyId
+  )
+
   const floorArea = uses.reduce((sum, use) => sum + use.grossFloorArea, 0)
 
   return (
@@ -78,11 +83,11 @@ export function PropertyBuildingUseSummary({
             </TableHeader>
             <TableBody>
               {uses.map((use) => (
-                <TableRow key={use.id}>
+                <TableRow key={use.ID}>
                   <TableCell className="h-12">
                     {
-                      PROPERTY_TYPES.find(
-                        (type) => type.value === use.buildingUseType
+                      BUILDING_USE_TYPES.find(
+                        (type) => type.value === use.reportType
                       )?.label
                     }
                   </TableCell>
