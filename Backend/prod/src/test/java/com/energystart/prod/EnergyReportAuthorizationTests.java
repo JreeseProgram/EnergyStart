@@ -2,6 +2,7 @@ package com.energystart.prod;
 
 import com.energystart.prod.controller.EnergyReportController;
 import com.energystart.prod.energy.EnergyReport;
+import com.energystart.prod.mapper.BuildingUseMapper;
 import com.energystart.prod.model.Property;
 import com.energystart.prod.repos.PropertyRepo;
 import com.energystart.prod.service.EnergyReportService;
@@ -22,7 +23,8 @@ class EnergyReportAuthorizationTests {
     private final EnergyReportService reports = mock(EnergyReportService.class);
     private final PropertyRepo properties = mock(PropertyRepo.class);
     private final EnergyReportController controller = new EnergyReportController(
-            reports, new PropertyService(properties, mock(WorkOsUserService.class)));
+            reports, mock(BuildingUseMapper.class),
+            new PropertyService(properties, mock(WorkOsUserService.class)));
     private final Jwt jwt = Jwt.withTokenValue("test").header("alg", "none")
             .subject("user_owner").build();
 

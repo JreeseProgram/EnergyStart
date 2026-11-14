@@ -26,12 +26,16 @@ import java.util.stream.Collectors;
 public class EnergyReportController {
 
     private final EnergyReportService energyReportService;
+    private final BuildingUseMapper buildingUseMapper;
     private final PropertyService propertyService;
 
     // Constructor dependency injection
     public EnergyReportController(
-            EnergyReportService energyReportService, PropertyService propertyService) {
+            EnergyReportService energyReportService,
+            BuildingUseMapper buildingUseMapper, PropertyService propertyService) {
+
         this.energyReportService = energyReportService;
+        this.buildingUseMapper = buildingUseMapper;
         this.propertyService = propertyService;
     }
 
