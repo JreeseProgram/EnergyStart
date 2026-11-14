@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
+import java.time.YearMonth;
 import java.util.List;
 
 @RestController
@@ -65,21 +66,36 @@ public class EnergyMeterController {
 
 
     // READ - Retrieve all energy meters
-    @GetMapping
-    public ResponseEntity<List<EnergyMeter>> getAllMeters() {
-
-        return ResponseEntity.ok(
-                energyMeterService.getAllMeters()
-        );
-    }
+//    @GetMapping
+//    public ResponseEntity<List<EnergyMeter>> getAllMeters() {
+//
+//        return ResponseEntity.ok(
+//                energyMeterService.getAllMeters()
+//        );
+//    }
 
 
     // READ - Retrieve all energy meters as frontend DTOs
-    @GetMapping("/dto")
-    public ResponseEntity<List<EnergyMeterDTO>> getAllMeterDTOs() {
+    @GetMapping("/dto/asList/{propertyId}")
+    public ResponseEntity<List<EnergyMeterDTO>> getAllMeterDTOs(
+            @PathVariable String propertyId,
+            @RequestParam(required = false)YearMonth startDate,
+            @RequestParam(required = false)YearMonth endDate
+            ) {
 
+        boolean allNull = (startDate == null && endDate == null);
+        boolean allPresent = (startDate != null && endDate != null);
+
+        if(!allNull && !allPresent) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        if(allPresent){
+            List <EnergyMeterDTO> meterDTO = energyMeterMapper.toEnergyMeterDatedDTO(propertyId,startDate,endDate);
+            return ResponseEntity.ok(meterDTO);
+        }
         List<EnergyMeterDTO> meters =
-                energyMeterService.getAllMeters()
+                energyMeterService.getAllMeters(propertyId)
                         .stream()
                         .map(energyMeterMapper::toEnergyMeterDTO)
                         .toList();
