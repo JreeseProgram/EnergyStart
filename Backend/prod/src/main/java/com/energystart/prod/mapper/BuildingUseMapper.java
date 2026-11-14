@@ -23,6 +23,18 @@ import com.energystart.prod.energy.report_types.MedicalOfficeReport;
 import com.energystart.prod.dto.buildinguse.types.ConvenienceStoreBuildingUseDTO;
 import com.energystart.prod.energy.report_types.ConvenienceStoreReport;
 
+import com.energystart.prod.dto.buildinguse.types.DistributionCenterBuildingUseDTO;
+import com.energystart.prod.energy.report_types.DistributionCenterReport;
+
+import com.energystart.prod.dto.buildinguse.types.HotelBuildingUseDTO;
+import com.energystart.prod.energy.report_types.HotelReport;
+
+import com.energystart.prod.dto.buildinguse.types.MultifamilyHousingBuildingUseDTO;
+import com.energystart.prod.energy.report_types.MultifamilyHousingReport;
+
+import com.energystart.prod.dto.buildinguse.types.RetailStoreBuildingUseDTO;
+import com.energystart.prod.energy.report_types.RetailStoreReport;
+
 
 import org.springframework.stereotype.Component;
 
@@ -830,6 +842,491 @@ public class BuildingUseMapper {
                 report.getNumOfHeatingUnits(),
                 (double) report.getPercentCooled(),
                 (double) report.getPercentHeated()
+        );
+    }
+
+
+
+    /**
+     * Converts a Distribution Center DTO into a backend report.
+     */
+    public DistributionCenterReport toDistributionCenterReport(
+            DistributionCenterBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Distribution Center building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.DISTRIBUTION_CENTER) {
+            throw new IllegalArgumentException(
+                    "Building use type must be DISTRIBUTION_CENTER."
+            );
+        }
+
+        DistributionCenterReport report = new DistributionCenterReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Distribution Center-specific fields
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentColdStorage(
+                requirePercentage(
+                        dto.percentColdStorage(),
+                        "percentColdStorage"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        report.setPercentHeated(
+                requirePercentage(
+                        dto.percentHeated(),
+                        "percentHeated"
+                )
+        );
+
+        int weeklyHours = requireWholeNumber(
+                dto.weeklyOperatingHours(),
+                "weeklyOperatingHours"
+        );
+
+        if (weeklyHours > 168) {
+            throw new IllegalArgumentException(
+                    "weeklyOperatingHours cannot exceed 168."
+            );
+        }
+
+        report.setWeeklyOperatingHours(weeklyHours);
+
+        return report;
+    }
+
+    /**
+     * Converts a backend Distribution Center report into a DTO.
+     */
+    public DistributionCenterBuildingUseDTO toDistributionCenterDTO(
+            DistributionCenterReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Distribution Center report cannot be null."
+            );
+        }
+
+        return new DistributionCenterBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.DISTRIBUTION_CENTER,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentColdStorage(),
+                (double) report.getPercentCooled(),
+                (double) report.getPercentHeated(),
+                (double) report.getWeeklyOperatingHours()
+        );
+    }
+
+
+
+    /**
+     * Converts a Hotel DTO into a backend HotelReport.
+     */
+    public HotelReport toHotelReport(HotelBuildingUseDTO dto) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Hotel building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.HOTEL) {
+            throw new IllegalArgumentException(
+                    "Building use type must be HOTEL."
+            );
+        }
+
+        HotelReport report = new HotelReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Hotel-specific fields
+        if (dto.hasCookingFacilities() == null) {
+            throw new IllegalArgumentException(
+                    "hasCookingFacilities is required."
+            );
+        }
+
+        report.setHasCookingFacilities(dto.hasCookingFacilities());
+
+        report.setNumCommercialFreezer(
+                requireNonnegativeInteger(
+                        dto.numCommercialFreezer(),
+                        "numCommercialFreezer"
+                )
+        );
+
+        report.setNumOfRooms(
+                requireNonnegativeInteger(
+                        dto.numOfRooms(),
+                        "numOfRooms"
+                )
+        );
+
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        report.setPercentHeated(
+                requirePercentage(
+                        dto.percentHeated(),
+                        "percentHeated"
+                )
+        );
+
+        return report;
+    }
+
+    /**
+     * Converts a backend HotelReport into a frontend-facing DTO.
+     */
+    public HotelBuildingUseDTO toHotelDTO(HotelReport report) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Hotel report cannot be null."
+            );
+        }
+
+        return new HotelBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.HOTEL,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.isHasCookingFacilities(),
+                report.getNumCommercialFreezer(),
+                report.getNumOfRooms(),
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentCooled(),
+                (double) report.getPercentHeated()
+        );
+    }
+
+
+
+    /**
+     * Converts a Multifamily Housing DTO into a backend report.
+     */
+    public MultifamilyHousingReport toMultifamilyHousingReport(
+            MultifamilyHousingBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Multifamily Housing building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.MULTIFAMILY_HOUSING) {
+            throw new IllegalArgumentException(
+                    "Building use type must be MULTIFAMILY_HOUSING."
+            );
+        }
+
+        MultifamilyHousingReport report =
+                new MultifamilyHousingReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Optional rise-unit counts
+        int lowRise = dto.lowRiseUnits() == null
+                ? 0
+                : requireWholeNumber(dto.lowRiseUnits(), "lowRiseUnits");
+
+        int midRise = dto.midRiseUnits() == null
+                ? 0
+                : requireWholeNumber(dto.midRiseUnits(), "midRiseUnits");
+
+        int highRise = dto.highRiseUnits() == null
+                ? 0
+                : requireWholeNumber(dto.highRiseUnits(), "highRiseUnits");
+
+        // Prevent division by zero in the regression calculation.
+        if ((long) lowRise + midRise + highRise == 0) {
+            throw new IllegalArgumentException(
+                    "At least one rise-unit count must be greater than zero."
+            );
+        }
+
+        report.setLowRiseUnits(lowRise);
+        report.setMidRiseUnits(midRise);
+        report.setHighRiseUnits(highRise);
+
+        report.setNumOfBedrooms(
+                requireNonnegativeInteger(
+                        dto.numOfBedrooms(),
+                        "numOfBedrooms"
+                )
+        );
+
+        report.setNumOfResidentialUnits(
+                requireNonnegativeInteger(
+                        dto.numOfResidentialUnits(),
+                        "numOfResidentialUnits"
+                )
+        );
+
+        return report;
+    }
+
+    /**
+     * Converts a backend Multifamily Housing report into a DTO.
+     */
+    public MultifamilyHousingBuildingUseDTO toMultifamilyHousingDTO(
+            MultifamilyHousingReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Multifamily Housing report cannot be null."
+            );
+        }
+
+        return new MultifamilyHousingBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.MULTIFAMILY_HOUSING,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                (double) report.getLowRiseUnits(),
+                (double) report.getMidRiseUnits(),
+                (double) report.getHighRiseUnits(),
+                report.getNumOfBedrooms(),
+                report.getNumOfResidentialUnits()
+        );
+    }
+
+
+    /**
+     * Converts a Retail Store DTO into a backend RetailStoreReport.
+     */
+    public RetailStoreReport toRetailStoreReport(
+            RetailStoreBuildingUseDTO dto
+    ) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException(
+                    "Retail Store building use cannot be null."
+            );
+        }
+
+        if (dto.buildingUseType() != BuildingUseType.RETAIL_STORE) {
+            throw new IllegalArgumentException(
+                    "Building use type must be RETAIL_STORE."
+            );
+        }
+
+        RetailStoreReport report = new RetailStoreReport();
+
+        // Common EnergyReport fields
+        report.setRelatedPropertyID(dto.propertyId());
+
+        report.setGrossFloorArea(
+                requireWholeNumber(dto.grossFloorArea(), "grossFloorArea")
+        );
+
+        report.setParkingSize(
+                requireWholeNumber(dto.parkingSize(), "parkingSize")
+        );
+
+        if (dto.yearOfConstruction() == null) {
+            throw new IllegalArgumentException(
+                    "yearOfConstruction is required."
+            );
+        }
+
+        report.setYearOfConstruction(dto.yearOfConstruction());
+
+        // Retail Store-specific fields
+        if (dto.hasExteriorEntrance() == null) {
+            throw new IllegalArgumentException(
+                    "hasExteriorEntrance is required."
+            );
+        }
+
+        report.setHasExteriorEntrance(dto.hasExteriorEntrance());
+
+        if (dto.isSingleStore() == null) {
+            throw new IllegalArgumentException(
+                    "isSingleStore is required."
+            );
+        }
+
+        report.setSingleStore(dto.isSingleStore());
+
+        report.setNumOfFreezers(
+                requireNonnegativeInteger(
+                        dto.numOfFreezers(),
+                        "numOfFreezers"
+                )
+        );
+
+        report.setNumOfWorkersMainShift(
+                requireNonnegativeInteger(
+                        dto.numOfWorkersMainShift(),
+                        "numOfWorkersMainShift"
+                )
+        );
+
+        report.setPercentCooled(
+                requirePercentage(
+                        dto.percentCooled(),
+                        "percentCooled"
+                )
+        );
+
+        report.setPercentHeated(
+                requirePercentage(
+                        dto.percentHeated(),
+                        "percentHeated"
+                )
+        );
+
+        int weeklyHours = requireNonnegativeInteger(
+                dto.weeklyOperatingHours(),
+                "weeklyOperatingHours"
+        );
+
+        if (weeklyHours > 168) {
+            throw new IllegalArgumentException(
+                    "weeklyOperatingHours cannot exceed 168."
+            );
+        }
+
+        report.setWeeklyOperatingHours(weeklyHours);
+
+        return report;
+    }
+
+    /**
+     * Converts a backend RetailStoreReport into a Retail Store DTO.
+     */
+    public RetailStoreBuildingUseDTO toRetailStoreDTO(
+            RetailStoreReport report
+    ) {
+
+        if (report == null) {
+            throw new IllegalArgumentException(
+                    "Retail Store report cannot be null."
+            );
+        }
+
+        return new RetailStoreBuildingUseDTO(
+                report.getID(),
+                null,
+                report.getRelatedPropertyID(),
+                BuildingUseType.RETAIL_STORE,
+
+                (double) report.getGrossFloorArea(),
+                (double) report.getParkingSize(),
+                report.getYearOfConstruction(),
+
+                report.isHasExteriorEntrance(),
+                report.isSingleStore(),
+                report.getNumOfFreezers(),
+                report.getNumOfWorkersMainShift(),
+                (double) report.getPercentCooled(),
+                (double) report.getPercentHeated(),
+                report.getWeeklyOperatingHours()
         );
     }
 
