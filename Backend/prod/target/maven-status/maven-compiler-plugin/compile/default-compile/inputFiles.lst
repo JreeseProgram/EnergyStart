@@ -28,6 +28,7 @@ C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energysta
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\WarehouseRefrigeratedBuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\WholesaleClubBuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\WorshipFacilityBuildingUseDTO.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\EnergyMeterDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\PropertyUserResponse.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\SharePropertyRequest.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\WorkOsUserResponse.java
@@ -56,6 +57,7 @@ C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energysta
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\energy\report_types\WholesaleClubReport.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\energy\report_types\WorshipFacilityReport.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\mapper\BuildingUseMapper.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\mapper\EnergyMeterMapper.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\model\BuildingMetrics.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\model\Property.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\model\User.java

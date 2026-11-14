@@ -1,4 +1,5 @@
 com\energystart\prod\service\EnergyMeterService.class
+com\energystart\prod\dto\EnergyMeterDTO.class
 com\energystart\prod\energy\report_types\BankBranchReport.class
 com\energystart\prod\repos\EnergyMeterReadingRepo.class
 com\energystart\prod\dto\buildinguse\types\FinancialOfficeBuildingUseDTO.class
@@ -63,6 +64,7 @@ com\energystart\prod\dto\PropertyUserResponse.class
 com\energystart\prod\energy\report_types\SeniorLivingCommunityReport.class
 com\energystart\prod\service\WorkOsUserService$UserListResponse.class
 com\energystart\prod\repos\PropertyRepo.class
+com\energystart\prod\mapper\EnergyMeterMapper.class
 com\energystart\prod\energy\EnergyMeterReading.class
 com\energystart\prod\energy\report_types\VehicleDealershipReport.class
 com\energystart\prod\ProdApplication.class
