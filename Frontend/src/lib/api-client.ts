@@ -37,11 +37,13 @@ class TokenRetrievalError extends Error {}
 
 async function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   const provider = tokenProvider
+
   if (!provider) {
     throw new AuthenticationNotReadyError()
   }
 
   let token: string
+
   try {
     token = await provider.getAccessToken()
   } catch (error) {
@@ -82,6 +84,7 @@ function showSessionExpired() {
       children: "Sign in",
       onClick: () => {
         const provider = tokenProvider
+
         if (!provider) {
           toast.add({
             type: "error",
@@ -90,6 +93,7 @@ function showSessionExpired() {
           })
           return
         }
+
         void provider.signIn().catch(() => {
           toast.add({
             type: "error",
@@ -113,13 +117,17 @@ api.interceptors.response.use(
   (error: unknown) => {
     if (Axios.isCancel(error)) return Promise.reject(error)
 
-    const status = Axios.isAxiosError(error) ? error.response?.status : undefined
+    const status = Axios.isAxiosError(error)
+      ? error.response?.status
+      : undefined
+
     if (error instanceof LoginRequiredError || status === 401) {
       showSessionExpired()
       return Promise.reject(error)
     }
 
     let message = "The request could not be completed. Please try again."
+
     if (error instanceof AuthenticationNotReadyError) {
       message = "Authentication is not ready. Please try again."
     } else if (error instanceof TokenRetrievalError) {
@@ -129,15 +137,18 @@ api.interceptors.response.use(
     } else if (status !== undefined && status >= 500) {
       message = "Something went wrong on the server. Please try again."
     } else if (Axios.isAxiosError(error) && !error.response) {
-      message = "Unable to reach the server. Check your connection and try again."
+      message =
+        "Unable to reach the server. Check your connection and try again."
     } else if (Axios.isAxiosError(error)) {
       const serverMessage: unknown = error.response?.data?.message
+
       if (typeof serverMessage === "string" && serverMessage.trim()) {
         message = serverMessage
       }
     }
 
     toast.add({ type: "error", title: "Request failed", description: message })
+
     return Promise.reject(error)
   }
 )
