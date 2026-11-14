@@ -8,6 +8,12 @@ C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energysta
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\controller\UserController.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\BuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\BuildingUseType.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\BankBranchBuildingUseDTO.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\ConvenienceStoreBuildingUseDTO.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\CourtHouseBuildingUseDTO.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\FinancialOfficeBuildingUseDTO.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\HospitalBuildingUseDTO.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\MedicalOfficeBuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\OfficeBuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\PropertyUserResponse.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\SharePropertyRequest.java
@@ -36,6 +42,7 @@ C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energysta
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\energy\report_types\WarehouseReport.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\energy\report_types\WholesaleClubReport.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\energy\report_types\WorshipFacilityReport.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\mapper\BuildingUseMapper.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\model\BuildingMetrics.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\model\Property.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\model\User.java
