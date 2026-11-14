@@ -3,7 +3,6 @@ import type { Property } from "@/features/portfolio/models/property.models"
 import type { PortfolioPerformance } from "@/features/portfolio/models/portfolio-performance.models"
 import { PortfolioPropertiesTable } from "@/features/portfolio/components/portfolio-properties-table"
 import { PortfolioPerformanceChart } from "@/features/portfolio/components/portfolio-performance-chart"
-import { Badge } from "@/components/ui/badge"
 
 import {
   Card,
@@ -18,6 +17,8 @@ import {
   type PortfolioMetric,
   type PortfolioMonths,
 } from "@/features/portfolio/utils/get-portfolio-performance"
+import { CardGrid } from "@/components/card-grid"
+import { Badge } from "@/components/ui/badge"
 
 export function PortfolioDashboard({
   properties,
@@ -89,18 +90,11 @@ export function PortfolioDashboard({
 
   return (
     <>
-      <p className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Badge variant="outline">Simulated data</Badge>Performance and readiness
-        values are for the prototype.
-      </p>
-      <div className="grid grid-cols-4 gap-4">
+      <CardGrid>
         {cards.map((card) => (
-          <Card
-            key={card.label}
-            className="rounded-2xl bg-linear-to-br from-primary/5 to-card"
-          >
+          <Card key={card.label}>
             <CardHeader>
-              <CardDescription>{card.label}</CardDescription>
+              <Badge variant={"outline"}>{card.label}</Badge>
             </CardHeader>
             <CardContent>
               <p className="text-4xl font-bold tabular-nums">
@@ -116,7 +110,7 @@ export function PortfolioDashboard({
             </CardHeader>
           </Card>
         ))}
-      </div>
+      </CardGrid>
 
       <PortfolioPerformanceChart
         performance={summary}
