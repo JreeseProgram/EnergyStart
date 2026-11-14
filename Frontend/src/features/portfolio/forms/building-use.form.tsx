@@ -58,20 +58,26 @@ export function BuildingUseForm({
     resolver: zodResolver(BuildingUseFormDetails),
     defaultValues: buildingUse
       ? BuildingUseDetails.parse(buildingUse)
-      : { relatedPropertyID: propertyId },
+      : { propertyId: propertyId },
   })
 
-  const type = useWatch({ control: form.control, name: "reportType" })
+  const type = useWatch({ control: form.control, name: "buildingUseType" })
   const fields = getBuildingUseFields(type)
   const pending = mutation.isPending
-  const savedWithoutRefresh = mutation.error instanceof BuildingUseSaveRefreshError
+  const savedWithoutRefresh =
+    mutation.error instanceof BuildingUseSaveRefreshError
 
   useEffect(() => {
     onSubmittingChange?.(pending)
   }, [pending, onSubmittingChange])
 
   function submit(details: BuildingUseDetails) {
-    if (submissionLocked.current || pending || savedWithoutRefresh || !user.data) {
+    if (
+      submissionLocked.current ||
+      pending ||
+      savedWithoutRefresh ||
+      !user.data
+    ) {
       return
     }
 
@@ -94,7 +100,7 @@ export function BuildingUseForm({
     }
 
     if (buildingUse) {
-      update.mutate({ ...input, id: buildingUse.ID }, options)
+      update.mutate({ ...input, id: buildingUse.id }, options)
     } else {
       create.mutate(input, options)
     }
@@ -113,17 +119,24 @@ export function BuildingUseForm({
       }
     }
 
-    form.setValue("reportType", next)
+    form.setValue("buildingUseType", next)
     form.clearErrors()
     mutation.reset()
   }
 
   return (
-    <form id={formId} onSubmit={(event) => void form.handleSubmit(submit)(event)} noValidate>
-      <fieldset disabled={pending || savedWithoutRefresh} className="grid gap-5">
+    <form
+      id={formId}
+      onSubmit={(event) => void form.handleSubmit(submit)(event)}
+      noValidate
+    >
+      <fieldset
+        disabled={pending || savedWithoutRefresh}
+        className="grid gap-5"
+      >
         <SelectField
           control={form.control}
-          name="reportType"
+          name="buildingUseType"
           label="Use type *"
           items={BUILDING_USE_TYPES}
           placeholder="Select a use type"

@@ -4,29 +4,26 @@ import {
 } from "@/features/portfolio/models/property.models"
 import z from "zod"
 
-export type BuildingUseType = z.infer<typeof BuildingUseType>
-export const BuildingUseType = z.enum([
-  ...PropertyType.options.filter((type) => type !== "SENIOR_LIVING"),
-  "SENIOR_LIVING_COMMUNITY",
-])
+export type BuildingUseType = PropertyType
+export const BuildingUseType = PropertyType
 
 export type LowRiseUnits = z.infer<typeof LowRiseUnits>
-export const LowRiseUnits = z.number().int()
+export const LowRiseUnits = z.number().int().nullish()
 
 export type MidRiseUnits = z.infer<typeof MidRiseUnits>
-export const MidRiseUnits = z.number().int()
+export const MidRiseUnits = z.number().int().nullish()
 
 export type HighRiseUnits = z.infer<typeof HighRiseUnits>
-export const HighRiseUnits = z.number().int()
+export const HighRiseUnits = z.number().int().nullish()
 
 export type BuildingUseId = z.infer<typeof BuildingUseId>
 export const BuildingUseId = z.string().min(1).brand("BuildingUseId")
 
-// Response schemas mirror EnergyReport and its report_types subclasses.
+// Response schemas mirror BuildingUseDTO and its subtype records.
 const integer = z.number().int()
 
 export const BuildingUseCommonFields = z.object({
-  relatedPropertyID: PropertyId,
+  propertyId: PropertyId,
   grossFloorArea: integer,
   parkingSize: integer,
   yearOfConstruction: integer,
@@ -34,7 +31,7 @@ export const BuildingUseCommonFields = z.object({
 
 export type BankBranchUse = z.infer<typeof BankBranchUse>
 export const BankBranchUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.BANK_BRANCH),
+  buildingUseType: z.literal(BuildingUseType.enum.BANK_BRANCH),
   numOfWorkersMainShift: integer,
   numOfComputers: integer,
   percentCooled: z.number(),
@@ -43,7 +40,7 @@ export const BankBranchUse = z.object({
 
 export type ConvenienceStoreUse = z.infer<typeof ConvenienceStoreUse>
 export const ConvenienceStoreUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.CONVENIENCE_STORE),
+  buildingUseType: z.literal(BuildingUseType.enum.CONVENIENCE_STORE),
   areaOfWalkInFreezer: z.number(),
   lengthOfFreezerUnit: z.number(),
   numOfCookingEquipment: integer,
@@ -55,7 +52,7 @@ export const ConvenienceStoreUse = z.object({
 
 export type CourtHouseUse = z.infer<typeof CourtHouseUse>
 export const CourtHouseUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.COURT_HOUSE),
+  buildingUseType: z.literal(BuildingUseType.enum.COURT_HOUSE),
   numOfComputers: integer,
   numOfWorkersMainShift: integer,
   percentCooled: z.number(),
@@ -64,13 +61,13 @@ export const CourtHouseUse = z.object({
 
 export type DataCenterUse = z.infer<typeof DataCenterUse>
 export const DataCenterUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.DATA_CENTER),
+  buildingUseType: z.literal(BuildingUseType.enum.DATA_CENTER),
   annualITEnergy: z.number(),
 })
 
 export type DistrubutionCenterUse = z.infer<typeof DistrubutionCenterUse>
 export const DistrubutionCenterUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.DISTRIBUTION_CENTER),
+  buildingUseType: z.literal(BuildingUseType.enum.DISTRIBUTION_CENTER),
   numOfWorkersMainShift: integer,
   percentColdStorage: z.number(),
   percentCooled: z.number(),
@@ -80,7 +77,7 @@ export const DistrubutionCenterUse = z.object({
 
 export type FinancialOfficeUse = z.infer<typeof FinancialOfficeUse>
 export const FinancialOfficeUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.FINANCIAL_OFFICE),
+  buildingUseType: z.literal(BuildingUseType.enum.FINANCIAL_OFFICE),
   numOfComputers: integer,
   numOfWorkersMainShift: integer,
   percentCooled: z.number(),
@@ -89,7 +86,7 @@ export const FinancialOfficeUse = z.object({
 
 export type HospitalUse = z.infer<typeof HospitalUse>
 export const HospitalUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.HOSPITAL),
+  buildingUseType: z.literal(BuildingUseType.enum.HOSPITAL),
   numOfFullTimeWorkers: integer,
   numOfMRIMachines: integer,
   numOfStaffedBeds: integer,
@@ -97,7 +94,7 @@ export const HospitalUse = z.object({
 
 export type HotelUse = z.infer<typeof HotelUse>
 export const HotelUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.HOTEL),
+  buildingUseType: z.literal(BuildingUseType.enum.HOTEL),
   hasCookingFacilities: z.boolean(),
   numCommercialFreezer: integer,
   numOfRooms: integer,
@@ -108,7 +105,7 @@ export const HotelUse = z.object({
 
 export type MedicalOfficeUse = z.infer<typeof MedicalOfficeUse>
 export const MedicalOfficeUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.MEDICAL_OFFICE),
+  buildingUseType: z.literal(BuildingUseType.enum.MEDICAL_OFFICE),
   numOfMRIMachines: integer,
   numOfSurgicalBeds: integer,
   numOfWorkersMainShift: integer,
@@ -117,7 +114,7 @@ export const MedicalOfficeUse = z.object({
 
 export type MultiFamilyHousingUse = z.infer<typeof MultiFamilyHousingUse>
 export const MultiFamilyHousingUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.MULTIFAMILY_HOUSING),
+  buildingUseType: z.literal(BuildingUseType.enum.MULTIFAMILY_HOUSING),
   lowRiseUnits: LowRiseUnits,
   midRiseUnits: MidRiseUnits,
   highRiseUnits: HighRiseUnits,
@@ -127,7 +124,7 @@ export const MultiFamilyHousingUse = z.object({
 
 export type OfficeUse = z.infer<typeof OfficeUse>
 export const OfficeUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.OFFICE),
+  buildingUseType: z.literal(BuildingUseType.enum.OFFICE),
   numOfComputers: integer,
   numOfWorkersMainShift: integer,
   percentCooled: z.number(),
@@ -136,9 +133,9 @@ export const OfficeUse = z.object({
 
 export type RetailStoreUse = z.infer<typeof RetailStoreUse>
 export const RetailStoreUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.RETAIL_STORE),
+  buildingUseType: z.literal(BuildingUseType.enum.RETAIL_STORE),
   hasExteriorEntrance: z.boolean(),
-  singleStore: z.boolean(),
+  isSingleStore: z.boolean(),
   numOfFreezers: integer,
   numOfWorkersMainShift: integer,
   percentCooled: z.number(),
@@ -148,10 +145,10 @@ export const RetailStoreUse = z.object({
 
 export type SchoolUse = z.infer<typeof SchoolUse>
 export const SchoolUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.SCHOOL),
+  buildingUseType: z.literal(BuildingUseType.enum.SCHOOL),
   doesWorkWeekend: z.boolean(),
   hasCookingFacilities: z.boolean(),
-  highSchool: z.boolean(),
+  isHighSchool: z.boolean(),
   numOfWorkersMainShift: integer,
   percentCooled: z.number(),
   percentHeated: z.number(),
@@ -159,7 +156,7 @@ export const SchoolUse = z.object({
 
 export type SeniorLivingUse = z.infer<typeof SeniorLivingUse>
 export const SeniorLivingUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.SENIOR_LIVING_COMMUNITY),
+  buildingUseType: z.literal(BuildingUseType.enum.SENIOR_LIVING),
   avgNumResidents: integer,
   maxResidentCapacity: integer,
   numOfComputers: integer,
@@ -175,8 +172,8 @@ export const SeniorLivingUse = z.object({
 
 export type SuperMarketUse = z.infer<typeof SuperMarketUse>
 export const SuperMarketUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.SUPERMARKET),
-  numOfFreezers: integer,
+  buildingUseType: z.literal(BuildingUseType.enum.SUPERMARKET),
+  numOfOpenClosedFreezers: integer,
   numOfWorkersMainShift: integer,
   percentCooled: z.number(),
   percentHeated: z.number(),
@@ -185,7 +182,7 @@ export const SuperMarketUse = z.object({
 
 export type VehicleDealershipUse = z.infer<typeof VehicleDealershipUse>
 export const VehicleDealershipUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.VEHICLE_DEALERSHIP),
+  buildingUseType: z.literal(BuildingUseType.enum.VEHICLE_DEALERSHIP),
   avgNumVehiclesInInventory: integer,
   numOfWorkersMainShift: integer,
   percentCooled: z.number(),
@@ -194,7 +191,7 @@ export const VehicleDealershipUse = z.object({
 
 export type WarehouseUse = z.infer<typeof WarehouseUse>
 export const WarehouseUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.WAREHOUSE),
+  buildingUseType: z.literal(BuildingUseType.enum.WAREHOUSE),
   numOfWorkersMainShift: integer,
   percentColdStorage: z.number(),
   percentCooled: z.number(),
@@ -204,7 +201,7 @@ export const WarehouseUse = z.object({
 
 export type WarehouseRefrigeratedUse = z.infer<typeof WarehouseRefrigeratedUse>
 export const WarehouseRefrigeratedUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.WAREHOUSE_REFRIGERATED),
+  buildingUseType: z.literal(BuildingUseType.enum.WAREHOUSE_REFRIGERATED),
   weeklyOperatingHours: integer,
   numOfWorkersMainShift: integer,
   percentColdStorage: z.number(),
@@ -214,9 +211,9 @@ export const WarehouseRefrigeratedUse = z.object({
 
 export type WholesaleClubUse = z.infer<typeof WholesaleClubUse>
 export const WholesaleClubUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.WHOLESALE_CLUB),
+  buildingUseType: z.literal(BuildingUseType.enum.WHOLESALE_CLUB),
   hasExteriorEntrance: z.boolean(),
-  singleStore: z.boolean(),
+  isSingleStore: z.boolean(),
   numOfFreezers: integer,
   numOfWorkersMainShift: integer,
   percentCooled: z.number(),
@@ -226,7 +223,7 @@ export const WholesaleClubUse = z.object({
 
 export type WorshipFacilityUse = z.infer<typeof WorshipFacilityUse>
 export const WorshipFacilityUse = z.object({
-  reportType: z.literal(BuildingUseType.enum.WORSHIP_FACILITY),
+  buildingUseType: z.literal(BuildingUseType.enum.WORSHIP_FACILITY),
   grossFloorAreaForFoodPrep: integer,
   percentCooled: z.number(),
   percentHeated: z.number(),
@@ -234,28 +231,31 @@ export const WorshipFacilityUse = z.object({
   weeklyOperatingHours: integer,
 })
 
-export const BuildingUseSpecificFields = z.discriminatedUnion("reportType", [
-  BankBranchUse,
-  ConvenienceStoreUse,
-  CourtHouseUse,
-  DataCenterUse,
-  DistrubutionCenterUse,
-  FinancialOfficeUse,
-  HospitalUse,
-  HotelUse,
-  MedicalOfficeUse,
-  MultiFamilyHousingUse,
-  OfficeUse,
-  RetailStoreUse,
-  SchoolUse,
-  SeniorLivingUse,
-  SuperMarketUse,
-  VehicleDealershipUse,
-  WarehouseUse,
-  WarehouseRefrigeratedUse,
-  WholesaleClubUse,
-  WorshipFacilityUse,
-] as const)
+export const BuildingUseSpecificFields = z.discriminatedUnion(
+  "buildingUseType",
+  [
+    BankBranchUse,
+    ConvenienceStoreUse,
+    CourtHouseUse,
+    DataCenterUse,
+    DistrubutionCenterUse,
+    FinancialOfficeUse,
+    HospitalUse,
+    HotelUse,
+    MedicalOfficeUse,
+    MultiFamilyHousingUse,
+    OfficeUse,
+    RetailStoreUse,
+    SchoolUse,
+    SeniorLivingUse,
+    SuperMarketUse,
+    VehicleDealershipUse,
+    WarehouseUse,
+    WarehouseRefrigeratedUse,
+    WholesaleClubUse,
+    WorshipFacilityUse,
+  ] as const
+)
 
 export type BuildingUseDetails = z.infer<typeof BuildingUseDetails>
 export const BuildingUseDetails = BuildingUseCommonFields.and(
@@ -263,9 +263,17 @@ export const BuildingUseDetails = BuildingUseCommonFields.and(
 )
 
 export const BuildingUse = z
-  .object({ ID: BuildingUseId })
+  .object({ id: BuildingUseId, createdAt: z.string().nullable() })
   .and(BuildingUseDetails)
 export type BuildingUse = z.infer<typeof BuildingUse>
+
+const floatFields = new Set([
+  "areaOfWalkInFreezer",
+  "lengthOfFreezerUnit",
+  "annualITEnergy",
+])
+const JAVA_INTEGER_MAX = 2_147_483_647
+const JAVA_FLOAT_MAX = 3.4028234663852886e38
 
 // Form constraints must not reject existing backend records when reading them.
 export const BuildingUseFormDetails = BuildingUseDetails.superRefine(
@@ -292,8 +300,44 @@ export const BuildingUseFormDetails = BuildingUseDetails.superRefine(
         message = "Enter hours from 0 to 168"
       }
 
+      if (!message && !name.startsWith("percent")) {
+        const max = floatFields.has(name) ? JAVA_FLOAT_MAX : JAVA_INTEGER_MAX
+        if (value > max) message = `Enter a number no greater than ${max}`
+      }
+
       if (message) {
         context.addIssue({ code: "custom", path: [name], message })
+      }
+    }
+
+    if (
+      details.buildingUseType === "MULTIFAMILY_HOUSING" &&
+      (details.lowRiseUnits ?? 0) +
+        (details.midRiseUnits ?? 0) +
+        (details.highRiseUnits ?? 0) ===
+        0
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["lowRiseUnits"],
+        message: "Enter at least one rise-unit count greater than zero",
+      })
+    }
+
+    if (details.buildingUseType === "SENIOR_LIVING") {
+      if (details.maxResidentCapacity === 0) {
+        context.addIssue({
+          code: "custom",
+          path: ["maxResidentCapacity"],
+          message: "Enter a capacity greater than zero",
+        })
+      }
+      if (details.avgNumResidents > details.maxResidentCapacity) {
+        context.addIssue({
+          code: "custom",
+          path: ["avgNumResidents"],
+          message: "Average residents cannot exceed maximum capacity",
+        })
       }
     }
   }

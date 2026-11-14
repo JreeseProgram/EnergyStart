@@ -30,9 +30,7 @@ export function PropertyBuildingUseSummary({
   propertyId: PropertyId
   buildingUses: BuildingUse[]
 }) {
-  const uses = buildingUses.filter(
-    (use) => use.relatedPropertyID === propertyId
-  )
+  const uses = buildingUses.filter((use) => use.propertyId === propertyId)
 
   const floorArea = uses.reduce((sum, use) => sum + use.grossFloorArea, 0)
 
@@ -83,11 +81,11 @@ export function PropertyBuildingUseSummary({
             </TableHeader>
             <TableBody>
               {uses.map((use) => (
-                <TableRow key={use.ID}>
+                <TableRow key={use.id}>
                   <TableCell className="h-12">
                     {
                       BUILDING_USE_TYPES.find(
-                        (type) => type.value === use.reportType
+                        (type) => type.value === use.buildingUseType
                       )?.label
                     }
                   </TableCell>

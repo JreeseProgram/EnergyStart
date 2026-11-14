@@ -97,11 +97,11 @@ export function BuildingUsesTable({
         <TableBody>
           {rows.map((use) => {
             const label = BUILDING_USE_TYPES.find(
-              (type) => type.value === use.reportType
+              (type) => type.value === use.buildingUseType
             )?.label
 
             return (
-              <TableRow key={use.ID}>
+              <TableRow key={use.id}>
                 <TableCell className="h-20 pl-6">
                   <Button
                     variant="link"

@@ -18,9 +18,7 @@ export function BuildingUses({
     null
   )
 
-  const uses = buildingUses.filter(
-    (use) => use.relatedPropertyID === propertyId
-  )
+  const uses = buildingUses.filter((use) => use.propertyId === propertyId)
 
   const floorArea = uses.reduce((sum, use) => sum + use.grossFloorArea, 0)
 

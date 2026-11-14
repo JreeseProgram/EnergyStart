@@ -1,4 +1,7 @@
-import { BuildingUse } from "@/features/portfolio/models/building-use.models"
+import {
+  BuildingUse,
+  type BuildingUseDetails,
+} from "@/features/portfolio/models/building-use.models"
 import { delay } from "@/utils/delay"
 
 import {
@@ -14,6 +17,18 @@ import {
 
 const SERVER_DELAY = 300
 
+// Match the backend mapper's normalization of omitted rise-unit counts.
+function normalizeRiseUnits(fields: BuildingUseDetails): BuildingUseDetails {
+  return fields.buildingUseType === "MULTIFAMILY_HOUSING"
+    ? {
+        ...fields,
+        lowRiseUnits: fields.lowRiseUnits ?? 0,
+        midRiseUnits: fields.midRiseUnits ?? 0,
+        highRiseUnits: fields.highRiseUnits ?? 0,
+      }
+    : fields
+}
+
 export function createBuildingUseTestService(
   store: PortfolioTestStore
 ): BuildingUseService {
@@ -25,7 +40,7 @@ export function createBuildingUseTestService(
       requireProperty(store, propertyId)
 
       return Array.from(buildingUses.values())
-        .filter((use) => use.relatedPropertyID === propertyId)
+        .filter((use) => use.propertyId === propertyId)
         .map((use) => BuildingUse.parse(use))
     },
 
@@ -45,14 +60,15 @@ export function createBuildingUseTestService(
 
       const fields = CreateBuildingUseInput.parse(input)
 
-      requireProperty(store, fields.relatedPropertyID)
+      requireProperty(store, fields.propertyId)
 
       const use = BuildingUse.parse({
-        ...fields,
-        ID: crypto.randomUUID(),
+        ...normalizeRiseUnits(fields),
+        id: crypto.randomUUID(),
+        createdAt: null,
       })
 
-      buildingUses.set(use.ID, use)
+      buildingUses.set(use.id, use)
 
       return BuildingUse.parse(use)
     },
@@ -61,25 +77,23 @@ export function createBuildingUseTestService(
 
       const fields = UpdateBuildingUseInput.parse(input)
 
-      requireProperty(store, fields.relatedPropertyID)
+      requireProperty(store, fields.propertyId)
 
       const existing = buildingUses.get(fields.id)
 
-      if (
-        !existing ||
-        existing.relatedPropertyID !== fields.relatedPropertyID
-      ) {
+      if (!existing || existing.propertyId !== fields.propertyId) {
         throw new Error(
-          `Building use ${fields.id} not found in property ${fields.relatedPropertyID}`
+          `Building use ${fields.id} not found in property ${fields.propertyId}`
         )
       }
 
       const use = BuildingUse.parse({
-        ...fields,
-        ID: fields.id,
+        ...normalizeRiseUnits(fields),
+        id: fields.id,
+        createdAt: existing.createdAt,
       })
 
-      buildingUses.set(use.ID, use)
+      buildingUses.set(use.id, use)
 
       return BuildingUse.parse(use)
     },

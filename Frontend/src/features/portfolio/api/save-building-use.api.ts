@@ -29,7 +29,7 @@ export function useCreateBuildingUse() {
   return useMutation({
     mutationFn: buildingUseService.createBuildingUse,
     retry: false,
-    onSuccess: (use) => invalidate(use.relatedPropertyID),
+    onSuccess: (use) => invalidate(use.propertyId),
     onError: async (error) => {
       if (error instanceof BuildingUseSaveRefreshError) {
         await invalidate(error.propertyId)
@@ -45,7 +45,7 @@ export function useUpdateBuildingUse() {
   return useMutation({
     mutationFn: buildingUseService.updateBuildingUse,
     retry: false,
-    onSuccess: (use) => invalidate(use.relatedPropertyID),
+    onSuccess: (use) => invalidate(use.propertyId),
     onError: async (error) => {
       if (error instanceof BuildingUseSaveRefreshError) {
         await invalidate(error.propertyId)

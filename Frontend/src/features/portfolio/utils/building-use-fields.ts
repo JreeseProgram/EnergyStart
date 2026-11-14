@@ -34,16 +34,17 @@ const labels: Record<string, string> = {
   numOfBedrooms: "Bedrooms",
   numOfResidentialUnits: "Residential units",
   doesWorkWeekend: "Operates on weekends",
-  highSchool: "High school",
+  isHighSchool: "High school",
   avgNumResidents: "Average residents",
   maxResidentCapacity: "Maximum resident capacity",
   numOfCommercialWashingMachines: "Commercial washing machines",
   numOfResidentialLifts: "Residential lifts",
   numOfResidentialWashingMachines: "Residential washing machines",
   numOfFreezers: "Freezers",
+  numOfOpenClosedFreezers: "Freezers",
   avgNumVehiclesInInventory: "Average vehicles in inventory",
   hasExteriorEntrance: "Exterior entrance",
-  singleStore: "Single store",
+  isSingleStore: "Single store",
   grossFloorAreaForFoodPrep: "Food preparation area (ft²)",
   seatingCapacity: "Seating capacity",
   lowRiseUnits: "Number of low rise units",
@@ -76,6 +77,11 @@ function getFieldLimits(
   schema: z.ZodType
 ): Pick<BuildingUseField, "min" | "max" | "step"> {
   switch (name) {
+    case "lowRiseUnits":
+    case "midRiseUnits":
+    case "highRiseUnits":
+      return { min: 0, max: 2_147_483_647, step: 1 }
+
     case "yearOfConstruction":
       return { min: 1800, max: new Date().getFullYear(), step: 1 }
 
@@ -102,14 +108,15 @@ export function getBuildingUseFields(
   type?: BuildingUseType
 ): BuildingUseField[] {
   const specificSchema = BuildingUseSpecificFields.options.find(
-    (schema) => schema.shape.reportType.value === type
+    (schema) => schema.shape.buildingUseType.value === type
   )
   const shape = { ...BuildingUseCommonFields.shape, ...specificSchema?.shape }
 
   return Object.entries(shape)
-    .filter(([name]) => name !== "relatedPropertyID" && name !== "reportType")
+    .filter(([name]) => name !== "propertyId" && name !== "buildingUseType")
     .map(([name, schema]) => ({
       name: name as FieldPath<BuildingUseDetails>,
+      required: !schema.isOptional(),
       label: labels[name] ?? name,
       ...getFieldInput(schema),
       ...getFieldLimits(name, schema),

@@ -38,7 +38,7 @@ export function createPortfolioTestStore(owner: User = testPortfolioUser) {
       })
     ),
     buildingUses: new Map(
-      defaultBuildingUses.map((use) => [use.ID, BuildingUse.parse(use)])
+      defaultBuildingUses.map((use) => [use.id, BuildingUse.parse(use)])
     ),
   }
 }
