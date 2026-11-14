@@ -50,3 +50,49 @@ test("no observed history does not become zero consumption", () => {
   assert.equal(result.energyChangePercent, null)
   assert.equal(result.propertiesWithHistory, 0)
 })
+
+test("portfolio site EUI weights complete properties by floor area", () => {
+  const property = (propertyId, floorAreaSqFt, monthlyPerformance) => ({
+    propertyId,
+    floorAreaSqFt,
+    meterCount: null,
+    currentMeterCount: null,
+    reportReady: null,
+    monthlyPerformance,
+  })
+  const result = getPortfolioPerformance({
+    asOf: "2026-04-01",
+    properties: [
+      property("small", 100, current.map((month) => point(month, 100))),
+      property("large", 300, current.map((month) => point(month, 600))),
+      property("incomplete", 1000, [point("2026-01", 10000)]),
+      property("unknown-area", null, current.map((month) => point(month, 10000))),
+    ],
+  }, 3)
+
+  // (300 + 1800) kBtu / (100 + 300) ft²; not the mean of property EUIs.
+  assert.equal(result.period.siteEui, 5.25)
+  assert.equal(result.propertiesWithHistory, 2)
+  assert.equal(result.propertyMetrics.incomplete.siteEui, null)
+})
+
+test("portfolio site EUI follows the selected period without annualizing", () => {
+  const monthlyPerformance = Array.from({ length: 12 }, (_, index) =>
+    point(new Date(Date.UTC(2025, 3 + index, 1)).toISOString().slice(0, 7))
+  )
+  const data = {
+    asOf: "2026-04-01",
+    properties: [{
+      propertyId: "property",
+      floorAreaSqFt: 100,
+      meterCount: null,
+      currentMeterCount: null,
+      reportReady: null,
+      monthlyPerformance,
+    }],
+  }
+
+  for (const months of [3, 6, 12]) {
+    assert.equal(getPortfolioPerformance(data, months).period.siteEui, months)
+  }
+})

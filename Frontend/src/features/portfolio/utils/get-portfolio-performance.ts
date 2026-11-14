@@ -154,11 +154,6 @@ export function getPortfolioPerformance(
     totalMeters: sumKnown(
       data.properties.map((property) => property.meterCount)
     ),
-    readyProperties: sumKnown(
-      data.properties.map((property) =>
-        property.reportReady === null ? null : Number(property.reportReady)
-      )
-    ),
   }
 }
 

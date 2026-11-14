@@ -77,14 +77,19 @@ export function PortfolioDashboard({
           : "Add meters and readings to track coverage",
     },
     {
-      label: "Report readiness",
+      label: "Portfolio site EUI",
       value:
-        summary.readyProperties === null
+        summary.period.siteEui === null
           ? "No data"
-          : `${summary.readyProperties} of ${properties.length}`,
-      unit: "properties",
-      title: "Properties ready to report",
-      detail: "Simulated readiness, not official eligibility",
+          : summary.period.siteEui.toLocaleString("en-US", {
+              maximumFractionDigits: 1,
+            }),
+      unit: summary.period.siteEui === null ? "" : "kBtu/ft²",
+      title: "Energy use per square foot",
+      detail:
+        summary.period.siteEui === null
+          ? "No performance history is available for this period."
+          : `Selected ${months}-month period · ${summary.propertiesWithHistory} ${summary.propertiesWithHistory === 1 ? "property" : "properties"} with performance history`,
     },
   ]
 
