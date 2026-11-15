@@ -37,6 +37,7 @@ const { latestReading, meterDate } =
   await import("../src/features/portfolio/utils/energy-meter-labels.ts")
 const { createEnergyMeterMockService } =
   await import("../src/features/portfolio/testing/services/energy-meter.service.ts")
+const { zodResolver } = await import("@hookform/resolvers/zod")
 
 const reading = {
   id: "507f1f77bcf86cd799439012",
@@ -72,6 +73,27 @@ const readingInput = {
   cost: 0,
 }
 const createdReading = { ...reading, createdAt: null }
+
+test("reading form uses the service input resolver for numeric fields and accepts corrections", async () => {
+  const resolver = zodResolver(CreateEnergyReadingInput)
+  const options = { fields: {}, shouldUseNativeValidation: false }
+  const rejected = await resolver(
+    { ...input, date: "2025-13", usage: NaN, cost: -1 },
+    {},
+    options
+  )
+  assert.deepEqual(rejected.values, {})
+  assert.ok(rejected.errors.date)
+  assert.ok(rejected.errors.usage)
+  assert.ok(rejected.errors.cost)
+
+  for (const cost of [0, 5, 5.25]) {
+    const values = { ...input, date: "2025-01", usage: 12.5, cost }
+    const accepted = await resolver(values, {}, options)
+    assert.deepEqual(accepted.errors, {})
+    assert.deepEqual(accepted.values, values)
+  }
+})
 
 test("creates a reading with exact fields and reads the canonical meter as a detached callback", async () => {
   const calls = []

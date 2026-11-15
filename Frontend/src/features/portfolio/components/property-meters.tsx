@@ -245,10 +245,6 @@ export function PropertyMeters({
           )}
         </CardContent>
       </Card>
-      <p className="text-xs text-muted-foreground">
-        Prototype meter data. Changes are kept during navigation and may reset
-        when the page is refreshed.
-      </p>
     </>
   )
 }
