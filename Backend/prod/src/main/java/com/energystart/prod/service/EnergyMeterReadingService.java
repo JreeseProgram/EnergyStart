@@ -31,6 +31,7 @@ public class EnergyMeterReadingService {
     public EnergyMeterReading createReading(EnergyMeterReading reading) {
         reading.setId(null);
         reading.calcEUI(reportRepo, meterRepo);
+        reading.calcKBtu(meterRepo);
         return readingRepo.save(reading);
     }
 
