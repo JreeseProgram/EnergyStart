@@ -35,4 +35,5 @@ Backend/prod/target/classes/com/energystart/prod/energy/EnergyMeter.class
 /Backend/prod/target/classes
 /Backend/prod/target/classes
 Backend/prod/src/test/java/com/energystart/prod/IWantToAddStuffEasy.java
+Backend/prod/.env
 .env
