@@ -1,6 +1,8 @@
 import { useId } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 import {
   Card,
   CardContent,
@@ -8,11 +10,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+
 import {
   Select,
   SelectContent,
@@ -20,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 import type {
   getPortfolioPerformance,
   PortfolioMetric,
@@ -32,10 +36,12 @@ const metrics = {
   sourceEui: "Source EUI",
   energyStarScore: "Energy Star Score",
 }
+
 const ranges = [3, 6, 12].map((value) => ({
   value,
   label: `Last ${value} months`,
 }))
+
 const monthLabel = (month: string) =>
   new Intl.DateTimeFormat("en-US", {
     month: "short",
@@ -62,6 +68,7 @@ export function PortfolioPerformanceChart({
   const value = performance.period[metric]
   const isProperty = scope === "property"
   const scoreLabel = isProperty ? "property score" : "area-weighted score"
+
   return (
     <Card className="rounded-2xl">
       <CardHeader spacing="between">

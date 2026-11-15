@@ -67,7 +67,7 @@ export function PropertyMeters({
           render={
             <Button
               variant="link"
-              className="h-auto justify-start p-0 font-semibold underline"
+              className="h-auto justify-start p-0 font-semibold text-foreground underline"
             />
           }
         >

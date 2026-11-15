@@ -19,6 +19,7 @@ export function NavMain() {
       <Button
         render={<Link to={paths.app.dashboard.getHref()} />}
         variant={"ghost"}
+        nativeButton={false}
       >
         <LayoutGrid />
         <span>{"Dashbaord"}</span>
@@ -27,6 +28,7 @@ export function NavMain() {
         <Button
           render={<Link to={paths.app.properties.getHref()} />}
           variant={"outline"}
+          nativeButton={false}
         >
           <MapPinned />
           <span>Properties</span>

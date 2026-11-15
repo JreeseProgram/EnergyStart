@@ -95,9 +95,6 @@ export function PortfolioPropertiesTable({
               <TableHead scope="col">Property</TableHead>
               <TableHead scope="col">Property Type</TableHead>
               <TableHead scope="col" className="text-right">
-                Energy Star Score
-              </TableHead>
-              <TableHead scope="col" className="text-right">
                 Site EUI
               </TableHead>
               <TableHead scope="col" className="text-right">
@@ -122,14 +119,6 @@ export function PortfolioPropertiesTable({
                       (type) => type.value === property.propertyType
                     )?.label ?? "Not specified"}
                   </Badge>
-                </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {metrics
-                    ? (metrics[property.id]?.energyStarScore?.toLocaleString(
-                        "en-US",
-                        { maximumFractionDigits: 1 }
-                      ) ?? "—")
-                    : property.energyStarScore}
                 </TableCell>
                 <TableCell className="text-right text-muted-foreground">
                   {metrics?.[property.id]?.siteEui?.toLocaleString("en-US", {
