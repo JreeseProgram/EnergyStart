@@ -3,95 +3,68 @@ import { EnergyReport } from "@/features/portfolio/models/energy-report.models"
 import {
   GetEnergyReportsInput,
   GetEnergyReportInput,
-  GenerateEnergyReportInput,
   type EnergyReportService,
 } from "@/features/portfolio/services/energy-report.service"
 import type { PropertyService } from "@/features/portfolio/services/property.service"
 import type { PortfolioPerformanceService } from "@/features/portfolio/services/portfolio-performance.service"
-import { reportMonths } from "@/features/portfolio/utils/energy-report-labels"
-import { delay } from "@/utils/delay"
 
 export function createEnergyReportTestService(
   propertyService: PropertyService,
   performanceService: PortfolioPerformanceService
 ): EnergyReportService {
   const reports = new Map<string, EnergyReport>()
-  async function requireProperty(
-    propertyId: GetEnergyReportsInput["propertyId"]
-  ) {
-    const property = await propertyService.getProperty({ propertyId })
-    if (!property) throw new Error("Property not found.")
-    return property
-  }
   return {
     getEnergyReports: async (input) => {
-      await delay(300)
       const { propertyId } = GetEnergyReportsInput.parse(input)
-      await requireProperty(propertyId)
       return [...reports.values()]
-        .filter((report) => report.propertyId === propertyId)
+        .filter((report) => report.PropertyId === propertyId)
         .sort((a, b) => b.generatedAt.localeCompare(a.generatedAt))
         .map((report) => EnergyReport.parse(report))
     },
     getEnergyReport: async (input) => {
-      await delay(300)
-      const { propertyId, reportId } = GetEnergyReportInput.parse(input)
-      await requireProperty(propertyId)
-      const report = reports.get(reportId)
-      if (!report || report.propertyId !== propertyId)
-        throw new Error("Report not found for this property.")
-      return EnergyReport.parse(report)
-    },
-    generateEnergyReport: async (input) => {
-      const fields = GenerateEnergyReportInput.parse(input)
-      const property = await requireProperty(fields.propertyId)
-      const generatedAt = new Date().toISOString()
-      const asOf = generatedAt.slice(0, 10)
+      const fields = GetEnergyReportInput.parse(input)
+      const property = await propertyService.getProperty({
+        propertyId: fields.propertyId,
+      })
+      if (!property) throw new Error("Property not found.")
+      const generatedAt = new Date().toISOString().slice(0, -1)
       const data = await performanceService.getPortfolioPerformance({
         propertyIds: [fields.propertyId],
-        asOf,
+        asOf: generatedAt.slice(0, 10),
       })
       const history = data.properties.find(
         (item) => item.propertyId === fields.propertyId
       )
       if (!history?.floorAreaSqFt)
         throw new Error(
-          "No simulated performance history is available for this property. A report was not generated."
+          "No test performance history is available for this property."
         )
-      const selected = reportMonths(fields.startMonth, fields.endMonth).map(
-        (month) =>
-          history.monthlyPerformance.find((point) => point.month === month)
+      const points = history.monthlyPerformance.filter(
+        (point) =>
+          point.month.slice(0, 7) >= fields.startMonth &&
+          point.month.slice(0, 7) <= fields.endMonth
       )
-      if (selected.some((point) => !point))
-        throw new Error(
-          "Complete simulated history is not available for this period. Choose completed months within the last 24 months."
-        )
-      const points = selected.filter((point) => point !== undefined)
-      let result: number
-      switch (fields.reportType) {
-        case "SITE_EUI":
-          result =
-            points.reduce((sum, point) => sum + point.siteEnergyKbtu, 0) /
-            history.floorAreaSqFt
-          break
-        case "SOURCE_EUI":
-          result =
-            points.reduce((sum, point) => sum + point.sourceEnergyKbtu, 0) /
-            history.floorAreaSqFt
-          break
-        case "ENERGY_STAR_SCORE":
-          if (points[points.length - 1].energyStarScore === null) {
-            throw new Error("No score is available for this period.")
-          }
-          result = points[points.length - 1].energyStarScore!
-          break
-      }
+      const monthlyPerformance = points.map((point) => ({
+        month: point.month.slice(0, 7),
+        siteEnergyKbtu: point.siteEnergyKbtu / history.floorAreaSqFt!,
+        sourceEnergyKbtu: point.sourceEnergyKbtu / history.floorAreaSqFt!,
+      }))
       const report = EnergyReport.parse({
-        ...fields,
         id: crypto.randomUUID(),
+        PropertyId: fields.propertyId,
+        startMonth: fields.startMonth,
+        endMonth: fields.endMonth,
         generatedAt,
-        simulated: true,
-        result,
+        aggregateSiteEUI: monthlyPerformance.reduce(
+          (sum, point) => sum + point.siteEnergyKbtu,
+          0
+        ),
+        aggregateSourceEUI: monthlyPerformance.reduce(
+          (sum, point) => sum + point.sourceEnergyKbtu,
+          0
+        ),
+        energyScore: points.at(-1)?.energyStarScore ?? 0,
+        disqualifiers: ["Test fixture data; not a backend calculation."],
         propertySnapshot: {
           name: property.name,
           streetAddress: property.streetAddress,
@@ -100,14 +73,14 @@ export function createEnergyReportTestService(
           zip: property.zip,
         },
         snapshot: {
-          version: "portfolio-prototype-v1",
-          asOf,
+          version: "test-fixture-v1",
+          asOf: generatedAt,
           floorAreaSqFt: history.floorAreaSqFt,
-          monthlyPerformance: points,
+          monthlyPerformance,
         },
       })
-      reports.set(report.id, report)
-      return EnergyReport.parse(report)
+      reports.set(report.id, EnergyReport.parse(report))
+      return report
     },
   }
 }

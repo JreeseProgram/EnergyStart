@@ -5,7 +5,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { EnergyReportDetailsCell } from "@/features/portfolio/cells/energy-report-details.cell"
+import { EnergyReportDetails } from "@/features/portfolio/components/energy-report-details"
+import { reportTitle } from "@/features/portfolio/utils/energy-report-labels"
 import type { EnergyReport } from "@/features/portfolio/models/energy-report.models"
 
 export function EnergyReportDetailsModal({
@@ -24,16 +25,12 @@ export function EnergyReportDetailsModal({
     >
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle>{report.name}</DialogTitle>
+          <DialogTitle>{reportTitle(report)}</DialogTitle>
           <DialogDescription>
-            Simulated results for this property. This is not an official energy
-            report.
+            Results for this property and reporting period.
           </DialogDescription>
         </DialogHeader>
-        <EnergyReportDetailsCell
-          propertyId={report.propertyId}
-          reportId={report.id}
-        />
+        <EnergyReportDetails report={report} />
       </DialogContent>
     </Dialog>
   )

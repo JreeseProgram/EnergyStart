@@ -2,7 +2,6 @@ import { useState } from "react"
 import { Plus } from "lucide-react"
 import { ContentHeader } from "@/components/layouts/content-header"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import type { Property } from "@/features/portfolio/models/property.models"
 import type { EnergyReport } from "@/features/portfolio/models/energy-report.models"
 import { EnergyReportsTable } from "@/features/portfolio/components/energy-reports-table"
@@ -19,14 +18,14 @@ export function PropertyReports({
   const [generating, setGenerating] = useState(false)
   const [selected, setSelected] = useState<EnergyReport | null>(null)
   const scopedReports = reports.filter(
-    (report) => report.propertyId === property.id
+    (report) => report.PropertyId === property.id
   )
 
   return (
     <>
       <ContentHeader
         title="Property reports"
-        description="Saved results and calculations for this property"
+        description="Reports generated during this session"
         action={
           <Button onClick={() => setGenerating(true)}>
             Generate new report <Plus className="size-4" />
@@ -34,15 +33,10 @@ export function PropertyReports({
         }
       />
 
-      <p className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Badge variant="outline">Simulated results</Badge>Reports use prototype
-        history, not meter readings or official calculations.
-      </p>
-
       <EnergyReportsTable reports={scopedReports} onOpen={setSelected} />
 
       <p className="text-xs text-muted-foreground">
-        Reports stay available during navigation and may reset on refresh.
+        Reports stay available during navigation and are cleared on refresh.
       </p>
 
       {generating && (

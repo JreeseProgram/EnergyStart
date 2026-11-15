@@ -1,11 +1,4 @@
-import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import {
   Table,
   TableHeader,
@@ -18,39 +11,30 @@ import {
 import type { EnergyReport } from "@/features/portfolio/models/energy-report.models"
 import {
   reportMonthLabel,
-  reportResultLabel,
-  reportTypeLabel,
+  reportEuiLabel,
+  reportDateLabel,
 } from "@/features/portfolio/utils/energy-report-labels"
-import { meterDate } from "@/features/portfolio/utils/energy-meter-labels"
 
 export function EnergyReportDetails({ report }: { report: EnergyReport }) {
   const property = report.propertySnapshot
-  let method =
-    "Latest simulated score in the selected period; not an official ENERGY STAR assessment."
-  if (report.reportType === "SITE_EUI")
-    method =
-      "Simulated site energy for the selected months divided by the saved floor area."
-  if (report.reportType === "SOURCE_EUI")
-    method =
-      "Simulated source energy for the selected months divided by the saved floor area. Official source conversion factors are not applied."
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-2">
-        <Badge variant="outline">Simulated result</Badge>
-        <span className="text-sm text-muted-foreground">Saved snapshot</span>
-      </div>
       <dl className="grid grid-cols-2 gap-4 text-sm">
         <div>
           <dt className="text-muted-foreground">Property at generation</dt>
-          <dd className="mt-1 font-medium">{property.name}</dd>
-          <dd>
-            {property.streetAddress}, {property.city}, {property.state}{" "}
-            {property.zip}
+          <dd className="mt-1 font-medium">
+            {property.name || "Property name unavailable"}
           </dd>
-        </div>
-        <div>
-          <dt className="text-muted-foreground">Report type</dt>
-          <dd className="mt-1">{reportTypeLabel(report.reportType)}</dd>
+          <dd>
+            {[
+              property.streetAddress,
+              property.city,
+              property.state,
+              property.zip,
+            ]
+              .filter(Boolean)
+              .join(", ") || "Address unavailable"}
+          </dd>
         </div>
         <div>
           <dt className="text-muted-foreground">Reporting period</dt>
@@ -61,7 +45,7 @@ export function EnergyReportDetails({ report }: { report: EnergyReport }) {
         </div>
         <div>
           <dt className="text-muted-foreground">Generated</dt>
-          <dd className="mt-1">{meterDate(report.generatedAt)}</dd>
+          <dd className="mt-1">{reportDateLabel(report.generatedAt)}</dd>
         </div>
         <div>
           <dt className="text-muted-foreground">Floor area used</dt>
@@ -71,44 +55,60 @@ export function EnergyReportDetails({ report }: { report: EnergyReport }) {
         </div>
         <div>
           <dt className="text-muted-foreground">History as of</dt>
-          <dd className="mt-1">{meterDate(report.snapshot.asOf)}</dd>
+          <dd className="mt-1">{reportDateLabel(report.snapshot.asOf)}</dd>
         </div>
       </dl>
-      <Card>
-        <CardHeader>
-          <CardTitle>{reportTypeLabel(report.reportType)}</CardTitle>
-          <CardDescription>{method}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-3xl font-bold tabular-nums">
-            {reportResultLabel(report)}
-          </p>
-        </CardContent>
-      </Card>
+      <div className="grid gap-4 sm:grid-cols-3">
+        {[
+          ["Site EUI", reportEuiLabel(report.aggregateSiteEUI)],
+          ["Source EUI", reportEuiLabel(report.aggregateSourceEUI)],
+          ["Energy score", report.energyScore.toLocaleString("en-US")],
+        ].map(([label, value]) => (
+          <Card key={label}>
+            <CardHeader>
+              <CardTitle>{label}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold tabular-nums">{value}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      {report.disqualifiers.length > 0 && (
+        <div className="text-sm">
+          <h3 className="font-semibold">Energy score qualification</h3>
+          <ul className="mt-2 list-disc pl-5">
+            {report.disqualifiers.map((reason, index) => (
+              <li key={index}>{reason}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       <p className="text-sm text-muted-foreground">
-        The result and inputs below were saved when this report was generated.
-        Later changes to property data do not update this report.
+        These results reflect the response received when this report was
+        generated. Generate another report to see updated data.
       </p>
       <Table>
         <TableCaption>
-          Saved simulated monthly inputs. These are separate from recorded meter
-          readings.
+          Monthly energy use intensity for the selected reporting period.
         </TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead scope="col">Month</TableHead>
             <TableHead scope="col" className="text-right">
-              Site energy (kBtu)
+              Site EUI (kBtu/ft²)
             </TableHead>
             <TableHead scope="col" className="text-right">
-              Source energy (kBtu)
-            </TableHead>
-            <TableHead scope="col" className="text-right">
-              Score
+              Source EUI (kBtu/ft²)
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
+          {report.snapshot.monthlyPerformance.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={3}>No monthly data available.</TableCell>
+            </TableRow>
+          )}
           {report.snapshot.monthlyPerformance.map((point) => (
             <TableRow key={point.month}>
               <TableCell>{reportMonthLabel(point.month.slice(0, 7))}</TableCell>
@@ -117,9 +117,6 @@ export function EnergyReportDetails({ report }: { report: EnergyReport }) {
               </TableCell>
               <TableCell className="text-right tabular-nums">
                 {point.sourceEnergyKbtu.toLocaleString("en-US")}
-              </TableCell>
-              <TableCell className="text-right tabular-nums">
-                {point.energyStarScore}
               </TableCell>
             </TableRow>
           ))}

@@ -1,16 +1,3 @@
-import type {
-  EnergyReport,
-  EnergyReportType,
-} from "@/features/portfolio/models/energy-report.models"
-
-export const REPORT_TYPES = [
-  { value: "SITE_EUI" as const, label: "Site EUI" },
-  { value: "SOURCE_EUI" as const, label: "Source EUI" },
-  { value: "ENERGY_STAR_SCORE" as const, label: "Energy Star Score" },
-]
-export function reportTypeLabel(type: EnergyReportType) {
-  return REPORT_TYPES.find((item) => item.value === type)!.label
-}
 export function reportMonthLabel(month: string) {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
@@ -18,23 +5,22 @@ export function reportMonthLabel(month: string) {
     timeZone: "UTC",
   }).format(new Date(month + "-01T00:00:00.000Z"))
 }
-export function reportResultLabel(report: EnergyReport) {
-  const value = report.result.toLocaleString("en-US", {
-    maximumFractionDigits: 1,
-  })
-  return report.reportType === "ENERGY_STAR_SCORE"
-    ? "Score " + value
-    : value + " kBtu/ft²"
+export function reportTitle(report: { startMonth: string; endMonth: string }) {
+  return `${reportMonthLabel(report.startMonth)} to ${reportMonthLabel(report.endMonth)}`
 }
-export function reportMonths(start: string, end: string) {
-  const [sy, sm] = start.split("-").map(Number)
-  const [ey, em] = end.split("-").map(Number)
-  const length = (ey - sy) * 12 + em - sm + 1
-  if (!Number.isInteger(length) || length < 1 || length > 24)
-    throw new Error("Choose a valid period of up to 24 months.")
-  return Array.from({ length }, (_, index) =>
-    new Date(Date.UTC(sy, sm - 1 + index, 1)).toISOString().slice(0, 10)
+export function reportEuiLabel(value: number) {
+  return (
+    value.toLocaleString("en-US", { maximumFractionDigits: 1 }) + " kBtu/ft²"
   )
+}
+export function reportDateLabel(value: string) {
+  // LocalDateTime has no timezone. Format its calendar date without shifting it.
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(value.slice(0, 10) + "T00:00:00Z"))
 }
 export function defaultReportPeriod() {
   const now = new Date()
