@@ -73,8 +73,8 @@ export function PropertySharingForm({
           placeholder="name@example.com"
         />
         <p className="text-sm text-muted-foreground">
-          This user will be able to view and edit this property. Only the owner
-          can manage sharing.
+          This user will be able to view and edit this property and manage
+          sharing.
         </p>
         {mutation.isError && (
           <FieldError role="alert">

@@ -1,7 +1,6 @@
 import z from "zod"
 import { isAxiosError } from "axios"
 import { api } from "@/lib/api-client"
-import { UserId } from "@/features/portfolio/models/user.models"
 import { defaultReportPeriod } from "@/features/portfolio/utils/energy-report-labels"
 
 import {
@@ -10,6 +9,8 @@ import {
 } from "@/features/portfolio/models/property.models"
 
 import {
+  PropertyUser,
+  RemovePropertyUserInput,
   CreatePropertyInput,
   AddPropertyUserInput,
   PropertyShareRefreshError,
@@ -22,12 +23,6 @@ import {
 
 const PropertyIds = z.array(z.object({ id: PropertyId }))
 const PropertyReference = z.object({ id: PropertyId })
-const PropertyUserResponse = z.object({
-  userId: z.string().min(1).pipe(UserId),
-  email: z.email(),
-  firstName: z.string().nullable(),
-  lastName: z.string().nullable(),
-})
 
 const JavaInteger = z.number().int().min(-2147483648).max(2147483647)
 const BasicProperty = z.object({
@@ -53,11 +48,31 @@ function parseBasicProperty(response: unknown, propertyId: PropertyId) {
 export class PropertyApiService implements PropertyService {
   constructor() {
     // Service methods are passed directly to query and mutation callbacks.
+    this.getPropertyUsers = this.getPropertyUsers.bind(this)
+    this.removePropertyUser = this.removePropertyUser.bind(this)
     this.addPropertyUser = this.addPropertyUser.bind(this)
     this.createProperty = this.createProperty.bind(this)
     this.updateProperty = this.updateProperty.bind(this)
     this.getProperty = this.getProperty.bind(this)
     this.getProperties = this.getProperties.bind(this)
+  }
+
+  async getPropertyUsers(input: GetPropertyInput): Promise<PropertyUser[]> {
+    const { propertyId } = GetPropertyInput.parse(input)
+    return z
+      .array(PropertyUser)
+      .parse(
+        await api.get<unknown, unknown>(
+          `/properties/${encodeURIComponent(propertyId)}/users`
+        )
+      )
+  }
+
+  async removePropertyUser(input: RemovePropertyUserInput): Promise<void> {
+    const { propertyId, userId } = RemovePropertyUserInput.parse(input)
+    await api.delete(
+      `/properties/${encodeURIComponent(propertyId)}/users/${encodeURIComponent(userId)}`
+    )
   }
 
   async addPropertyUser(input: AddPropertyUserInput): Promise<void> {
@@ -69,7 +84,7 @@ export class PropertyApiService implements PropertyService {
     )
 
     try {
-      PropertyUserResponse.parse(response)
+      PropertyUser.parse(response)
     } catch (error) {
       throw new PropertyShareRefreshError(propertyId, error)
     }

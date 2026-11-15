@@ -6,6 +6,8 @@ import {
   UpdatePropertyInput,
   GetPropertyInput,
   AddPropertyUserInput,
+  RemovePropertyUserInput,
+  PropertyUser,
 } from "@/features/portfolio/services/property.service"
 import { User } from "@/features/portfolio/models/user.models"
 import { TestPropertyRecord } from "@/features/portfolio/testing/property-record.models"
@@ -17,6 +19,16 @@ export function createPropertyTestService(
   store: PortfolioTestStore,
   getCurrentUser: () => Promise<User | null>
 ): PropertyService {
+  // Initialize legacy fixtures once; ownership is not an access privilege.
+  for (const property of store.properties) {
+    property.authorizedUserIds ??= [
+      property.owner.id,
+      ...property.assignments.map(({ user }) => user.id),
+    ]
+  }
+  const authorizedIds = (property: TestPropertyRecord) =>
+    property.authorizedUserIds ?? []
+
   const withFloorArea = (property: TestPropertyRecord): TestPropertyRecord =>
     TestPropertyRecord.parse({
       ...property,
@@ -31,10 +43,7 @@ export function createPropertyTestService(
       ...item,
       humanReadablePropertyId: item.humanReadablePropertyId ?? null,
       notes: item.notes ?? null,
-      authUsers: [
-        item.owner.id,
-        ...item.assignments.map(({ user }) => user.id),
-      ],
+      authUsers: authorizedIds(item),
       siteEui: item.siteEui ?? 0,
       sourceEui: item.sourceEui ?? 0,
       energyUse: item.energyUse ?? 0,
@@ -42,8 +51,7 @@ export function createPropertyTestService(
   }
 
   const canAccess = (user: User, property: TestPropertyRecord) =>
-    property.owner.id === user.id ||
-    property.assignments.some(({ user: assignee }) => assignee.id === user.id)
+    authorizedIds(property).includes(user.id)
 
   const requireUser = async () => {
     const user = await getCurrentUser()
@@ -73,18 +81,51 @@ export function createPropertyTestService(
   }
 
   return {
+    getPropertyUsers: async (input) => {
+      const { propertyId } = GetPropertyInput.parse(input)
+      await delay(SERVER_DELAY)
+      const actor = await requireUser()
+      const property = requireProperty(propertyId)
+      if (!canAccess(actor, property))
+        throw new Error("You do not have access to this property.")
+      return authorizedIds(property).map((id) => {
+        const user = store.users.find((user) => user.id === id)
+        if (!user) throw new Error("User not found.")
+        return PropertyUser.parse({
+          userId: user.id,
+          email: user.email,
+          firstName: user.firstName ?? null,
+          lastName: user.lastName ?? null,
+        })
+      })
+    },
+    removePropertyUser: async (input) => {
+      const { propertyId, userId } = RemovePropertyUserInput.parse(input)
+      await delay(SERVER_DELAY)
+      const actor = await requireUser()
+      const property = requireProperty(propertyId)
+      if (!canAccess(actor, property))
+        throw new Error("You do not have access to this property.")
+      const ids = authorizedIds(property)
+      if (!ids.includes(userId))
+        throw new Error("User is not assigned to this property.")
+      if (ids.length <= 1)
+        throw new Error(
+          "Cannot remove the last authorized user from a property."
+        )
+      save({
+        ...property,
+        authorizedUserIds: ids.filter((id) => id !== userId),
+      })
+    },
     addPropertyUser: async (input) => {
       const { propertyId, email } = AddPropertyUserInput.parse(input)
       await delay(SERVER_DELAY)
       const actor = await requireUser()
       const property = requireProperty(propertyId)
 
-      if (property.owner.id !== actor.id) {
-        throw new Error("Only the owner can manage sharing.")
-      }
-
-      if (property.owner.email.trim().toLowerCase() === email) {
-        throw new Error("The owner already has access.")
+      if (!canAccess(actor, property)) {
+        throw new Error("You do not have access to this property.")
       }
 
       const user = store.users.find(
@@ -95,9 +136,7 @@ export function createPropertyTestService(
         throw new Error("No registered user has this email address.")
       }
 
-      const hasAccess = property.assignments.some(
-        (assignment) => assignment.user.id === user.id
-      )
+      const hasAccess = authorizedIds(property).includes(user.id)
 
       if (hasAccess) {
         throw new Error("This user already has access.")
@@ -105,10 +144,7 @@ export function createPropertyTestService(
 
       save({
         ...property,
-        assignments: [
-          ...property.assignments,
-          { user, assignedAt: new Date().toISOString() },
-        ],
+        authorizedUserIds: [...authorizedIds(property), user.id],
       })
     },
     getProperties: async () => {
@@ -130,6 +166,9 @@ export function createPropertyTestService(
         (property) => property.id === propertyId
       )
 
+      const actor = await requireUser()
+      if (property && !canAccess(actor, property))
+        throw new Error("You do not have access to this property.")
       return property ? toProperty(property) : null
     },
 
@@ -173,12 +212,14 @@ export function createPropertyTestService(
     createProperty: async (input) => {
       await delay(SERVER_DELAY)
 
+      const actor = await requireUser()
       const property = TestPropertyRecord.parse({
         ...CreatePropertyInput.parse(input),
         propertyType: "None",
         id: crypto.randomUUID(),
         createdAt: new Date().toISOString(),
-        owner: await requireUser(),
+        owner: actor,
+        authorizedUserIds: [actor.id],
         reportingYear: String(new Date().getFullYear()),
         auditComplianceStatus: "NOT_PARTICIPATING",
         grossFloorArea: 0,

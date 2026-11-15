@@ -54,7 +54,7 @@ export function PropertySharingCell({
       return (
         <>
           <PropertyHeader property={property} />
-          <PropertySharing />
+          <PropertySharing property={property} />
         </>
       )
     },

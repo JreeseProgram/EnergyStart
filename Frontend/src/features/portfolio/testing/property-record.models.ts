@@ -32,6 +32,7 @@ export const TestPropertyRecord = z.object({
   name: z.string("Enter the name of the property"),
   notes: z.string().optional(),
   owner: User,
+  authorizedUserIds: z.array(z.string()).optional(),
   // Read-only snapshot; sharing changes use dedicated service operations.
   assignments: z.array(PropertyAssignment).default([]),
   propertyType: z.union([PropertyType, z.literal("None")]),
