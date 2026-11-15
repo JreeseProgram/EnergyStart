@@ -1,0 +1,24 @@
+services:
+  backend:
+    build:
+      context: ./Backend/prod
+    environment:
+      MONGODB_URI: ${MONGODB_URI:?Set MONGODB_URI in .env}
+      WORKOS_CLIENT_ID: ${WORKOS_CLIENT_ID:?Set WORKOS_CLIENT_ID in .env}
+      WORKOS_API_KEY: ${WORKOS_API_KEY:?Set WORKOS_API_KEY in .env}
+      WORKOS_ISSUER: ${WORKOS_ISSUER:-}
+      FRONTEND_ORIGIN: http://localhost:5173
+    ports:
+      - "127.0.0.1:8080:8080"
+
+  frontend:
+    build:
+      context: ./Frontend
+    environment:
+      VITE_APP_WORKOS_CLIENT_ID: ${WORKOS_CLIENT_ID:?Set WORKOS_CLIENT_ID in .env}
+      VITE_APP_REDIRECT_URI: http://localhost:5173/app
+      VITE_APP_API_URL: http://localhost:8080/api
+    ports:
+      - "127.0.0.1:5173:5173"
+    depends_on:
+      - backend
