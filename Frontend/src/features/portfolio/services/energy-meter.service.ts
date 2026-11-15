@@ -65,6 +65,26 @@ export class EnergyMeterUpdateRefreshError extends Error {
   }
 }
 
+// The POST succeeded; validation or refresh failure must not invite another write.
+export class EnergyReadingCreateRefreshError extends Error {
+  readonly propertyId: PropertyId
+  readonly energyMeterId: EnergyMeterId
+
+  constructor(
+    propertyId: PropertyId,
+    energyMeterId: EnergyMeterId,
+    cause: unknown
+  ) {
+    super(
+      "The energy reading may have been created, but the saved details could not be validated or refreshed. Close this form and reload the meter; do not submit the reading again.",
+      { cause }
+    )
+    this.name = "EnergyReadingCreateRefreshError"
+    this.propertyId = propertyId
+    this.energyMeterId = energyMeterId
+  }
+}
+
 export interface EnergyMeterService {
   getEnergyMeter: (input: GetEnergyMeterInput) => Promise<EnergyMeter>
   getEnergyMeters: (input: GetEnergyMetersInput) => Promise<EnergyMeter[]>

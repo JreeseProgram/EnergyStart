@@ -1,7 +1,12 @@
 import { api } from "@/lib/api-client"
-import { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
+import {
+  EnergyMeter,
+  EnergyReading,
+} from "@/features/portfolio/models/energy-meter.models"
 import {
   CreateEnergyMeterInput,
+  CreateEnergyReadingInput,
+  EnergyReadingCreateRefreshError,
   EnergyMeterCreateRefreshError,
   EnergyMeterUpdateRefreshError,
   GetEnergyMeterInput,
@@ -10,13 +15,41 @@ import {
   type EnergyMeterService,
 } from "@/features/portfolio/services/energy-meter.service"
 
-export class EnergyMeterApiService implements Pick<
-  EnergyMeterService,
-  | "getEnergyMeter"
-  | "getEnergyMeters"
-  | "createEnergyMeter"
-  | "updateEnergyMeter"
-> {
+// The reading controller returns null for createdAt; canonical meters do not.
+const CreatedEnergyReading = EnergyReading.extend({
+  createdAt: EnergyReading.shape.createdAt.nullable(),
+})
+
+export class EnergyMeterApiService implements EnergyMeterService {
+  async createEnergyReading(
+    input: CreateEnergyReadingInput
+  ): Promise<EnergyMeter> {
+    const { energyMeterId, propertyId, date, usage, cost } =
+      CreateEnergyReadingInput.parse(input)
+    const response = await api.post<unknown, unknown>(
+      `/energy-meter-readings/meter/${encodeURIComponent(energyMeterId)}`,
+      { date, usage, cost }
+    )
+
+    try {
+      CreatedEnergyReading.parse(response)
+      const saved = await api.get<unknown, unknown>(
+        `/energy-meters/dto/${encodeURIComponent(energyMeterId)}`
+      )
+      const meter = EnergyMeter.parse(saved)
+      if (meter.meterId !== energyMeterId || meter.propertyId !== propertyId) {
+        throw new Error("Meter not found for this property.")
+      }
+      return meter
+    } catch (error) {
+      throw new EnergyReadingCreateRefreshError(
+        propertyId,
+        energyMeterId,
+        error
+      )
+    }
+  }
+
   async createEnergyMeter(input: CreateEnergyMeterInput): Promise<EnergyMeter> {
     const fields = CreateEnergyMeterInput.parse(input)
     const response = await api.post<unknown, unknown>(

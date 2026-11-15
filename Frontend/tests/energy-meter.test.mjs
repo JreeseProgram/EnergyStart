@@ -29,6 +29,7 @@ const { EnergyMeter, EnergyReading } =
   await import("../src/features/portfolio/models/energy-meter.models.ts")
 const {
   CreateEnergyReadingInput,
+  EnergyReadingCreateRefreshError,
   EnergyMeterCreateRefreshError,
   EnergyMeterUpdateRefreshError,
 } = await import("../src/features/portfolio/services/energy-meter.service.ts")
@@ -63,6 +64,214 @@ const createInput = {
   inUse: false,
   isDelivered: true,
 }
+
+const readingInput = {
+  ...input,
+  date: reading.date,
+  usage: reading.usage,
+  cost: 0,
+}
+const createdReading = { ...reading, createdAt: null }
+
+test("creates a reading with exact fields and reads the canonical meter as a detached callback", async () => {
+  const calls = []
+  api.post = async (...args) => {
+    calls.push(["post", ...args])
+    return createdReading
+  }
+  api.get = async (...args) => {
+    calls.push(["get", ...args])
+    return dto
+  }
+  const { createEnergyReading } = new EnergyMeterApiService()
+  assert.deepEqual(
+    await createEnergyReading({
+      ...readingInput,
+      id: "ignored",
+      createdAt: "ignored",
+      readings: [],
+    }),
+    dto
+  )
+  assert.deepEqual(calls, [
+    [
+      "post",
+      `/energy-meter-readings/meter/${dto.meterId}`,
+      { date: reading.date, usage: reading.usage, cost: 0 },
+    ],
+    ["get", `/energy-meters/dto/${dto.meterId}`],
+  ])
+})
+
+test("encodes the reading meter identifier in both requests", async () => {
+  const energyMeterId = "meter /?#%"
+  const calls = []
+  api.post = async (url) => {
+    calls.push(url)
+    return createdReading
+  }
+  api.get = async (url) => {
+    calls.push(url)
+    return { ...dto, meterId: energyMeterId }
+  }
+  await new EnergyMeterApiService().createEnergyReading({
+    ...readingInput,
+    energyMeterId,
+  })
+  assert.deepEqual(calls, [
+    "/energy-meter-readings/meter/meter%20%2F%3F%23%25",
+    "/energy-meters/dto/meter%20%2F%3F%23%25",
+  ])
+})
+
+test("rejects invalid reading input before any request", async () => {
+  api.post = api.get = () => assert.fail("Invalid input must not request")
+  for (const invalid of [
+    {},
+    ...[
+      { energyMeterId: "" },
+      { propertyId: "" },
+      { date: "2025-13" },
+      { date: "9999-01" },
+      { usage: -1 },
+      { cost: -1 },
+      { usage: NaN },
+      { cost: Infinity },
+      { usage: "12" },
+      { cost: undefined },
+    ].map((patch) => ({ ...readingInput, ...patch })),
+  ]) {
+    await assert.rejects(
+      new EnergyMeterApiService().createEnergyReading(invalid),
+      { name: "ZodError" }
+    )
+  }
+})
+
+function assertReadingRefreshError(error) {
+  assert.ok(error instanceof EnergyReadingCreateRefreshError)
+  assert.equal(error.name, "EnergyReadingCreateRefreshError")
+  assert.equal(error.propertyId, input.propertyId)
+  assert.equal(error.energyMeterId, input.energyMeterId)
+  assert.match(error.message, /may have been created/)
+  assert.match(
+    error.message,
+    /reload the meter; do not submit the reading again/
+  )
+}
+
+test("malformed successful reading responses preserve validation failures without retrying", async () => {
+  api.get = () => assert.fail("Malformed write response must not read back")
+  for (const response of [
+    null,
+    undefined,
+    {},
+    { ...createdReading, id: "" },
+    { ...createdReading, date: "2025-13" },
+    { ...createdReading, usage: "12" },
+    { ...createdReading, cost: null },
+    { ...createdReading, createdAt: "invalid" },
+  ]) {
+    let posts = 0
+    api.post = async () => {
+      posts++
+      return response
+    }
+    await assert.rejects(
+      new EnergyMeterApiService().createEnergyReading(readingInput),
+      (error) => {
+        assertReadingRefreshError(error)
+        assert.equal(error.cause.name, "ZodError")
+        return true
+      }
+    )
+    assert.equal(posts, 1)
+  }
+})
+
+test("reading creation reports malformed canonical meters and identity mismatches without retrying", async () => {
+  for (const response of [
+    null,
+    {},
+    { ...dto, readings: [createdReading] },
+    { ...dto, meterId: "other-meter" },
+    { ...dto, propertyId: "other-property" },
+  ]) {
+    let posts = 0
+    let gets = 0
+    api.post = async () => {
+      posts++
+      return createdReading
+    }
+    api.get = async () => {
+      gets++
+      return response
+    }
+    await assert.rejects(
+      new EnergyMeterApiService().createEnergyReading(readingInput),
+      (error) => {
+        assertReadingRefreshError(error)
+        if (
+          response?.meterId === "other-meter" ||
+          response?.propertyId === "other-property"
+        ) {
+          assert.equal(
+            error.cause.message,
+            "Meter not found for this property."
+          )
+        } else {
+          assert.equal(error.cause.name, "ZodError")
+        }
+        return true
+      }
+    )
+    assert.equal(posts, 1)
+    assert.equal(gets, 1)
+  }
+})
+
+test("reading creation preserves failed read-back cause without retrying the successful write", async () => {
+  const cause = new Error("Read-back failed")
+  let posts = 0
+  let gets = 0
+  api.post = async () => {
+    posts++
+    return createdReading
+  }
+  api.get = async () => {
+    gets++
+    throw cause
+  }
+  await assert.rejects(
+    new EnergyMeterApiService().createEnergyReading(readingInput),
+    (error) => {
+      assertReadingRefreshError(error)
+      assert.equal(error.cause, cause)
+      return true
+    }
+  )
+  assert.equal(posts, 1)
+  assert.equal(gets, 1)
+})
+
+test("reading write HTTP errors propagate unchanged without refresh or retry", async () => {
+  api.get = () => assert.fail("Failed write must not read back")
+  for (const status of [400, 401, 403, 404, 409, 500]) {
+    const error = Object.assign(new Error("Write failed"), {
+      response: { status },
+    })
+    let posts = 0
+    api.post = async () => {
+      posts++
+      throw error
+    }
+    await assert.rejects(
+      new EnergyMeterApiService().createEnergyReading(readingInput),
+      (actual) => actual === error
+    )
+    assert.equal(posts, 1)
+  }
+})
 
 test("creates a meter with exactly the editable DTO fields as a detached callback", async () => {
   const created = { ...dto, ...createInput, readings: [] }
