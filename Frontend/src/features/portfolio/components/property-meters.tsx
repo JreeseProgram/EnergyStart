@@ -59,7 +59,7 @@ export function PropertyMeters({
   const pageSizeId = useId()
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
   const columns = helper.columns([
-    helper.accessor("meterId", {
+    helper.accessor("meterName", {
       header: "Meter",
       cell: ({ row }) => (
         <EnergyMeterDetailsModal
@@ -71,7 +71,7 @@ export function PropertyMeters({
             />
           }
         >
-          {row.original.meterId || "Unnamed meter"}
+          {row.original.meterName || "Unnamed meter"}
         </EnergyMeterDetailsModal>
       ),
     }),
@@ -103,20 +103,11 @@ export function PropertyMeters({
           <div className="tabular-nums">
             {latest.usage.toLocaleString("en-US")} {row.original.unitOfMeasure}
             <div className="text-xs text-muted-foreground">
-              {meterDate(latest.endDate)}
+              {meterDate(latest.date)}
             </div>
           </div>
         )
       },
-    }),
-    helper.display({
-      id: "updated",
-      header: "Updated",
-      cell: ({ row }) => (
-        <span className="text-muted-foreground">
-          {meterDate(row.original.updatedAt ?? row.original.date)}
-        </span>
-      ),
     }),
     helper.accessor("inUse", {
       header: "Status",
@@ -133,7 +124,7 @@ export function PropertyMeters({
             <Button
               variant="ghost"
               size="icon-sm"
-              aria-label={`Edit ${row.original.meterId || "meter"}`}
+              aria-label={`Edit ${row.original.meterName || "meter"}`}
             />
           }
         >
@@ -149,7 +140,7 @@ export function PropertyMeters({
     columns,
     state: { pagination },
     onPaginationChange: setPagination,
-    getRowId: (row) => row.id,
+    getRowId: (row) => row.meterId,
   })
 
   return (

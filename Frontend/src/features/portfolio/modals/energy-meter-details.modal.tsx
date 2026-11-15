@@ -21,7 +21,7 @@ export function EnergyMeterDetailsModal({
       <DialogTrigger {...props} />
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle>{meter.meterId || "Energy meter"}</DialogTitle>
+          <DialogTitle>{meter.meterName || "Energy meter"}</DialogTitle>
           <DialogDescription>
             Review and record usage for this property meter. Entries use{" "}
             {meter.unitOfMeasure}.
@@ -30,7 +30,7 @@ export function EnergyMeterDetailsModal({
         {open && (
           <EnergyMeterDetailsCell
             propertyId={meter.propertyId}
-            energyMeterId={meter.id}
+            energyMeterId={meter.meterId}
           />
         )}
       </DialogContent>

@@ -17,34 +17,23 @@ const numericText = z
     (value) => Number.isFinite(Number(value)) && Number(value) >= 0,
     "Enter a number of zero or greater"
   )
-const ReadingFormInput = z
-  .object({
-    startDate: z.iso.date("Enter a start date"),
-    endDate: z.iso.date("Enter an end date"),
-    usage: numericText,
-    cost: z
-      .string()
-      .trim()
-      .refine(
-        (value) =>
-          value === "" ||
-          (Number.isFinite(Number(value)) && Number(value) >= 0),
-        "Enter a cost of zero or greater"
-      ),
-  })
-  .refine((value) => value.startDate <= value.endDate, {
-    message: "End date must be on or after start date",
-    path: ["endDate"],
-  })
-  .refine((value) => value.endDate <= new Date().toISOString().slice(0, 10), {
-    message: "Readings cannot end in the future",
-    path: ["endDate"],
-  })
+const ReadingFormInput = z.object({
+  date: CreateEnergyReadingInput.shape.date,
+  usage: numericText,
+  cost: z
+    .string()
+    .trim()
+    .refine(
+      (value) =>
+        value === "" || (Number.isFinite(Number(value)) && Number(value) >= 0),
+      "Enter a cost of zero or greater"
+    ),
+})
 
 export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
   const form = useForm<z.infer<typeof ReadingFormInput>>({
     resolver: zodResolver(ReadingFormInput),
-    defaultValues: { startDate: "", endDate: "", usage: "", cost: "" },
+    defaultValues: { date: "", usage: "", cost: "" },
   })
   const mutation = useCreateEnergyReading()
   function submit(data: z.output<typeof ReadingFormInput>) {
@@ -53,9 +42,9 @@ export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
       CreateEnergyReadingInput.parse({
         ...data,
         usage: Number(data.usage),
-        cost: data.cost === "" ? undefined : Number(data.cost),
+        cost: data.cost === "" ? 0 : Number(data.cost),
         propertyId: meter.propertyId,
-        energyMeterId: meter.id,
+        energyMeterId: meter.meterId,
       }),
       {
         onSuccess: () => {
@@ -69,21 +58,13 @@ export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
     <form onSubmit={form.handleSubmit(submit)} className="flex flex-col gap-4">
       <h3 className="font-semibold">Record a reading</h3>
       <FieldSet disabled={!meter.inUse || mutation.isPending}>
-        <FieldGroup className="grid grid-cols-2">
-          <InputField
-            control={form.control}
-            name="startDate"
-            label="Period start *"
-            type="date"
-          />
-          <InputField
-            control={form.control}
-            name="endDate"
-            label="Period end *"
-            type="date"
-            max={new Date().toISOString().slice(0, 10)}
-          />
-        </FieldGroup>
+        <InputField
+          control={form.control}
+          name="date"
+          label="Month *"
+          type="month"
+          max={new Date().toISOString().slice(0, 7)}
+        />
         <FieldGroup className="grid grid-cols-2">
           <InputField
             control={form.control}

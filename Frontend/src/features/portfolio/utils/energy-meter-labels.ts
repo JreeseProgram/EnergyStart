@@ -23,15 +23,14 @@ export function meterTypeLabel(value: EnergyMeter["meterType"]) {
   return METER_TYPES.find((item) => item.value === value)?.label ?? value
 }
 export function latestReading(meter: EnergyMeter) {
-  return [...meter.readings].sort((a, b) =>
-    b.endDate.localeCompare(a.endDate)
-  )[0]
+  return [...meter.readings].sort((a, b) => b.date.localeCompare(a.date))[0]
 }
 export function meterDate(value: string) {
+  const isMonth = value.length === 7
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
-    day: "numeric",
+    day: isMonth ? undefined : "numeric",
     year: "numeric",
     timeZone: "UTC",
-  }).format(new Date(value.length === 10 ? value + "T00:00:00.000Z" : value))
+  }).format(new Date(isMonth ? value + "-01T00:00:00.000Z" : value))
 }
