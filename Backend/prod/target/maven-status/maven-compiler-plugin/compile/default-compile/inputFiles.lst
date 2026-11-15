@@ -1,9 +1,12 @@
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\config\CorsConfig.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\config\LocalTestSecurityConfig.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\config\SecurityConfig.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\controller\AltPropertyController.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\controller\AuthController.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\controller\EnergyMeterController.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\controller\EnergyReportController.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\controller\EnergyStatisticReportController.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\controller\PortfolioPerformanceController.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\controller\PropertyController.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\controller\UserController.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\BuildingUseDTO.java
@@ -29,6 +32,8 @@ C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energysta
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\WholesaleClubBuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\buildinguse\types\WorshipFacilityBuildingUseDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\EnergyMeterDTO.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\EnergyMeterReadingFieldsDTO.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\FrontendLinkingDTO.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\PropertyUserResponse.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\SharePropertyRequest.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\dto\WorkOsUserResponse.java
@@ -67,8 +72,12 @@ C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energysta
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\repos\EnergyReportRepo.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\repos\PropertyRepo.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\repos\UserRepo.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\service\AltPropertyService.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\service\EnergyMeterReadingService.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\service\EnergyMeterService.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\service\EnergyReportService.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\service\EnergyStatisticReportService.java
+C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\service\PortfolioPerformanceService.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\service\PropertyService.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\service\UserService.java
 C:\Users\clepm\IdeaProjects\EnergyStart\Backend\prod\src\main\java\com\energystart\prod\service\WorkOsUserService.java
