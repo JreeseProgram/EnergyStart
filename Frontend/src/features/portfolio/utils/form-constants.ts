@@ -23,6 +23,8 @@ export const PROPERTY_TYPES = [
   { label: "Worship Facility", value: "WORSHIP_FACILITY" },
 ] satisfies { label: string; value: PropertyType }[]
 
+export const BUILDING_USE_TYPES = PROPERTY_TYPES
+
 export const STATES = [
   { label: "Alabama", value: "AL" },
   { label: "Alaska", value: "AK" },

@@ -52,6 +52,24 @@ public class PropertyController {
     }
 
 
+    // DELETE - Remove a user's access to a property
+    @DeleteMapping("/{id}/users/{userId}")
+    public ResponseEntity<Void> removePropertyUser(
+            @PathVariable String id,
+            @PathVariable String userId,
+            @AuthenticationPrincipal Jwt jwt) {
+
+        propertyService.removePropertyUser(
+                id,
+                userId,
+                requireUserId(jwt)
+        );
+
+        return ResponseEntity.noContent().build();
+    }
+
+
+
 
     @GetMapping
     public List<Property> getAllProperties(

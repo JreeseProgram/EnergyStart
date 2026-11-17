@@ -1,5 +1,3 @@
-import { usePortfolioUser } from "@/features/portfolio/api/get-user.api"
-import { PORTFOLIO_POLICIES } from "@/features/portfolio/utils/portfolio-policies"
 import { ContentHeader } from "@/components/layouts/content-header"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/components/ui/link"
@@ -19,7 +17,6 @@ export function PropertySharingCell({
 }: {
   propertyId: PropertyId
 }) {
-  const user = usePortfolioUser()
   const query = useProperty({ propertyId })
 
   return createCell(query, {
@@ -57,14 +54,7 @@ export function PropertySharingCell({
       return (
         <>
           <PropertyHeader property={property} />
-          <PropertySharing
-            key={property.id}
-            property={property}
-            canManage={PORTFOLIO_POLICIES["property:manage-sharing"](
-              user.data,
-              property
-            )}
-          />
+          <PropertySharing property={property} />
         </>
       )
     },

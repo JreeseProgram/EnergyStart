@@ -7,6 +7,7 @@ import type { BuildingUseDetails } from "@/features/portfolio/models/building-us
 export type BuildingUseField = {
   name: FieldPath<BuildingUseDetails>
   label: string
+  required: boolean
   kind: "number" | "boolean" | "enum"
   options?: { value: string; label: string }[]
   min?: number
@@ -25,19 +26,19 @@ export function BuildingUseField({
   >
   definition: BuildingUseField
 }) {
-  const { name, label, kind } = definition
+  const { name, label, kind, required } = definition
 
   if (kind === "number") {
     return (
       <InputField
         control={control}
         name={name}
-        label={label + " *"}
+        label={label + (required ? " *" : "")}
         type="number"
         min={definition.min}
         max={definition.max}
         step={definition.step}
-        aria-required
+        aria-required={required}
         formatValue={(value) => (typeof value === "number" ? value : "")}
         parseValue={(value) => (value === "" ? undefined : Number(value))}
       />
@@ -48,8 +49,8 @@ export function BuildingUseField({
     <SelectField
       control={control}
       name={name}
-      label={label + " *"}
-      required
+      label={label + (required ? " *" : "")}
+      required={required}
       items={
         kind === "boolean"
           ? [

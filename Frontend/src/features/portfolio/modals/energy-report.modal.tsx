@@ -34,7 +34,8 @@ export function EnergyReportModal({
         <DialogHeader>
           <DialogTitle>Generate new report</DialogTitle>
           <DialogDescription>
-            Create a saved snapshot with clearly identified simulated results.
+            Get results for a month range and keep them in this session’s
+            history.
           </DialogDescription>
         </DialogHeader>
         <EnergyReportForm

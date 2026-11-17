@@ -4,11 +4,15 @@ package com.energystart.prod.controller;
 import com.energystart.prod.energy.EnergyMeter;
 import com.energystart.prod.service.EnergyMeterService;
 
+import com.energystart.prod.dto.EnergyMeterDTO;
+import com.energystart.prod.mapper.EnergyMeterMapper;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
+import java.time.YearMonth;
 import java.util.List;
 
 @RestController
@@ -16,11 +20,16 @@ import java.util.List;
 public class EnergyMeterController {
 
     private final EnergyMeterService energyMeterService;
+    private final EnergyMeterMapper energyMeterMapper;
+
 
     // Constructor dependency injection
     public EnergyMeterController(
-            EnergyMeterService energyMeterService) {
+            EnergyMeterService energyMeterService,
+            EnergyMeterMapper energyMeterMapper) {
+
         this.energyMeterService = energyMeterService;
+        this.energyMeterMapper = energyMeterMapper;
     }
 
     // CREATE - Save a new energy meter
@@ -36,14 +45,64 @@ public class EnergyMeterController {
                 .body(createdMeter);
     }
 
-    // READ - Retrieve all energy meters
-    @GetMapping
-    public ResponseEntity<List<EnergyMeter>> getAllMeters() {
 
-        return ResponseEntity.ok(
-                energyMeterService.getAllMeters()
-        );
+    // CREATE - Save a new energy meter using the frontend DTO
+    @PostMapping("/dto")
+    public ResponseEntity<EnergyMeterDTO> createMeterDTO(
+            @RequestBody EnergyMeterDTO dto) {
+
+        EnergyMeter meter = energyMeterMapper.toEnergyMeter(dto);
+
+        EnergyMeter createdMeter =
+                energyMeterService.createMeter(meter);
+
+        EnergyMeterDTO response =
+                energyMeterMapper.toEnergyMeterDTO(createdMeter);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
+
+
+    // READ - Retrieve all energy meters
+//    @GetMapping
+//    public ResponseEntity<List<EnergyMeter>> getAllMeters() {
+//
+//        return ResponseEntity.ok(
+//                energyMeterService.getAllMeters()
+//        );
+//    }
+
+
+    // READ - Retrieve all energy meters as frontend DTOs
+    @GetMapping("/dto/asList/{propertyId}")
+    public ResponseEntity<List<EnergyMeterDTO>> getAllMeterDTOs(
+            @PathVariable String propertyId,
+            @RequestParam(required = false)YearMonth startDate,
+            @RequestParam(required = false)YearMonth endDate
+            ) {
+
+        boolean allNull = (startDate == null && endDate == null);
+        boolean allPresent = (startDate != null && endDate != null);
+
+        if(!allNull && !allPresent) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        if(allPresent){
+            List <EnergyMeterDTO> meterDTO = energyMeterMapper.toEnergyMeterDatedDTO(propertyId,startDate,endDate);
+            return ResponseEntity.ok(meterDTO);
+        }
+        List<EnergyMeterDTO> meters =
+                energyMeterService.getAllMeters(propertyId)
+                        .stream()
+                        .map(energyMeterMapper::toEnergyMeterDTO)
+                        .toList();
+
+        return ResponseEntity.ok(meters);
+    }
+
 
     // READ - Retrieve an energy meter by ID
     @GetMapping("/{id}")
@@ -56,6 +115,21 @@ public class EnergyMeterController {
                         ResponseEntity.notFound().build()
                 );
     }
+
+
+    // READ - Retrieve one energy meter as a frontend DTO
+    @GetMapping("/dto/{id}")
+    public ResponseEntity<EnergyMeterDTO> getMeterDTOById(
+            @PathVariable String id) {
+
+        return energyMeterService.getMeterById(id)
+                .map(energyMeterMapper::toEnergyMeterDTO)
+                .map(ResponseEntity::ok)
+                .orElseGet(() ->
+                        ResponseEntity.notFound().build()
+                );
+    }
+
 
     // UPDATE - Replace an existing energy meter
     @PutMapping("/{id}")
@@ -70,6 +144,24 @@ public class EnergyMeterController {
                 );
     }
 
+
+    // UPDATE - Replace an existing energy meter using the frontend DTO
+    @PutMapping("/dto/{id}")
+    public ResponseEntity<EnergyMeterDTO> updateMeterDTO(
+            @PathVariable String id,
+            @RequestBody EnergyMeterDTO dto) {
+
+        EnergyMeter meter = energyMeterMapper.toEnergyMeter(dto);
+
+        return energyMeterService.updateMeter(id, meter)
+                .map(energyMeterMapper::toEnergyMeterDTO)
+                .map(ResponseEntity::ok)
+                .orElseGet(() ->
+                        ResponseEntity.notFound().build()
+                );
+    }
+
+
     // DELETE - Remove an energy meter
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMeter(
@@ -81,6 +173,20 @@ public class EnergyMeterController {
 
         return ResponseEntity.notFound().build();
     }
+
+
+    // DELETE - Remove an energy meter using the DTO endpoint
+    @DeleteMapping("/dto/{id}")
+    public ResponseEntity<Void> deleteMeterDTO(
+            @PathVariable String id) {
+
+        if (energyMeterService.deleteMeter(id)) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
 
     // Handle invalid meter information
     @ExceptionHandler(IllegalArgumentException.class)

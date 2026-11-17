@@ -1,7 +1,7 @@
 services:
   backend:
-    build:
-      context: ./Backend/prod
+    image:
+      jreese17/energy-start-backend:latest
     environment:
       MONGODB_URI: ${MONGODB_URI:?Set MONGODB_URI in .env}
       WORKOS_CLIENT_ID: ${WORKOS_CLIENT_ID:?Set WORKOS_CLIENT_ID in .env}
@@ -12,8 +12,8 @@ services:
       - "127.0.0.1:8080:8080"
 
   frontend:
-    build:
-      context: ./Frontend
+    image:
+      jreese17/energy-start-frontend:latest
     environment:
       VITE_APP_WORKOS_CLIENT_ID: ${WORKOS_CLIENT_ID:?Set WORKOS_CLIENT_ID in .env}
       VITE_APP_REDIRECT_URI: http://localhost:5173/app

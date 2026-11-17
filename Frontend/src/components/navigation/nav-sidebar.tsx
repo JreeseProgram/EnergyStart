@@ -15,7 +15,7 @@ import {
   Share2,
   Settings,
 } from "lucide-react"
-import { Link } from "react-router"
+import { NavLink } from "react-router"
 
 export type NavMainItem = {
   title: string
@@ -64,7 +64,15 @@ export function NavSidebar({ propertyId }: { propertyId: string }) {
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 tooltip={item.title}
-                render={<Link to={item.url} />}
+                className="aria-[current=page]:bg-sidebar-accent aria-[current=page]:text-sidebar-accent-foreground"
+                render={
+                  <NavLink
+                    to={item.url}
+                    end={
+                      item.url === paths.app.property.root.getHref(propertyId)
+                    }
+                  />
+                }
               >
                 {item.icon}
                 <span>{item.title}</span>

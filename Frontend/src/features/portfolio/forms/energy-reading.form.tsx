@@ -1,4 +1,3 @@
-import z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { InputField } from "@/components/form/input-field"
@@ -6,89 +5,66 @@ import { SubmitButton } from "@/components/form/submit-button"
 import { FieldError, FieldGroup, FieldSet } from "@/components/ui/field"
 import { toast } from "@/components/ui/toast"
 import { useCreateEnergyReading } from "@/features/portfolio/api/create-energy-reading.api"
-import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
 import { CreateEnergyReadingInput } from "@/features/portfolio/services/energy-meter.service"
-
-const numericText = z
-  .string()
-  .trim()
-  .min(1, "Enter usage")
-  .refine(
-    (value) => Number.isFinite(Number(value)) && Number(value) >= 0,
-    "Enter a number of zero or greater"
-  )
-const ReadingFormInput = z
-  .object({
-    startDate: z.iso.date("Enter a start date"),
-    endDate: z.iso.date("Enter an end date"),
-    usage: numericText,
-    cost: z
-      .string()
-      .trim()
-      .refine(
-        (value) =>
-          value === "" ||
-          (Number.isFinite(Number(value)) && Number(value) >= 0),
-        "Enter a cost of zero or greater"
-      ),
-  })
-  .refine((value) => value.startDate <= value.endDate, {
-    message: "End date must be on or after start date",
-    path: ["endDate"],
-  })
-  .refine((value) => value.endDate <= new Date().toISOString().slice(0, 10), {
-    message: "Readings cannot end in the future",
-    path: ["endDate"],
-  })
+import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
 
 export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
-  const form = useForm<z.infer<typeof ReadingFormInput>>({
-    resolver: zodResolver(ReadingFormInput),
-    defaultValues: { startDate: "", endDate: "", usage: "", cost: "" },
+  const form = useForm({
+    resolver: zodResolver(CreateEnergyReadingInput),
+    defaultValues: {
+      propertyId: meter.propertyId,
+      energyMeterId: meter.meterId,
+      date: "",
+      usage: NaN,
+      cost: 0,
+    },
   })
+
   const mutation = useCreateEnergyReading()
-  function submit(data: z.output<typeof ReadingFormInput>) {
+
+  function submit(data: CreateEnergyReadingInput) {
     if (mutation.isPending) return
-    mutation.mutate(
-      CreateEnergyReadingInput.parse({
-        ...data,
-        usage: Number(data.usage),
-        cost: data.cost === "" ? undefined : Number(data.cost),
-        propertyId: meter.propertyId,
-        energyMeterId: meter.id,
-      }),
-      {
-        onSuccess: () => {
-          form.reset()
-          toast.add({ type: "success", title: "Reading recorded" })
+    if (meter.readings.some((reading) => reading.date === data.date)) {
+      form.setError(
+        "date",
+        {
+          type: "duplicate",
+          message:
+            "A reading already exists for this month. Choose another month.",
         },
-      }
-    )
+        { shouldFocus: true }
+      )
+      return
+    }
+    mutation.mutate(data, {
+      onSuccess: () => {
+        form.reset()
+        toast.add({ type: "success", title: "Reading recorded" })
+      },
+    })
   }
+
   return (
     <form onSubmit={form.handleSubmit(submit)} className="flex flex-col gap-4">
       <h3 className="font-semibold">Record a reading</h3>
       <FieldSet disabled={!meter.inUse || mutation.isPending}>
-        <FieldGroup className="grid grid-cols-2">
-          <InputField
-            control={form.control}
-            name="startDate"
-            label="Period start *"
-            type="date"
-          />
-          <InputField
-            control={form.control}
-            name="endDate"
-            label="Period end *"
-            type="date"
-            max={new Date().toISOString().slice(0, 10)}
-          />
-        </FieldGroup>
+        <InputField
+          control={form.control}
+          name="date"
+          label="Month *"
+          type="month"
+          max={new Date().toISOString().slice(0, 7)}
+        />
         <FieldGroup className="grid grid-cols-2">
           <InputField
             control={form.control}
             name="usage"
             label={`Usage (${meter.unitOfMeasure}) *`}
+            type="number"
+            step="any"
+            min={0}
+            parseValue={(value) => (value.trim() === "" ? NaN : Number(value))}
+            formatValue={(value) => (Number.isFinite(value) ? value : "")}
             inputMode="decimal"
             placeholder="0"
           />
@@ -96,6 +72,10 @@ export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
             control={form.control}
             name="cost"
             label="Cost (optional)"
+            type="number"
+            step="any"
+            min={0}
+            parseValue={(value) => Number(value)}
             inputMode="decimal"
             placeholder="0"
           />

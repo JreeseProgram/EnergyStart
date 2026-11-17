@@ -55,7 +55,6 @@ export function SelectField<T extends FieldValues>({
     <Controller
       control={control}
       name={name}
-      disabled={disabled}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid} className={className}>
           <FieldLabel htmlFor={key}>{label}</FieldLabel>
@@ -69,7 +68,7 @@ export function SelectField<T extends FieldValues>({
               field.onChange(next)
               onValueChange?.(value)
             }}
-            disabled={field.disabled}
+            disabled={disabled || field.disabled}
             items={items}
           >
             <SelectTrigger

@@ -1,6 +1,11 @@
 "use client"
 
 import { PROPERTY_TYPES } from "@/features/portfolio/utils/form-constants"
+import { ChevronsUpDownIcon, CheckIcon, MapPinned } from "lucide-react"
+import type { Property } from "@/features/portfolio/models/property.models"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useLocation, useMatch, useNavigate } from "react-router"
+import { paths } from "@/config/paths"
 
 import {
   DropdownMenu,
@@ -8,16 +13,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { ChevronsUpDownIcon, CheckIcon, MapPinned } from "lucide-react"
-import type { Property } from "@/features/portfolio/models/property.models"
-import { Skeleton } from "@/components/ui/skeleton"
-import { useLocation, useMatch, useNavigate } from "react-router"
-import { paths } from "@/config/paths"
 
 export function PropertySwitcher({
   properties,
@@ -64,16 +65,15 @@ export function PropertySwitcher({
               <span className="font-medium">{selectedProperty.name}</span>
 
               <span className="text-xs text-muted-foreground">
-                {
-                  PROPERTY_TYPES.find(
-                    (type) => type.value === selectedProperty.propertyType
-                  )?.label
-                }{" "}
+                {PROPERTY_TYPES.find(
+                  (type) => type.value === selectedProperty.propertyType
+                )?.label ?? "Not specified"}{" "}
                 {" • "} {selectedProperty.city}, {selectedProperty.state}
               </span>
             </div>
             <ChevronsUpDownIcon className="ml-auto" />
           </DropdownMenuTrigger>
+
           <DropdownMenuContent align="start">
             {properties.map((property) => (
               <DropdownMenuItem

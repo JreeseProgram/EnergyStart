@@ -54,7 +54,7 @@ public class Property {
         this.notes = notes;
     }
     //Custom methods
-    public void calculateEnergyScore(EnergyReportRepo energyReportRepo,
+    public int calculateEnergyScore(EnergyReportRepo energyReportRepo,
                                      EnergyMeterRepo energyMeterRepo,
                                      EnergyMeterReadingRepo energyMeterReadingRepo,
                                      String startDate, String endDate,
@@ -103,7 +103,8 @@ public class Property {
         }
 
         float EER = totalSourceKBtu / totalPredictedKBtu;
-        this.setEnergyScore(EnergyStarLookupTable.getScore(EER, relevantEnergyReports, weights));
+        int score = EnergyStarLookupTable.getScore(EER, relevantEnergyReports, weights);
+        return score;
     }
 
     //Getters and Setters

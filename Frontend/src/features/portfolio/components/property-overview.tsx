@@ -1,3 +1,8 @@
+import { Button } from "@/components/ui/button"
+import { paths } from "@/config/paths"
+import { Link } from "react-router"
+import type { Property } from "@/features/portfolio/models/property.models"
+
 import {
   Card,
   CardContent,
@@ -5,14 +10,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { paths } from "@/config/paths"
-import type { Property } from "@/features/portfolio/models/property.models"
-import { Link } from "react-router"
+import { CardGrid } from "@/components/card-grid"
+import { Badge } from "@/components/ui/badge"
 
 export function PropertyOverview({ property }: { property: Property }) {
   const score =
     property.energyStarScore > 0 ? property.energyStarScore : undefined
+
   const metrics = [
     {
       label: "Energy Star Score",
@@ -46,22 +50,19 @@ export function PropertyOverview({ property }: { property: Property }) {
       description: "Energy total supplied for this property",
     },
   ]
+
   const hasPerformance = metrics.some((metric) => metric.value !== undefined)
 
   return (
     <>
-      <p className="text-sm text-muted-foreground">
-        Prototype metrics · Reporting year {property.reportingYear}. Values come
-        from the property data and are not official report results.
-      </p>
-      <div className="grid grid-cols-4 gap-4">
+      <CardGrid>
         {metrics.map((metric) => (
           <Card
             key={metric.label}
             className="rounded-2xl bg-linear-to-br from-primary/5 to-card"
           >
             <CardHeader>
-              <CardDescription>{metric.label}</CardDescription>
+              <Badge variant={"outline"}>{metric.label}</Badge>
             </CardHeader>
             <CardContent>
               <p className="text-4xl font-bold tabular-nums">
@@ -85,7 +86,8 @@ export function PropertyOverview({ property }: { property: Property }) {
             </CardHeader>
           </Card>
         ))}
-      </div>
+      </CardGrid>
+
       {!hasPerformance && (
         <div className="flex flex-col items-start gap-3 rounded-xl border border-border p-6">
           <h3 className="text-lg font-semibold">No performance data yet</h3>

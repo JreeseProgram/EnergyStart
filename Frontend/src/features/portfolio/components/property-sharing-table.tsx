@@ -1,11 +1,4 @@
 import { useState } from "react"
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  EllipsisVertical,
-} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardFooter } from "@/components/ui/card"
@@ -18,57 +11,49 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import type {
-  Property,
-  PropertyAssignment,
-} from "@/features/portfolio/models/property.models"
+import type { PropertyUser } from "@/features/portfolio/services/property.service"
 
 export function PropertySharingTable({
-  property,
+  users,
+  propertyName,
+  currentUserId,
   canManage,
   onRemove,
 }: {
-  property: Property
+  users: PropertyUser[]
+  propertyName: string
+  currentUserId?: string
   canManage: boolean
-  onRemove: (assignment: PropertyAssignment) => void
+  onRemove: (user: PropertyUser) => void
 }) {
   const [requestedPage, setPage] = useState(0)
-  const pageCount = Math.max(1, Math.ceil(property.assignments.length / 10))
+  const pageCount = Math.max(1, Math.ceil(users.length / 10))
   const page = Math.min(requestedPage, pageCount - 1)
-  const rows = property.assignments.slice(page * 10, (page + 1) * 10)
+  const rows = users.slice(page * 10, (page + 1) * 10)
   return (
     <Card className="gap-0 overflow-hidden rounded-2xl py-0">
       <Table>
         <TableCaption className="sr-only">
-          Users with access to {property.name}
+          Users with access to {propertyName}
         </TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead scope="col" className="h-16 pl-6">
               User
             </TableHead>
-            <TableHead scope="col" className="w-48 text-right">
-              Assigned
-            </TableHead>
-            <TableHead scope="col" className="w-16">
-              <span className="sr-only">Actions</span>
+            <TableHead scope="col" className="pr-6 text-right">
+              Access
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((assignment) => {
-            const { user } = assignment
+          {rows.map((user) => {
             const name =
               [user.firstName, user.lastName].filter(Boolean).join(" ") ||
               user.email
+            const isSelf = user.userId === currentUserId
             return (
-              <TableRow key={user.id}>
+              <TableRow key={user.userId}>
                 <TableCell className="pl-6">
                   <div className="flex items-center gap-3 py-2">
                     <Avatar>
@@ -78,108 +63,68 @@ export function PropertySharingTable({
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium">{name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="font-medium">
+                        {name}
+                        {isSelf ? " (you)" : ""}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
                         {user.email}
                       </p>
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="text-right text-muted-foreground">
-                  <time dateTime={assignment.assignedAt}>
-                    {new Intl.DateTimeFormat("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    }).format(new Date(assignment.assignedAt))}
-                  </time>
-                </TableCell>
-                <TableCell>
+                <TableCell className="pr-6 text-right">
                   {canManage && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            aria-label={`Actions for ${user.email}`}
-                          />
-                        }
-                      >
-                        <EllipsisVertical />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          variant="destructive"
-                          onClick={() => onRemove(assignment)}
-                        >
-                          Remove access
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={users.length <= 1}
+                      onClick={() => onRemove(user)}
+                      aria-label={
+                        isSelf
+                          ? "Leave property"
+                          : `Remove access for ${user.email}`
+                      }
+                    >
+                      {isSelf ? "Leave property" : "Remove access"}
+                    </Button>
                   )}
                 </TableCell>
               </TableRow>
             )
           })}
-          {rows.length === 0 && (
+          {users.length === 0 && (
             <TableRow>
-              <TableCell colSpan={3} className="h-40 text-center">
-                <p className="font-medium">No shared users yet</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {canManage
-                    ? "Add a registered user to share this property."
-                    : "Only the owner has access to this property."}
-                </p>
+              <TableCell colSpan={2} className="p-6 text-center">
+                No users found.
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
-      <CardFooter className="justify-end gap-4 border-t py-4 text-sm">
-        <span>
-          Rows per page{" "}
-          <span className="ml-2 rounded-lg border px-3 py-1">10</span>
-        </span>
-        <span aria-live="polite">
-          Page {page + 1} of {pageCount}
-        </span>
+      <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t p-4">
+        <p className="text-sm text-muted-foreground">
+          {users.length === 1
+            ? "The last authorized user cannot be removed."
+            : `${users.length} users`}{" "}
+          · Page {page + 1} of {pageCount}
+        </p>
         <div className="flex gap-2">
           <Button
             variant="outline"
-            size="icon"
-            aria-label="First page"
-            disabled={page === 0}
-            onClick={() => setPage(0)}
-          >
-            <ChevronsLeft />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label="Previous page"
+            size="sm"
             disabled={page === 0}
             onClick={() => setPage(page - 1)}
           >
-            <ChevronLeft />
+            Previous
           </Button>
           <Button
             variant="outline"
-            size="icon"
-            aria-label="Next page"
+            size="sm"
             disabled={page === pageCount - 1}
             onClick={() => setPage(page + 1)}
           >
-            <ChevronRight />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label="Last page"
-            disabled={page === pageCount - 1}
-            onClick={() => setPage(pageCount - 1)}
-          >
-            <ChevronsRight />
+            Next
           </Button>
         </div>
       </CardFooter>

@@ -1,11 +1,10 @@
+import { TestPropertyRecord } from "@/features/portfolio/testing/property-record.models"
 import { BuildingUse } from "@/features/portfolio/models/building-use.models"
-import {
-  Property,
-  type PropertyId,
-} from "@/features/portfolio/models/property.models"
+import type { PropertyId } from "@/features/portfolio/models/property.models"
 import { defaultBuildingUses } from "@/features/portfolio/testing/fixtures/building-use.fixtures"
 import { defaultProperties } from "@/features/portfolio/testing/fixtures/property.fixtures"
 import { User } from "@/features/portfolio/models/user.models"
+
 import {
   mockSharingUsers,
   testPortfolioUser,
@@ -22,7 +21,7 @@ export function createPortfolioTestStore(owner: User = testPortfolioUser) {
       ),
     ],
     properties: defaultProperties.map((property, index) =>
-      Property.parse({
+      TestPropertyRecord.parse({
         ...property,
         owner,
         assignments:
@@ -52,6 +51,10 @@ export function requireProperty(
   const property = store.properties.find(
     (property) => property.id === propertyId
   )
-  if (!property) throw new Error("Property not found")
+
+  if (!property) {
+    throw new Error("Property not found")
+  }
+
   return property
 }

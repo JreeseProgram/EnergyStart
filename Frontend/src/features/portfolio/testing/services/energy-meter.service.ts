@@ -19,7 +19,10 @@ export function createEnergyMeterMockService(
   propertyService: PropertyService
 ): EnergyMeterService {
   const meters = new Map(
-    defaultEnergyMeters.map((meter) => [meter.id, EnergyMeter.parse(meter)])
+    defaultEnergyMeters.map((meter) => [
+      meter.meterId,
+      EnergyMeter.parse(meter),
+    ])
   )
   async function requireProperty(
     propertyId: GetEnergyMetersInput["propertyId"]
@@ -39,8 +42,8 @@ export function createEnergyMeterMockService(
       [...meters.values()].some(
         (meter) =>
           meter.propertyId === fields.propertyId &&
-          meter.id !== exceptId &&
-          meter.meterId?.toLowerCase() === fields.meterId.toLowerCase()
+          meter.meterId !== exceptId &&
+          meter.meterName?.toLowerCase() === fields.meterName.toLowerCase()
       )
     )
       throw new Error("A meter with this name already exists in this property.")
@@ -65,20 +68,12 @@ export function createEnergyMeterMockService(
       const fields = CreateEnergyMeterInput.parse(input)
       await requireProperty(fields.propertyId)
       checkName(fields)
-      const now = new Date().toISOString()
       const meter = EnergyMeter.parse({
         ...fields,
-        id: crypto.randomUUID(),
-        createdAt: now,
-        date: now,
-        updatedAt: now,
+        meterId: crypto.randomUUID(),
         readings: [],
-        meterKBtu: 0,
-        rawUse: 0,
-        siteEui: 0,
-        sourceEui: 0,
       })
-      meters.set(meter.id, meter)
+      meters.set(meter.meterId, meter)
       return EnergyMeter.parse(meter)
     },
     updateEnergyMeter: async (input) => {
@@ -97,9 +92,8 @@ export function createEnergyMeterMockService(
       const updated = EnergyMeter.parse({
         ...current,
         ...fields,
-        updatedAt: new Date().toISOString(),
       })
-      meters.set(updated.id, updated)
+      meters.set(updated.meterId, updated)
       return EnergyMeter.parse(updated)
     },
     createEnergyReading: async (input) => {
@@ -109,24 +103,17 @@ export function createEnergyMeterMockService(
       const current = await requireMeter({ propertyId, energyMeterId })
       if (!current.inUse)
         throw new Error("Activate this meter before adding readings.")
-      if (
-        current.readings.some(
-          (reading) =>
-            fields.startDate <= reading.endDate &&
-            fields.endDate >= reading.startDate
-        )
-      )
+      if (current.readings.some((reading) => fields.date === reading.date))
         throw new Error(
-          "This period overlaps an existing reading. Choose a different period."
+          "A reading already exists for this month. Choose a different month."
         )
       const now = new Date().toISOString()
       const reading = { ...fields, id: crypto.randomUUID(), createdAt: now }
       const updated = EnergyMeter.parse({
         ...current,
         readings: [...current.readings, reading],
-        updatedAt: now,
       })
-      meters.set(updated.id, updated)
+      meters.set(updated.meterId, updated)
       return EnergyMeter.parse(updated)
     },
   }

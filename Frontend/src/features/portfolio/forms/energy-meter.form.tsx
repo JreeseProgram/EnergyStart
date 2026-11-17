@@ -32,7 +32,7 @@ export function EnergyMeterForm({
   const form = useForm<z.infer<typeof MeterFormInput>>({
     resolver: zodResolver(MeterFormInput),
     defaultValues: {
-      meterId: meter?.meterId ?? "",
+      meterName: meter?.meterName ?? "",
       meterType: meter?.meterType,
       unitOfMeasure: meter?.unitOfMeasure,
       inUse: meter?.inUse ?? true,
@@ -45,7 +45,7 @@ export function EnergyMeterForm({
     if (mutation.isPending) return
     mutation.mutate(
       meter
-        ? { ...data, propertyId, energyMeterId: meter.id }
+        ? { ...data, propertyId, energyMeterId: meter.meterId }
         : { ...data, propertyId },
       {
         onSuccess: () => {
@@ -63,7 +63,7 @@ export function EnergyMeterForm({
       <FieldSet disabled={mutation.isPending}>
         <InputField
           control={form.control}
-          name="meterId"
+          name="meterName"
           label="Meter name *"
           placeholder="e.g. Grid electricity"
           maxLength={100}

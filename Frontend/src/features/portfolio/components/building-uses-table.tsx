@@ -1,4 +1,9 @@
 import { useId, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardFooter } from "@/components/ui/card"
+import type { BuildingUse } from "@/features/portfolio/models/building-use.models"
+import { BUILDING_USE_TYPES } from "@/features/portfolio/utils/form-constants"
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -6,8 +11,7 @@ import {
   ChevronsRight,
   EllipsisVertical,
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardFooter } from "@/components/ui/card"
+
 import {
   Table,
   TableBody,
@@ -17,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
 import {
   Select,
   SelectContent,
@@ -24,14 +29,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import type { BuildingUse } from "@/features/portfolio/models/building-use.models"
-import { PROPERTY_TYPES } from "@/features/portfolio/utils/form-constants"
 
 const pageSizes = [5, 10, 20, 50].map((value) => ({
   value,
@@ -46,16 +50,19 @@ export function BuildingUsesTable({
   onEdit: (buildingUse: BuildingUse) => void
 }) {
   const [pagination, setPagination] = useState({ page: 0, size: 10 })
+
   const pageSizeId = useId()
   const pageCount = Math.max(
     1,
     Math.ceil(buildingUses.length / pagination.size)
   )
+
   const page = Math.min(pagination.page, pageCount - 1)
   const rows = buildingUses.slice(
     page * pagination.size,
     (page + 1) * pagination.size
   )
+
   const setPage = (next: number) =>
     setPagination((current) => ({
       ...current,
@@ -89,7 +96,7 @@ export function BuildingUsesTable({
         </TableHeader>
         <TableBody>
           {rows.map((use) => {
-            const label = PROPERTY_TYPES.find(
+            const label = BUILDING_USE_TYPES.find(
               (type) => type.value === use.buildingUseType
             )?.label
 

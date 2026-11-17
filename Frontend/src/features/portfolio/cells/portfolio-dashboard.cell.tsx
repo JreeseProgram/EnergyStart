@@ -10,6 +10,7 @@ import { createCell } from "@/lib/react-query"
 
 export function PortfolioDashboardCell() {
   const query = useProperties({})
+
   return createCell(query, {
     Loading: () => (
       <div
@@ -51,13 +52,18 @@ export function PortfolioDashboardCell() {
   })
 }
 
-function PortfolioPerformanceCell({ properties }: { properties: Property[] }) {
+function PortfolioPerformanceCell({
+  properties,
+}: {
+  properties: Property[]
+}) {
   const query = usePortfolioPerformance({
     input: {
       propertyIds: properties.map((property) => property.id),
       asOf: new Date().toISOString().slice(0, 10),
     },
   })
+
   return createCell(query, {
     Loading: () => (
       <div role="status" aria-label="Loading portfolio performance">

@@ -1,5 +1,11 @@
 import { SubmitButton } from "@/components/form/submit-button"
 import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { PropertyForm } from "@/features/portfolio/forms/property.form"
+import type { Property } from "@/features/portfolio/models/property.models"
+import type { DialogTriggerProps } from "@base-ui/react"
+import { useState } from "react"
+
 import {
   Dialog,
   DialogContent,
@@ -9,12 +15,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Separator } from "@/components/ui/separator"
-
-import { PropertyForm } from "@/features/portfolio/forms/property.form"
-import type { Property } from "@/features/portfolio/models/property.models"
-import type { DialogTriggerProps } from "@base-ui/react"
-import { useState } from "react"
 
 export function PropertyModal({
   property,
@@ -22,6 +22,7 @@ export function PropertyModal({
 }: Omit<DialogTriggerProps, "property"> & { property?: Property }) {
   const [open, setOpen] = useState(false)
   const [pending, setPending] = useState(false)
+  const [savedWithoutRefresh, setSavedWithoutRefresh] = useState(false)
   const action = property ? "Edit" : "Create"
 
   return (
@@ -40,8 +41,10 @@ export function PropertyModal({
               : "Create a property and add buildings after it is saved."}
           </DialogDescription>
         </DialogHeader>
+
         <PropertyForm
           onSubmittingChange={setPending}
+          onSavedWithoutRefreshChange={setSavedWithoutRefresh}
           onSuccess={() => {
             setPending(false)
             setOpen(false)
@@ -59,7 +62,7 @@ export function PropertyModal({
             >
               Cancel
             </Button>
-            <SubmitButton disabled={pending}>
+            <SubmitButton disabled={pending || savedWithoutRefresh}>
               {property ? "Save changes" : "Create property"}
             </SubmitButton>
           </DialogFooter>

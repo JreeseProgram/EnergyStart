@@ -1,4 +1,14 @@
 import { useId, useState } from "react"
+import { Plus, Pencil, ChevronLeft, ChevronRight } from "lucide-react"
+import { ContentHeader } from "@/components/layouts/content-header"
+import type { Property } from "@/features/portfolio/models/property.models"
+import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
+import { EnergyMeterModal } from "@/features/portfolio/modals/energy-meter.modal"
+import { EnergyMeterDetailsModal } from "@/features/portfolio/modals/energy-meter-details.modal"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+
 import {
   createColumnHelper,
   createPaginatedRowModel,
@@ -7,11 +17,7 @@ import {
   tableFeatures,
   useTable,
 } from "@tanstack/react-table"
-import { Plus, Pencil, ChevronLeft, ChevronRight } from "lucide-react"
-import { ContentHeader } from "@/components/layouts/content-header"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
+
 import {
   Select,
   SelectContent,
@@ -19,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+
 import {
   Table,
   TableHeader,
@@ -28,10 +35,7 @@ import {
   TableCell,
   TableCaption,
 } from "@/components/ui/table"
-import type { Property } from "@/features/portfolio/models/property.models"
-import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
-import { EnergyMeterModal } from "@/features/portfolio/modals/energy-meter.modal"
-import { EnergyMeterDetailsModal } from "@/features/portfolio/modals/energy-meter-details.modal"
+
 import {
   latestReading,
   meterDate,
@@ -42,6 +46,7 @@ const features = tableFeatures({
   rowPaginationFeature,
   paginatedRowModel: createPaginatedRowModel(),
 })
+
 const helper = createColumnHelper<typeof features, EnergyMeter>()
 
 export function PropertyMeters({
@@ -54,7 +59,7 @@ export function PropertyMeters({
   const pageSizeId = useId()
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
   const columns = helper.columns([
-    helper.accessor("meterId", {
+    helper.accessor("meterName", {
       header: "Meter",
       cell: ({ row }) => (
         <EnergyMeterDetailsModal
@@ -62,11 +67,11 @@ export function PropertyMeters({
           render={
             <Button
               variant="link"
-              className="h-auto justify-start p-0 font-semibold underline"
+              className="h-auto justify-start p-0 font-semibold text-foreground underline"
             />
           }
         >
-          {row.original.meterId || "Unnamed meter"}
+          {row.original.meterName || "Unnamed meter"}
         </EnergyMeterDetailsModal>
       ),
     }),
@@ -98,20 +103,11 @@ export function PropertyMeters({
           <div className="tabular-nums">
             {latest.usage.toLocaleString("en-US")} {row.original.unitOfMeasure}
             <div className="text-xs text-muted-foreground">
-              {meterDate(latest.endDate)}
+              {meterDate(latest.date)}
             </div>
           </div>
         )
       },
-    }),
-    helper.display({
-      id: "updated",
-      header: "Updated",
-      cell: ({ row }) => (
-        <span className="text-muted-foreground">
-          {meterDate(row.original.updatedAt ?? row.original.date)}
-        </span>
-      ),
     }),
     helper.accessor("inUse", {
       header: "Status",
@@ -128,7 +124,7 @@ export function PropertyMeters({
             <Button
               variant="ghost"
               size="icon-sm"
-              aria-label={`Edit ${row.original.meterId || "meter"}`}
+              aria-label={`Edit ${row.original.meterName || "meter"}`}
             />
           }
         >
@@ -137,13 +133,14 @@ export function PropertyMeters({
       ),
     }),
   ])
+
   const table = useTable({
     features,
     data: meters,
     columns,
     state: { pagination },
     onPaginationChange: setPagination,
-    getRowId: (row) => row.id,
+    getRowId: (row) => row.meterId,
   })
 
   return (
@@ -248,10 +245,6 @@ export function PropertyMeters({
           )}
         </CardContent>
       </Card>
-      <p className="text-xs text-muted-foreground">
-        Prototype meter data. Changes are kept during navigation and may reset
-        when the page is refreshed.
-      </p>
     </>
   )
 }

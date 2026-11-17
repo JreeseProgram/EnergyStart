@@ -30,8 +30,8 @@ public class EnergyMeterService {
     }
 
     // READ - Retrieve all energy meters
-    public List<EnergyMeter> getAllMeters() {
-        return energyMeterRepo.findAll();
+    public List<EnergyMeter> getAllMeters(String propertyId) {
+        return energyMeterRepo.findAllByAssociatedPropertyID(propertyId);
     }
 
     // READ - Retrieve an energy meter by ID

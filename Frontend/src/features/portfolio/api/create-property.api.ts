@@ -1,7 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { type MutationConfig } from "@/lib/react-query"
-import type { PropertyService } from "@/features/portfolio/services/property.service"
+import {
+  PropertyCreateRefreshError,
+  type PropertyService,
+} from "@/features/portfolio/services/property.service"
 import { getPropertiesQueryOptions } from "@/features/portfolio/api/get-properties.api"
 import { use } from "react"
 import { Services } from "@/context/services.context"
@@ -16,16 +19,28 @@ export const useCreateProperty = ({
   const queryClient = useQueryClient()
   const { propertyService } = use(Services)
 
-  const { onSuccess, ...restConfig } = mutationConfig || {}
+  const { onSuccess, onError, ...restConfig } = mutationConfig || {}
+
+  const invalidateProperties = () =>
+    queryClient.invalidateQueries(
+      { queryKey: getPropertiesQueryOptions({ propertyService }).queryKey },
+      { throwOnError: false }
+    )
 
   return useMutation({
-    onSuccess: (...args) => {
-      queryClient.invalidateQueries({
-        queryKey: getPropertiesQueryOptions({ propertyService }).queryKey,
-      })
-      onSuccess?.(...args)
-    },
     ...restConfig,
     mutationFn: propertyService.createProperty,
+    retry: false,
+    onSuccess: async (...args) => {
+      await invalidateProperties()
+      await onSuccess?.(...args)
+    },
+    onError: async (...args) => {
+      if (args[0] instanceof PropertyCreateRefreshError) {
+        await invalidateProperties()
+      }
+
+      await onError?.(...args)
+    },
   })
 }

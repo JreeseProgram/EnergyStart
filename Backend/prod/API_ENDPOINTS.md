@@ -149,6 +149,13 @@ Successfully tested; the controller returns the deleted property object. Follow-
 
 ## Energy Reports API
 
+All energy-report routes require an authenticated user. Collection GET returns
+only reports belonging to properties that user can access. Individual GET, PUT,
+and DELETE check access to the stored report's property. POST and PUT also check
+access to the submitted `relatedPropertyID`; moving a report requires access to
+both properties. Access to an existing unauthorized property returns `403`;
+missing reports or properties return `404`.
+
 Energy reports are polymorphic. **Include `reportType` in POST and PUT JSON**. The base `EnergyReport` model exposes:
 
 | Field | Type | Notes |

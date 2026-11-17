@@ -14,7 +14,6 @@ import {
   ChevronsRight,
   EllipsisVertical,
 } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -42,10 +41,10 @@ import {
 import type { EnergyReport } from "@/features/portfolio/models/energy-report.models"
 import {
   reportMonthLabel,
-  reportResultLabel,
-  reportTypeLabel,
+  reportEuiLabel,
+  reportTitle,
+  reportDateLabel,
 } from "@/features/portfolio/utils/energy-report-labels"
-import { meterDate } from "@/features/portfolio/utils/energy-meter-labels"
 
 const features = tableFeatures({
   rowPaginationFeature,
@@ -62,7 +61,8 @@ export function EnergyReportsTable({
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
   const sizeId = useId()
   const columns = helper.columns([
-    helper.accessor("name", {
+    helper.display({
+      id: "report",
       header: "Report",
       cell: ({ row }) => (
         <Button
@@ -70,16 +70,8 @@ export function EnergyReportsTable({
           className="h-auto p-0 font-semibold text-foreground underline"
           onClick={() => onOpen(row.original)}
         >
-          {row.original.name}
+          {reportTitle(row.original)}
         </Button>
-      ),
-    }),
-    helper.accessor("reportType", {
-      header: "Type",
-      cell: ({ row }) => (
-        <Badge variant="outline">
-          {reportTypeLabel(row.original.reportType)}
-        </Badge>
       ),
     }),
     helper.display({
@@ -92,19 +84,20 @@ export function EnergyReportsTable({
         </span>
       ),
     }),
-    helper.accessor("result", {
-      header: "Result",
-      cell: ({ row }) => (
-        <span className="font-semibold tabular-nums">
-          {reportResultLabel(row.original)}
-        </span>
-      ),
+    helper.accessor("aggregateSiteEUI", {
+      header: "Site EUI",
+      cell: ({ row }) => reportEuiLabel(row.original.aggregateSiteEUI),
     }),
+    helper.accessor("aggregateSourceEUI", {
+      header: "Source EUI",
+      cell: ({ row }) => reportEuiLabel(row.original.aggregateSourceEUI),
+    }),
+    helper.accessor("energyScore", { header: "Energy score" }),
     helper.accessor("generatedAt", {
       header: "Generated",
       cell: ({ row }) => (
         <span className="text-muted-foreground">
-          {meterDate(row.original.generatedAt)}
+          {reportDateLabel(row.original.generatedAt)}
         </span>
       ),
     }),
@@ -118,7 +111,7 @@ export function EnergyReportsTable({
               <Button
                 variant="ghost"
                 size="icon-sm"
-                aria-label={`Actions for ${row.original.name}`}
+                aria-label={`Actions for ${reportTitle(row.original)}`}
               />
             }
           >
@@ -148,14 +141,14 @@ export function EnergyReportsTable({
           <div className="flex flex-col gap-2 py-8">
             <h3 className="font-semibold">No reports yet</h3>
             <p className="text-sm text-muted-foreground">
-              Generate a simulated report to save a result for this property.
+              Generate a report to view results for this property.
             </p>
           </div>
         ) : (
           <>
             <Table>
               <TableCaption className="sr-only">
-                Saved simulated reports for the selected property
+                Session report history for the selected property
               </TableCaption>
               <TableHeader>
                 {table.getHeaderGroups().map((group) => (

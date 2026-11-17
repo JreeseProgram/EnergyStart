@@ -6,14 +6,10 @@ export function useGenerateEnergyReport() {
   const { energyReportService } = use(Services)
   const client = useQueryClient()
   return useMutation({
-    mutationFn: energyReportService.generateEnergyReport,
+    mutationFn: energyReportService.getEnergyReport,
     onSuccess: async (report) => {
-      client.setQueryData(
-        ["EnergyReports", report.propertyId, report.id],
-        report
-      )
       await client.invalidateQueries({
-        queryKey: ["EnergyReports", report.propertyId],
+        queryKey: ["EnergyReports", report.PropertyId],
       })
     },
   })

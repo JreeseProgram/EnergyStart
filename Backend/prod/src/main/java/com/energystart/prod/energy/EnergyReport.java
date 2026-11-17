@@ -82,6 +82,33 @@ public class EnergyReport {
 
     //Custom Methods
 
+    public static String consistentName(String input){
+        return switch (input) {
+            case "BankBranchReport" -> "BANK_BRANCH";
+            case "ConvenienceStoreReport" -> "CONVENIENCE_STORE";
+            case "CourtHouseReport" -> "COURT_HOUSE";
+            case "DataCenterReport" -> "DATA_CENTER";
+            case "DistributionCenterReport" -> "DISTRIBUTION_CENTER";
+            case "FinancialOfficeReport" -> "FINANCIAL_OFFICE";
+            case "HospitalReport" -> "HOSPITAL";
+            case "HotelReport" -> "HOTEL";
+            case "MedicalOfficeReport" -> "MEDICAL_OFFICE";
+            case "MultifamilyHousingReport" -> "MULTIFAMILY_HOUSING";
+            case "OfficeReport" -> "OFFICE";
+            case "RetailStoreReport" -> "RETAIL_STORE";
+            case "SchoolReport" -> "SCHOOL";
+            case "SeniorLivingCommunityReport" -> "SENIOR_LIVING";
+            case "SupermarketReport" -> "SUPERMARKET";
+            case "VehicleDealershipReport" -> "VEHICLE_DEALERSHIP";
+            case "WarehouseRefrigeratedReport" -> "WAREHOUSE_REFRIGERATED";
+            case "WarehouseReport" -> "WAREHOUSE";
+            case "WholesaleClubReport" -> "WHOLESALE_CLUB";
+            case "WorshipFacilityReport" -> "WORSHIP_FACILITY";
+            default -> "None";
+        };
+    }
+
+
     //IMPORTANT: DO NOT USE THIS METHOD IN AN ENERGY REPORT, IT WILL BE OVERRIDDEN BY CHILD CLASSES
     public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         return -1;

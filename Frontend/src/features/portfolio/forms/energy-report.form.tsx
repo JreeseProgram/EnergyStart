@@ -1,23 +1,17 @@
+import { EnergyReportPeriod } from "@/features/portfolio/services/energy-report.service"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { InputField } from "@/components/form/input-field"
-import { SelectField } from "@/components/form/select-field"
 import { SubmitButton } from "@/components/form/submit-button"
 import { Button } from "@/components/ui/button"
 import { DialogFooter } from "@/components/ui/dialog"
 import { FieldError, FieldGroup, FieldSet } from "@/components/ui/field"
 import { toast } from "@/components/ui/toast"
 import { useGenerateEnergyReport } from "@/features/portfolio/api/generate-energy-report.api"
-import {
-  EnergyReportFields,
-  type EnergyReport,
-} from "@/features/portfolio/models/energy-report.models"
+import { type EnergyReport } from "@/features/portfolio/models/energy-report.models"
 import type { PropertyId } from "@/features/portfolio/models/property.models"
-import {
-  REPORT_TYPES,
-  defaultReportPeriod,
-} from "@/features/portfolio/utils/energy-report-labels"
+import { defaultReportPeriod } from "@/features/portfolio/utils/energy-report-labels"
 
 export function EnergyReportForm({
   propertyId,
@@ -31,22 +25,22 @@ export function EnergyReportForm({
   onPendingChange: (pending: boolean) => void
 }) {
   const period = defaultReportPeriod()
-  const form = useForm<EnergyReportFields>({
-    resolver: zodResolver(EnergyReportFields),
-    defaultValues: { name: "", reportType: "SITE_EUI", ...period },
+  const form = useForm<EnergyReportPeriod>({
+    resolver: zodResolver(EnergyReportPeriod),
+    defaultValues: period,
   })
   const mutation = useGenerateEnergyReport()
   useEffect(() => {
     onPendingChange(mutation.isPending)
   }, [mutation.isPending, onPendingChange])
 
-  function submit(fields: EnergyReportFields) {
+  function submit(fields: EnergyReportPeriod) {
     if (mutation.isPending) return
     mutation.mutate(
       { ...fields, propertyId },
       {
         onSuccess: (report) => {
-          toast.add({ type: "success", title: "Simulated report generated" })
+          toast.add({ type: "success", title: "Report generated" })
           onGenerated(report)
         },
       }
@@ -59,39 +53,23 @@ export function EnergyReportForm({
       noValidate
     >
       <FieldSet disabled={mutation.isPending}>
-        <InputField
-          control={form.control}
-          name="name"
-          label="Report name *"
-          placeholder="e.g. Annual Site EUI"
-          maxLength={100}
-        />
-        <SelectField
-          control={form.control}
-          name="reportType"
-          label="Report type *"
-          items={REPORT_TYPES}
-          placeholder="Select report type"
-        />
         <FieldGroup className="grid grid-cols-2">
           <InputField
             control={form.control}
             name="startMonth"
             label="Start month *"
             type="month"
-            max={period.endMonth}
           />
           <InputField
             control={form.control}
             name="endMonth"
             label="End month *"
             type="month"
-            max={period.endMonth}
           />
         </FieldGroup>
         <p className="text-sm text-muted-foreground">
-          Choose completed months within the last 24 months. The report uses
-          simulated history, not meter readings.
+          Choose a reporting period. The report includes site EUI, source EUI,
+          and an energy score with any qualification details.
         </p>
         {mutation.isError && (
           <FieldError role="alert">{mutation.error.message}</FieldError>
@@ -107,7 +85,7 @@ export function EnergyReportForm({
           Cancel
         </Button>
         <SubmitButton disabled={mutation.isPending}>
-          Generate simulated report
+          Generate report
         </SubmitButton>
       </DialogFooter>
     </form>
