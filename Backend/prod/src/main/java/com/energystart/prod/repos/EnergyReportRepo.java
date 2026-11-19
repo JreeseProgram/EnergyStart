@@ -8,4 +8,6 @@ import java.util.List;
 public interface EnergyReportRepo extends MongoRepository<EnergyReport, String> {
 
     List<EnergyReport> findAllByRelatedPropertyID(String relatedPropertyID);
+
+    void deleteAllByRelatedPropertyIDIn(List<String> relatedPropertyID);
 }
