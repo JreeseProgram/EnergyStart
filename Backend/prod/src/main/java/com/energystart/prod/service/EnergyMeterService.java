@@ -2,6 +2,7 @@
 package com.energystart.prod.service;
 
 import com.energystart.prod.energy.EnergyMeter;
+import com.energystart.prod.repos.EnergyMeterReadingRepo;
 import com.energystart.prod.repos.EnergyMeterRepo;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +13,13 @@ import java.util.Optional;
 public class EnergyMeterService {
 
     private final EnergyMeterRepo energyMeterRepo;
+    private final EnergyMeterReadingRepo energyMeterReadingRepo;
 
     // Constructor dependency injection
-    public EnergyMeterService(EnergyMeterRepo energyMeterRepo) {
+    public EnergyMeterService(EnergyMeterRepo energyMeterRepo,
+                              EnergyMeterReadingRepo energyMeterReadingRepo) {
         this.energyMeterRepo = energyMeterRepo;
+        this.energyMeterReadingRepo = energyMeterReadingRepo;
     }
 
     // CREATE - Save a new energy meter
@@ -61,6 +65,8 @@ public class EnergyMeterService {
         if (!energyMeterRepo.existsById(id)) {
             return false;
         }
+
+        energyMeterReadingRepo.deleteAllByAssociatedMeterIDIn(List.of(id));
 
         energyMeterRepo.deleteById(id);
         return true;

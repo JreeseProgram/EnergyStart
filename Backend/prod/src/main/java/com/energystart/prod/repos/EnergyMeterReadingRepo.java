@@ -11,4 +11,6 @@ public interface EnergyMeterReadingRepo extends MongoRepository<EnergyMeterReadi
 
     @Query("{ 'associatedMeterID': { '$in': ?0 }, 'date': { '$gte': ?1, '$lte': ?2 } }")
     List<EnergyMeterReading> findAllByAssociatedMeterIDInAndDateBetween(List<String> associatedMeterID, String startDate, String endDate);
+
+    void deleteAllByAssociatedMeterIDIn(List<String> associatedMeterIDs);
 }

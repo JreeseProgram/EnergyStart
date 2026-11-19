@@ -4,6 +4,9 @@ import com.energystart.prod.controller.EnergyReportController;
 import com.energystart.prod.energy.EnergyReport;
 import com.energystart.prod.mapper.BuildingUseMapper;
 import com.energystart.prod.model.Property;
+import com.energystart.prod.repos.EnergyMeterReadingRepo;
+import com.energystart.prod.repos.EnergyMeterRepo;
+import com.energystart.prod.repos.EnergyReportRepo;
 import com.energystart.prod.repos.PropertyRepo;
 import com.energystart.prod.service.EnergyReportService;
 import com.energystart.prod.service.PropertyService;
@@ -24,7 +27,8 @@ class EnergyReportAuthorizationTests {
     private final PropertyRepo properties = mock(PropertyRepo.class);
     private final EnergyReportController controller = new EnergyReportController(
             reports, mock(BuildingUseMapper.class),
-            new PropertyService(properties, mock(WorkOsUserService.class)));
+            new PropertyService(properties, mock(EnergyReportRepo.class),mock(EnergyMeterRepo.class),
+                    mock(EnergyMeterReadingRepo.class),mock(WorkOsUserService.class)));
     private final Jwt jwt = Jwt.withTokenValue("test").header("alg", "none")
             .subject("user_owner").build();
 

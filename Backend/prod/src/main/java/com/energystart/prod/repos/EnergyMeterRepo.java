@@ -20,5 +20,7 @@ public interface EnergyMeterRepo extends MongoRepository<EnergyMeter,String> {
 
     EnergyMeter findByID(String id);
 
+    void deleteAllByAssociatedPropertyIDIn(List<String> associatedPropertyID);
+
     List<EnergyMeter> findAllByAssociatedPropertyID(String id);
 }

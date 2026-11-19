@@ -1,6 +1,9 @@
 package com.energystart.prod;
 
 import com.energystart.prod.model.Property;
+import com.energystart.prod.repos.EnergyMeterReadingRepo;
+import com.energystart.prod.repos.EnergyMeterRepo;
+import com.energystart.prod.repos.EnergyReportRepo;
 import com.energystart.prod.repos.PropertyRepo;
 import com.energystart.prod.service.PropertyService;
 import com.energystart.prod.service.WorkOsUserService;
@@ -21,7 +24,8 @@ class PropertyServiceTests {
     private final PropertyRepo repository = mock(PropertyRepo.class);
     @Mock
     private WorkOsUserService workOsUserService;
-    private final PropertyService service = new PropertyService(repository,workOsUserService);
+    private final PropertyService service = new PropertyService(repository, mock(EnergyReportRepo.class),mock(EnergyMeterRepo.class),
+            mock(EnergyMeterReadingRepo.class),mock(WorkOsUserService.class));
 
     private Property request() {
         return new Property(null, 1001, "Test Office Building","123 Main Street", "Orlando", "FL", 32801, "Test property");

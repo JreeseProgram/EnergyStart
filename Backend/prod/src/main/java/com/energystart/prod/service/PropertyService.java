@@ -3,13 +3,20 @@ package com.energystart.prod.service;
 
 import com.energystart.prod.dto.PropertyUserResponse;
 import com.energystart.prod.dto.WorkOsUserResponse;
+import com.energystart.prod.energy.EnergyMeter;
+import com.energystart.prod.energy.EnergyMeterReading;
+import com.energystart.prod.energy.EnergyReport;
 import com.energystart.prod.model.Property;
+import com.energystart.prod.repos.EnergyMeterReadingRepo;
+import com.energystart.prod.repos.EnergyMeterRepo;
+import com.energystart.prod.repos.EnergyReportRepo;
 import com.energystart.prod.repos.PropertyRepo;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.YearMonth;
 import java.util.List;
 import java.util.UUID;
 import java.util.ArrayList;
@@ -19,13 +26,22 @@ public class PropertyService {
 
 
     private final PropertyRepo propertyRepo;
+    private final EnergyReportRepo energyReportRepo;
+    private final EnergyMeterRepo energyMeterRepo;
+    private final EnergyMeterReadingRepo energyMeterReadingRepo;
     private final WorkOsUserService workOsUserService;
 
     public PropertyService(
             PropertyRepo propertyRepo,
+            EnergyReportRepo energyReportRepo,
+            EnergyMeterRepo energyMeterRepo,
+            EnergyMeterReadingRepo energyMeterReadingRepo,
             WorkOsUserService workOsUserService) {
 
         this.propertyRepo = propertyRepo;
+        this.energyReportRepo = energyReportRepo;
+        this.energyMeterRepo = energyMeterRepo;
+        this.energyMeterReadingRepo = energyMeterReadingRepo;
         this.workOsUserService = workOsUserService;
     }
 
@@ -85,6 +101,17 @@ public class PropertyService {
 
     public Property deleteProperty(String id, String userId) {
         Property existing = requireAccess(id, userId);
+
+        List<EnergyReport> reports = energyReportRepo.findAllByRelatedPropertyID(id);
+        List<EnergyMeter> meters = energyMeterRepo.findAllByAssociatedPropertyID(id);
+
+        List<String> reportIDs = reports.stream().map(EnergyReport::getRelatedPropertyID).toList();
+        List<String> meterIDs = meters.stream().map(EnergyMeter::getID).toList();
+
+        energyReportRepo.deleteAllByRelatedPropertyIDIn(reportIDs);
+        energyMeterReadingRepo.deleteAllByAssociatedMeterIDIn(meterIDs);
+        energyMeterRepo.deleteAllById(meterIDs);
+
         propertyRepo.delete(existing);
 
         return copy(existing);
