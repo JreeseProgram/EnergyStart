@@ -1,13 +1,13 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza"
 import { BuildingUseForm } from "@/features/portfolio/forms/building-use.form"
 import type { BuildingUse } from "@/features/portfolio/models/building-use.models"
 import type { PropertyId } from "@/features/portfolio/models/property.models"
@@ -22,49 +22,62 @@ export function BuildingUseModal({
   buildingUse?: BuildingUse
   onClose: () => void
 }) {
+  const [open, setOpen] = useState(false)
+
+  // These modals mount on demand; start closed so Base UI runs its entrance transition.
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setOpen(true))
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
+  const close = () => setOpen(false)
   const [pending, setPending] = useState(false)
   const action = buildingUse ? "Edit" : "Create"
 
   return (
-    <Dialog
-      open
-      onOpenChange={(open) => {
-        if (!open && !pending) onClose()
+    <Credenza
+      open={open}
+      onOpenChange={(next, event) => {
+        if (!next && pending) event.cancel()
+        else setOpen(next)
+      }}
+      onOpenChangeComplete={(next) => {
+        if (!next) onClose()
       }}
     >
-      <DialogContent
-        className="max-h-[85vh] overflow-y-auto sm:max-w-2xl"
+      <CredenzaContent
+        dialogClassName="sm:max-w-2xl"
         showCloseButton={!pending}
       >
-        <DialogHeader>
-          <DialogTitle>{action} building use</DialogTitle>
-          <DialogDescription>
+        <CredenzaHeader>
+          <CredenzaTitle>{action} building use</CredenzaTitle>
+          <CredenzaDescription>
             Describe how this space is used. All fields are required.
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
         <BuildingUseForm
           propertyId={propertyId}
           buildingUse={buildingUse}
-          onSuccess={onClose}
+          onSuccess={close}
           onSubmittingChange={setPending}
         >
           {({ isSubmitting, canSubmit }) => (
-            <DialogFooter className="mt-6 border-t pt-5">
+            <CredenzaFooter className="mt-6 border-t pt-5">
               <Button
                 type="button"
                 variant="outline"
                 disabled={isSubmitting}
-                onClick={onClose}
+                onClick={close}
               >
                 Cancel
               </Button>
               <SubmitButton disabled={!canSubmit}>
                 {buildingUse ? "Save changes" : "Add building use"}
               </SubmitButton>
-            </DialogFooter>
+            </CredenzaFooter>
           )}
         </BuildingUseForm>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

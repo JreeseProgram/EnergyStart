@@ -15,7 +15,7 @@ export type NavMainItem = {
 
 export function NavMain() {
   return (
-    <div className="flex gap-1">
+    <div className="hidden gap-1 md:flex">
       <Button
         render={<Link to={paths.app.dashboard.getHref()} />}
         variant={"ghost"}
@@ -35,7 +35,7 @@ export function NavMain() {
         </Button>
         <PropertyModal
           render={
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" aria-label="Add property">
               <PlusIcon />
             </Button>
           }

@@ -12,7 +12,7 @@ const PropertySharingRoute = () => {
   }
 
   return (
-    <ContentLayout seo={{ title: "Property Sharing" }}>
+    <ContentLayout compactMobileTop seo={{ title: "Property Sharing" }}>
       <PropertySharingCell propertyId={propertyId} />
     </ContentLayout>
   )

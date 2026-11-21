@@ -12,7 +12,10 @@ const DashboardRoute = () => (
       title="Portfolio performance"
       description="Track efficiency, resolve data gaps, and prepare ENERGY STAR submissions."
       action={
-        <Button render={<Link to={paths.app.properties.getHref()} />}>
+        <Button
+          nativeButton={false}
+          render={<Link to={paths.app.properties.getHref()} />}
+        >
           View properties <ArrowRight />
         </Button>
       }

@@ -6,11 +6,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu"
-import { DialogTrigger, createDialogHandle } from "@/components/ui/dialog"
+import { CredenzaTrigger, createCredenzaHandle } from "@/components/ui/credenza"
 import { Button } from "@/components/ui/button"
 import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
 
-type MeterDialogHandle = ReturnType<typeof createDialogHandle<EnergyMeter>>
+type MeterDialogHandle = ReturnType<typeof createCredenzaHandle<EnergyMeter>>
 
 export function EnergyMeterActions({
   meter,
@@ -35,7 +35,7 @@ export function EnergyMeterActions({
   return (
     <div className="flex flex-col items-end gap-1">
       <div className="flex items-center gap-2 whitespace-nowrap">
-        <DialogTrigger
+        <CredenzaTrigger
           handle={readingDialog}
           payload={meter}
           render={<Button variant="outline" size="sm" />}
@@ -43,7 +43,7 @@ export function EnergyMeterActions({
           aria-label={`Add reading for ${meter.meterName || "Unnamed meter"}`}
         >
           <Plus /> Add reading
-        </DialogTrigger>
+        </CredenzaTrigger>
         <DropdownMenu>
           <DropdownMenuTrigger
             ref={menuTrigger}

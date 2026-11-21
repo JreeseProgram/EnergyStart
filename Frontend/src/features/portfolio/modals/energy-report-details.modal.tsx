@@ -1,10 +1,10 @@
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza"
 import { EnergyReportDetails } from "@/features/portfolio/components/energy-report-details"
 import { reportTitle } from "@/features/portfolio/utils/energy-report-labels"
 import type { EnergyReport } from "@/features/portfolio/models/energy-report.models"
@@ -17,21 +17,21 @@ export function EnergyReportDetailsModal({
   onClose: () => void
 }) {
   return (
-    <Dialog
+    <Credenza
       open
       onOpenChange={(open) => {
         if (!open) onClose()
       }}
     >
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-4xl">
-        <DialogHeader>
-          <DialogTitle>{reportTitle(report)}</DialogTitle>
-          <DialogDescription>
+      <CredenzaContent dialogClassName="sm:max-w-4xl">
+        <CredenzaHeader>
+          <CredenzaTitle>{reportTitle(report)}</CredenzaTitle>
+          <CredenzaDescription>
             Results for this property and reporting period.
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
         <EnergyReportDetails report={report} />
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

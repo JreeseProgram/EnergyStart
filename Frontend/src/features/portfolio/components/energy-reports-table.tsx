@@ -177,7 +177,7 @@ export function EnergyReportsTable({
             </Table>
             <nav
               aria-label="Report table pagination"
-              className="flex items-center justify-end gap-3 pt-4 text-sm"
+              className="flex flex-wrap items-center justify-end gap-3 pt-4 text-sm"
             >
               <label htmlFor={sizeId}>Rows per page</label>
               <Select

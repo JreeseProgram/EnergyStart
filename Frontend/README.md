@@ -283,3 +283,14 @@ are mounted for each authenticated identity, keeping account caches separate.
 Keep the primary row action visible with a text label (for example, **Add reading**). Group secondary actions in a trailing vertical three-dot menu with a row-specific accessible label, such as “Actions for Main meter.” Use plain text for entity names when the row menu already provides the detail or history action. If a name is linked, give it an unmistakable link affordance. Tables without row actions do not need a menu. Page-level creation actions stay in the page header.
 
 Mount dialogs outside dropdown content, preserve keyboard focus when opening and closing them, and explain disabled actions with visible text. Meter rows are the reference implementation; apply this convention when adding or revising other tables.
+
+### Responsive overlays
+
+Use `Credenza` and its matching parts from `@/components/ui/credenza` for
+portfolio modals. It renders a bottom drawer below 768px and a dialog above
+that breakpoint. The presentation stays fixed until the closing animation
+finishes, preserving drafts when the viewport changes. Use `dialogClassName`
+on `CredenzaContent` for desktop widths and `className` for shared content
+styles. Use `createCredenzaHandle<T>()` for detached triggers and payloads.
+Controlled roots retain ownership of dismissal; uncontrolled roots can veto
+Escape, outside presses, or swipes with `eventDetails.cancel()`.

@@ -15,11 +15,7 @@ import type { Property } from "@/features/portfolio/models/property.models"
 import { MapPinned } from "lucide-react"
 import type { PropsWithChildren } from "react"
 
-export function PropertiesList({
-  properties,
-}: {
-  properties: Property[]
-}) {
+export function PropertiesList({ properties }: { properties: Property[] }) {
   return (
     <Grid>
       {properties.map((property) => (
@@ -58,7 +54,7 @@ export function PropertiesListEmpty({ children }: PropsWithChildren) {
           your first property.
         </EmptyDescription>
       </EmptyHeader>
-      <EmptyContent className="flex-row justify-center gap-2">
+      <EmptyContent className="flex-row flex-wrap justify-center gap-2">
         {children}
       </EmptyContent>
     </Empty>

@@ -135,7 +135,7 @@ export function PortfolioPropertiesTable({
           </TableBody>
         </Table>
       </CardContent>
-      <CardFooter className="justify-end gap-6">
+      <CardFooter className="flex-wrap justify-end gap-3">
         <div className="flex items-center gap-2">
           <label htmlFor={pageSizeId}>Rows per page</label>
           <Select

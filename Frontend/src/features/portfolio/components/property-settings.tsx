@@ -26,7 +26,7 @@ export function PropertySettings({ property }: { property: Property }) {
   ]
 
   return (
-    <div className="grid grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] items-start gap-6">
+    <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)]">
       <Card className="min-h-80 rounded-2xl">
         <CardHeader>
           <CardTitle>General information</CardTitle>
@@ -35,7 +35,7 @@ export function PropertySettings({ property }: { property: Property }) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <dl className="grid grid-cols-2 gap-6">
+          <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             {details.map(([label, value]) => (
               <div key={label} className="min-w-0">
                 <dt className="text-sm text-muted-foreground">{label}</dt>

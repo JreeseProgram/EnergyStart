@@ -3,44 +3,47 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { PropertyForm } from "@/features/portfolio/forms/property.form"
 import type { Property } from "@/features/portfolio/models/property.models"
-import type { DialogTriggerProps } from "@base-ui/react"
+import type { Drawer } from "@base-ui/react/drawer"
 import { useState } from "react"
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@/components/ui/credenza"
 
 export function PropertyModal({
   property,
   ...props
-}: Omit<DialogTriggerProps, "property"> & { property?: Property }) {
+}: Omit<Drawer.Trigger.Props, "property"> & { property?: Property }) {
   const [open, setOpen] = useState(false)
   const [pending, setPending] = useState(false)
   const [savedWithoutRefresh, setSavedWithoutRefresh] = useState(false)
   const action = property ? "Edit" : "Create"
 
   return (
-    <Dialog
+    <Credenza
       open={open}
       onOpenChange={(nextOpen) => {
         if (!pending) setOpen(nextOpen)
       }}
     >
-      <DialogContent className={"sm:max-w-2xl"} showCloseButton={!pending}>
-        <DialogHeader>
-          <DialogTitle>{action} Property</DialogTitle>
-          <DialogDescription>
+      <CredenzaContent
+        dialogClassName="sm:max-w-2xl"
+        showCloseButton={!pending}
+      >
+        <CredenzaHeader>
+          <CredenzaTitle>{action} Property</CredenzaTitle>
+          <CredenzaDescription>
             {property
               ? "Update the details for this property."
               : "Create a property and add buildings after it is saved."}
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
 
         <PropertyForm
           onSubmittingChange={setPending}
@@ -53,7 +56,7 @@ export function PropertyModal({
           property={property}
         >
           <Separator className={"my-6"} />
-          <DialogFooter>
+          <CredenzaFooter>
             <Button
               variant={"outline"}
               type="button"
@@ -65,10 +68,10 @@ export function PropertyModal({
             <SubmitButton disabled={pending || savedWithoutRefresh}>
               {property ? "Save changes" : "Create property"}
             </SubmitButton>
-          </DialogFooter>
+          </CredenzaFooter>
         </PropertyForm>
-      </DialogContent>
-      <DialogTrigger {...props} />
-    </Dialog>
+      </CredenzaContent>
+      <CredenzaTrigger {...props} />
+    </Credenza>
   )
 }

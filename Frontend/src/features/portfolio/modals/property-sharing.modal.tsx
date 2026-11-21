@@ -10,14 +10,14 @@ import { PropertySharingForm } from "@/features/portfolio/forms/property-sharing
 import type { Property } from "@/features/portfolio/models/property.models"
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@/components/ui/credenza"
 
 export function AddPropertyUserModal({ property }: { property: Property }) {
   const [open, setOpen] = useState(false)
@@ -25,7 +25,7 @@ export function AddPropertyUserModal({ property }: { property: Property }) {
   const [shared, setShared] = useState(false)
 
   return (
-    <Dialog
+    <Credenza
       open={open}
       onOpenChange={(next) => {
         if (!pending) {
@@ -34,17 +34,17 @@ export function AddPropertyUserModal({ property }: { property: Property }) {
         }
       }}
     >
-      <DialogTrigger render={<Button />}>
+      <CredenzaTrigger render={<Button />}>
         Add new user
         <Plus />
-      </DialogTrigger>
-      <DialogContent showCloseButton={!pending}>
-        <DialogHeader>
-          <DialogTitle>Add new user</DialogTitle>
-          <DialogDescription>
+      </CredenzaTrigger>
+      <CredenzaContent showCloseButton={!pending}>
+        <CredenzaHeader>
+          <CredenzaTitle>Add new user</CredenzaTitle>
+          <CredenzaDescription>
             Share {property.name} with a registered user.
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
         {open && (
           <PropertySharingForm
             propertyId={property.id}
@@ -55,7 +55,7 @@ export function AddPropertyUserModal({ property }: { property: Property }) {
               setOpen(false)
             }}
           >
-            <DialogFooter className="mt-6">
+            <CredenzaFooter className="mt-6">
               <Button
                 type="button"
                 variant="outline"
@@ -65,11 +65,11 @@ export function AddPropertyUserModal({ property }: { property: Property }) {
                 Cancel
               </Button>
               <SubmitButton disabled={pending || shared}>Add user</SubmitButton>
-            </DialogFooter>
+            </CredenzaFooter>
           </PropertySharingForm>
         )}
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }
 
@@ -87,9 +87,12 @@ export function RemovePropertyUserModal({
   const mutation = useRemovePropertyUser()
   const submissionLocked = useRef(false)
   function remove() {
-    if (submissionLocked.current || mutation.isPending || mutation.isSuccess)
+    if (submissionLocked.current || mutation.isPending || mutation.isSuccess) {
       return
+    }
+
     submissionLocked.current = true
+
     mutation.mutate(
       { propertyId: property.id, userId: user.userId },
       {
@@ -103,31 +106,32 @@ export function RemovePropertyUserModal({
       }
     )
   }
+
   return (
-    <Dialog
+    <Credenza
       open
       onOpenChange={(open) => {
         if (!open && !mutation.isPending) onClose()
       }}
     >
-      <DialogContent showCloseButton={!mutation.isPending}>
-        <DialogHeader>
-          <DialogTitle>
+      <CredenzaContent showCloseButton={!mutation.isPending}>
+        <CredenzaHeader>
+          <CredenzaTitle>
             {isSelf ? "Leave this property?" : "Remove property access?"}
-          </DialogTitle>
-          <DialogDescription>
+          </CredenzaTitle>
+          <CredenzaDescription>
             {isSelf
               ? `You will lose access to ${property.name ?? "this property"} and return to the property list. Another authorized user will need to add you again to restore access.`
               : `${user.email} will no longer be able to view or edit ${property.name ?? "this property"}.`}
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
         {mutation.isError && (
           <FieldError role="alert">
             {mutation.error.message ||
               "Unable to remove access. Please try again."}
           </FieldError>
         )}
-        <DialogFooter>
+        <CredenzaFooter>
           <Button
             variant="outline"
             disabled={mutation.isPending}
@@ -146,8 +150,8 @@ export function RemovePropertyUserModal({
                 ? "Leave property"
                 : "Remove access"}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   )
 }

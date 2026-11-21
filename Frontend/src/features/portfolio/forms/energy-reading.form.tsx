@@ -75,6 +75,7 @@ export function EnergyReadingForm({
           control={form.control}
           name="date"
           label="Month"
+          hideLabel
           disabled={!meter.inUse || mutation.isPending}
         />
 

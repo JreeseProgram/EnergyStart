@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { cn } from "cn"
 
 const months = [
   "January",
@@ -43,6 +44,7 @@ type MonthYearFieldProps<T extends FieldValues> = {
   name: FieldPath<T>
   label: string
   disabled?: boolean
+  hideLabel?: boolean
 }
 
 export function MonthYearField<T extends FieldValues>({
@@ -50,6 +52,7 @@ export function MonthYearField<T extends FieldValues>({
   name,
   label,
   disabled,
+  hideLabel = false,
 }: MonthYearFieldProps<T>) {
   const id = useId()
   const currentYear = new Date().getUTCFullYear()
@@ -69,7 +72,9 @@ export function MonthYearField<T extends FieldValues>({
 
         return (
           <FieldSet disabled={disabled || field.disabled} className="gap-3">
-            <FieldLegend variant="label">{label}</FieldLegend>
+            <FieldLegend variant="label" className={cn(hideLabel && "sr-only")}>
+              {label}
+            </FieldLegend>
 
             <div className="grid grid-cols-2 gap-3">
               {[

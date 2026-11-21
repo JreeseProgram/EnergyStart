@@ -7,38 +7,38 @@ import { EnergyReadingForm } from "@/features/portfolio/forms/energy-reading.for
 import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  createDialogHandle,
-} from "@/components/ui/dialog"
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaHeader,
+  CredenzaTitle,
+  createCredenzaHandle,
+} from "@/components/ui/credenza"
 
 export function EnergyMeterHistoryModal({
   handle,
   propertyName,
   finalFocus,
 }: {
-  handle: ReturnType<typeof createDialogHandle<EnergyMeter>>
+  handle: ReturnType<typeof createCredenzaHandle<EnergyMeter>>
   propertyName: string
   finalFocus: RefObject<HTMLElement | null>
 }) {
   return (
-    <Dialog handle={handle}>
+    <Credenza handle={handle}>
       {({ payload: meter }) =>
         meter && (
-          <DialogContent
+          <CredenzaContent
             finalFocus={finalFocus}
-            className="max-h-[85vh] overflow-y-auto sm:max-w-3xl"
+            dialogClassName="sm:max-w-3xl"
           >
-            <DialogHeader>
-              <DialogTitle>Reading history</DialogTitle>
-              <DialogDescription>
+            <CredenzaHeader>
+              <CredenzaTitle>Reading history</CredenzaTitle>
+              <CredenzaDescription>
                 {meter.meterName || "Unnamed meter"} · {propertyName} ·{" "}
                 {meter.unitOfMeasure.replaceAll("_", " ")}
-              </DialogDescription>
-            </DialogHeader>
+              </CredenzaDescription>
+            </CredenzaHeader>
 
             <EnergyMeterDetailsCell
               key={meter.meterId}
@@ -52,10 +52,10 @@ export function EnergyMeterHistoryModal({
                 />
               )}
             </EnergyMeterDetailsCell>
-          </DialogContent>
+          </CredenzaContent>
         )
       }
-    </Dialog>
+    </Credenza>
   )
 }
 

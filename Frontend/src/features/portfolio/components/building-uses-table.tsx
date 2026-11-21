@@ -158,7 +158,7 @@ export function BuildingUsesTable({
         </TableBody>
       </Table>
 
-      <CardFooter className="justify-end gap-6 border-t px-6 py-6">
+      <CardFooter className="flex-wrap justify-end gap-3 border-t px-6 py-6">
         <div className="flex items-center gap-3">
           <label htmlFor={pageSizeId}>Rows per page</label>
           <Select

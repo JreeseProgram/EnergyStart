@@ -134,12 +134,12 @@ export function PropertyForm({
           placeholder="123 Central Blvd"
         />
 
-        <FieldGroup className="grid grid-cols-8">
+        <FieldGroup className="grid grid-cols-1 sm:grid-cols-8">
           <InputField
             control={form.control}
             name="city"
             label="City *"
-            className="col-span-4"
+            className="sm:col-span-4"
             placeholder="Orlando"
           />
 
@@ -148,7 +148,7 @@ export function PropertyForm({
             name="state"
             label="State *"
             items={STATES}
-            className="col-span-2"
+            className="sm:col-span-2"
             placeholder="Florida"
           />
 
@@ -157,7 +157,7 @@ export function PropertyForm({
             inputMode="numeric"
             name="zip"
             label="ZIP code *"
-            className="col-span-2"
+            className="sm:col-span-2"
             placeholder="12345"
           />
         </FieldGroup>

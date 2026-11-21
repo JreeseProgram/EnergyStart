@@ -1,4 +1,5 @@
 import * as React from "react"
+import { Logo } from "@/components/logo"
 import { NavSidebar } from "@/components/navigation/nav-sidebar"
 import {
   Sidebar,
@@ -20,6 +21,9 @@ export function PropertySidebar({
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
+        <div className="px-2 py-2 md:hidden">
+          <Logo />
+        </div>
         <PropertySwitcherCell />
       </SidebarHeader>
       <SidebarContent>
@@ -33,6 +37,9 @@ export function PropertySidebarSkeleton() {
   return (
     <Sidebar collapsible="offcanvas">
       <SidebarHeader>
+        <div className="px-2 py-2 md:hidden">
+          <Logo />
+        </div>
         <PropertySwitcherCell />
       </SidebarHeader>
       <SidebarContent>
