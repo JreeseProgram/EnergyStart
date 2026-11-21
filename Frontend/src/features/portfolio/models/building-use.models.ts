@@ -332,6 +332,7 @@ export const BuildingUseFormDetails = BuildingUseDetails.superRefine(
           message: "Enter a capacity greater than zero",
         })
       }
+
       if (details.avgNumResidents > details.maxResidentCapacity) {
         context.addIssue({
           code: "custom",
