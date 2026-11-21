@@ -28,14 +28,15 @@ export function NavUser() {
           <Button
             size="lg"
             variant={"ghost"}
-            className="aria-expanded:bg-muted"
+            className="aria-expanded:bg-muted max-md:h-9 max-md:shrink-0 max-md:px-1"
+            aria-label="Account menu"
           />
         }
       >
-        <Avatar className="mr-1 size-8 grayscale">
+        <Avatar className="size-8 grayscale md:mr-1">
           <AvatarFallback>{user.data?.firstName.split("")[0]}</AvatarFallback>
         </Avatar>
-        <div className="grid flex-1 text-left text-sm leading-tight">
+        <div className="hidden flex-1 text-left text-sm leading-tight md:grid">
           <span className="truncate font-medium">{user.data?.firstName}</span>
         </div>
         <ChevronDown className="ml-auto size-4" />

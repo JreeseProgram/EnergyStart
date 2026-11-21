@@ -1,3 +1,4 @@
+import { PropertyBreadcrumbs } from "@/features/portfolio/components/property-breadcrumbs"
 import type { PropsWithChildren, ReactNode } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -98,8 +99,11 @@ export function ProtectedPropertyRoute({
 
 export function ProtectedPropertyRouteSkeleton() {
   return (
-    <SidebarLayout sidebar={<PropertySidebarSkeleton />}>
-      <ContentLayout>
+    <SidebarLayout
+      sidebar={<PropertySidebarSkeleton />}
+      mobileNavigation={<PropertyBreadcrumbs />}
+    >
+      <ContentLayout compactMobileTop>
         <PropertyHeaderSkeleton />
         <Skeleton className="h-[calc(100vh-20rem)]" />
       </ContentLayout>

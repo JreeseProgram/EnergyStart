@@ -4,6 +4,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 
 import { paths } from "@/config/paths"
@@ -24,6 +25,8 @@ export type NavMainItem = {
 }
 
 export function NavSidebar({ propertyId }: { propertyId: string }) {
+  const { isMobile, setOpenMobile } = useSidebar()
+
   const navigation = [
     {
       title: "Overview",
@@ -68,6 +71,9 @@ export function NavSidebar({ propertyId }: { propertyId: string }) {
                 render={
                   <NavLink
                     to={item.url}
+                    onClick={() => {
+                      if (isMobile) setOpenMobile(false)
+                    }}
                     end={
                       item.url === paths.app.property.root.getHref(propertyId)
                     }

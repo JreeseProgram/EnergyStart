@@ -12,7 +12,7 @@ const PropertyBuildingUsesRoute = () => {
   }
 
   return (
-    <ContentLayout seo={{ title: "Building Uses" }}>
+    <ContentLayout compactMobileTop seo={{ title: "Building Uses" }}>
       <PropertyBuildingUsesCell propertyId={propertyId} />
     </ContentLayout>
   )

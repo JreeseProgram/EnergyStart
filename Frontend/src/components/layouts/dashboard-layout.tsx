@@ -1,4 +1,5 @@
 import { SidebarProvider } from "@/components/ui/sidebar"
+import { NavMobile } from "@/components/navigation/nav-mobile"
 
 export function DashboardLayout({
   children,
@@ -9,7 +10,7 @@ export function DashboardLayout({
 }) {
   return (
     <SidebarProvider
-      className="flex-col"
+      className="flex-col pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:pb-0"
       style={
         {
           "--sidebar-width": "calc(var(--spacing) * 64)",
@@ -21,6 +22,7 @@ export function DashboardLayout({
         <div className="min-w-0 flex-1">{topbar}</div>
       </header>
       {children}
+      <NavMobile />
     </SidebarProvider>
   )
 }
