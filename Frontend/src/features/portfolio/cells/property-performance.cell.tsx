@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { usePortfolioPerformance } from "@/features/portfolio/api/get-portfolio-performance.api"
+import { usePortfolioPerformance } from "@/features/portfolio/api/portfolio/get-portfolio-performance.api"
 import {
   PortfolioPerformanceChart,
   PerformanceChartSkeleton,

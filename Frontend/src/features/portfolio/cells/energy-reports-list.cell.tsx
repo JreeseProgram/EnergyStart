@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useEnergyReports } from "@/features/portfolio/api/get-energy-reports.api"
+import { useEnergyReports } from "@/features/portfolio/api/energy-report/get-energy-reports.api"
 import { PropertyReports } from "@/features/portfolio/components/property-reports"
 import type { Property } from "@/features/portfolio/models/property.models"
 import { createCell } from "@/lib/react-query"

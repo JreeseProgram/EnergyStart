@@ -1,3 +1,4 @@
+import { portfolioKeys } from "@/features/portfolio/api/query-keys"
 import { use } from "react"
 import { queryOptions, useQuery } from "@tanstack/react-query"
 import { Services } from "@/context/services.context"
@@ -20,7 +21,7 @@ export const getPortfolioPerformanceQueryOptions = ({
     propertyIds: [...new Set(parsedInput.propertyIds)].sort(),
   }
   return queryOptions({
-    queryKey: ["Properties", "PortfolioPerformance", normalizedInput],
+    queryKey: portfolioKeys.properties.performance(normalizedInput),
     queryFn: () =>
       portfolioPerformanceService.getPortfolioPerformance(normalizedInput),
   })

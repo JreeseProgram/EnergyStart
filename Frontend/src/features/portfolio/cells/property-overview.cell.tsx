@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Link } from "@/components/ui/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { paths } from "@/config/paths"
-import { useProperty } from "@/features/portfolio/api/get-property.api"
+import { useProperty } from "@/features/portfolio/api/property/get-property.api"
 import {
   PropertyHeader,
   PropertyHeaderSkeleton,

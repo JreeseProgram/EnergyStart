@@ -1,4 +1,4 @@
-import { useProperties } from "@/features/portfolio/api/get-properties.api"
+import { useProperties } from "@/features/portfolio/api/property/get-properties.api"
 import {
   PropertySwitcher,
   PropertySwitcherSkeleton,

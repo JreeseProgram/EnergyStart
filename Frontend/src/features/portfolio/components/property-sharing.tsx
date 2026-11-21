@@ -2,8 +2,8 @@ import { useState } from "react"
 import { ContentHeader } from "@/components/layouts/content-header"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { usePortfolioUser } from "@/features/portfolio/api/get-user.api"
-import { usePropertyUsers } from "@/features/portfolio/api/property-sharing.api"
+import { usePortfolioUser } from "@/features/portfolio/api/user/get-user.api"
+import { usePropertyUsers } from "@/features/portfolio/api/property/get-property-users.api"
 import { PropertySharingTable } from "@/features/portfolio/components/property-sharing-table"
 import {
   AddPropertyUserModal,

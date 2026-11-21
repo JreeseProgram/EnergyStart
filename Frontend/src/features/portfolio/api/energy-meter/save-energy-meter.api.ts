@@ -1,6 +1,6 @@
 import { use } from "react"
 import { Services } from "@/context/services.context"
-import { useMeterMutation } from "@/features/portfolio/api/meter-mutation.api"
+import { useMeterMutation } from "@/features/portfolio/api/energy-meter/meter-mutation.api"
 import type {
   CreateEnergyMeterInput,
   UpdateEnergyMeterInput,

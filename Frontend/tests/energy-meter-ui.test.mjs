@@ -36,7 +36,7 @@ registerHooks({
         url: "data:text/javascript,export const DashboardLayout = () => null",
         shortCircuit: true,
       }
-    if (specifier === "@/features/portfolio/api/get-energy-meter.api")
+    if (specifier === "@/features/portfolio/api/energy-meter/get-energy-meter.api")
       return {
         url: `data:text/javascript,${encodeURIComponent(
           `import { state } from ${JSON.stringify(stateUrl)};

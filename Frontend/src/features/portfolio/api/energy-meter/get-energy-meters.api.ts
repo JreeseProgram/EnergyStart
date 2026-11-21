@@ -1,3 +1,4 @@
+import { portfolioKeys } from "@/features/portfolio/api/query-keys"
 import { use } from "react"
 import { queryOptions, useQuery } from "@tanstack/react-query"
 import { Services } from "@/context/services.context"
@@ -9,7 +10,7 @@ export function getEnergyMetersQueryOptions(
   service: EnergyMeterService
 ) {
   return queryOptions({
-    queryKey: ["EnergyMeters", propertyId],
+    queryKey: portfolioKeys.meters.list(propertyId),
     queryFn: () => service.getEnergyMeters({ propertyId }),
   })
 }

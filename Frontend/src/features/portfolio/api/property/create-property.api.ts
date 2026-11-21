@@ -1,3 +1,4 @@
+import { portfolioKeys } from "@/features/portfolio/api/query-keys"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { type MutationConfig } from "@/lib/react-query"
@@ -5,7 +6,6 @@ import {
   PropertyCreateRefreshError,
   type PropertyService,
 } from "@/features/portfolio/services/property.service"
-import { getPropertiesQueryOptions } from "@/features/portfolio/api/get-properties.api"
 import { use } from "react"
 import { Services } from "@/context/services.context"
 
@@ -23,7 +23,7 @@ export const useCreateProperty = ({
 
   const invalidateProperties = () =>
     queryClient.invalidateQueries(
-      { queryKey: getPropertiesQueryOptions({ propertyService }).queryKey },
+      { queryKey: portfolioKeys.properties.all },
       { throwOnError: false }
     )
 

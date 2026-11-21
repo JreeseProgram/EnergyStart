@@ -1,8 +1,8 @@
+import { portfolioKeys } from "@/features/portfolio/api/query-keys"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { use } from "react"
 
 import { Services } from "@/context/services.context"
-import { getPropertiesQueryOptions } from "@/features/portfolio/api/get-properties.api"
 import {
   PropertyUpdateRefreshError,
   type PropertyService,
@@ -24,7 +24,7 @@ export const useUpdateProperty = ({
     queryClient.invalidateQueries(
       {
         // Prefix matching includes detail and all paginated list queries.
-        queryKey: getPropertiesQueryOptions({ propertyService }).queryKey,
+        queryKey: portfolioKeys.properties.all,
       },
       { throwOnError: false }
     )

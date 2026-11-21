@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Link } from "@/components/ui/link"
 import { paths } from "@/config/paths"
 import { Authorization } from "@/utils/authorization"
-import { useProperty } from "@/features/portfolio/api/get-property.api"
+import { useProperty } from "@/features/portfolio/api/property/get-property.api"
 import { usePropertyId } from "@/features/portfolio/hooks/use-property-id"
 import type { PropertyId } from "@/features/portfolio/models/property.models"
 import { PORTFOLIO_POLICIES } from "@/features/portfolio/utils/portfolio-policies"
@@ -14,7 +14,7 @@ import { PropertySidebarSkeleton } from "@/features/portfolio/components/propert
 import { ContentLayout } from "@/components/layouts/content-layout"
 import { PropertyHeaderSkeleton } from "@/features/portfolio/components/property-header"
 import { Skeleton } from "@/components/ui/skeleton"
-import { usePortfolioUser } from "@/features/portfolio/api/get-user.api"
+import { usePortfolioUser } from "@/features/portfolio/api/user/get-user.api"
 
 function PropertyFallback({
   title,

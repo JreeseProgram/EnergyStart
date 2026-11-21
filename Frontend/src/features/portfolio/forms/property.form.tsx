@@ -7,8 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useId, useRef, type PropsWithChildren } from "react"
 import { useForm } from "react-hook-form"
 import { SelectField } from "@/components/form/select-field"
-import { useCreateProperty } from "@/features/portfolio/api/create-property.api"
-import { useUpdateProperty } from "@/features/portfolio/api/update-property.api"
+import { useCreateProperty } from "@/features/portfolio/api/property/create-property.api"
+import { useUpdateProperty } from "@/features/portfolio/api/property/update-property.api"
 import type { Property } from "@/features/portfolio/models/property.models"
 
 import {
