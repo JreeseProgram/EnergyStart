@@ -277,3 +277,9 @@ Sharing matches emails case-insensitively and never sends invitations.
 Mock changes survive navigation but reset on refresh or account change. Separate
 browsers do not synchronize. A new query client and portfolio store
 are mounted for each authenticated identity, keeping account caches separate.
+
+### Table actions
+
+Keep the primary row action visible with a text label (for example, **Add reading**). Group secondary actions in a trailing vertical three-dot menu with a row-specific accessible label, such as “Actions for Main meter.” Use plain text for entity names when the row menu already provides the detail or history action. If a name is linked, give it an unmistakable link affordance. Tables without row actions do not need a menu. Page-level creation actions stay in the page header.
+
+Mount dialogs outside dropdown content, preserve keyboard focus when opening and closing them, and explain disabled actions with visible text. Meter rows are the reference implementation; apply this convention when adding or revising other tables.

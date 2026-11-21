@@ -1,14 +1,19 @@
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Separator } from "@/components/ui/separator"
-import { EnergyMeterTable } from "@/features/portfolio/components/energy-meter-table"
+import type { ReactNode } from "react"
+import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
 import { useEnergyMeter } from "@/features/portfolio/api/get-energy-meter.api"
-import { EnergyReadingForm } from "@/features/portfolio/forms/energy-reading.form"
 import type { GetEnergyMeterInput } from "@/features/portfolio/services/energy-meter.service"
 import { createCell } from "@/lib/react-query"
 
-export function EnergyMeterDetailsCell(input: GetEnergyMeterInput) {
+export function EnergyMeterDetailsCell({
+  children,
+  ...input
+}: GetEnergyMeterInput & {
+  children: (meter: EnergyMeter) => ReactNode
+}) {
   const query = useEnergyMeter(input)
+
   return createCell(query, {
     Loading: () => (
       <Skeleton
@@ -23,12 +28,6 @@ export function EnergyMeterDetailsCell(input: GetEnergyMeterInput) {
         <Button onClick={() => void ctx.refetch()}>Retry</Button>
       </div>
     ),
-    Success: ({ data: meter }) => (
-      <>
-        <EnergyReadingForm meter={meter} />
-        <Separator />
-        <EnergyMeterTable meter={meter} />
-      </>
-    ),
+    Success: ({ data: meter }) => children(meter),
   })
 }

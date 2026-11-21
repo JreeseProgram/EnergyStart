@@ -1,3 +1,7 @@
+import type { ReactNode } from "react"
+import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
+import { meterDate } from "@/features/portfolio/utils/energy-meter-labels"
+
 import {
   Table,
   TableHeader,
@@ -7,17 +11,34 @@ import {
   TableCell,
   TableCaption,
 } from "@/components/ui/table"
-import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
-import { meterDate } from "@/features/portfolio/utils/energy-meter-labels"
 
-export function EnergyMeterTable({ meter }: { meter: EnergyMeter }) {
+export function EnergyMeterTable({
+  meter,
+  addReadingAction,
+}: {
+  meter: EnergyMeter
+  addReadingAction: ReactNode
+}) {
   return (
     <>
-      <h3 className="font-semibold">Reading history</h3>
-      {meter.readings.length === 0 ? (
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="font-semibold">Monthly usage</h3>
+        {meter.readings.length > 0 && addReadingAction}
+      </div>
+
+      {!meter.inUse && (
         <p className="text-sm text-muted-foreground">
-          No readings yet. Record the first month above.
+          Activate this meter to add readings.
         </p>
+      )}
+
+      {meter.readings.length === 0 ? (
+        <div className="flex flex-col items-start gap-3 py-4">
+          <p className="text-sm text-muted-foreground">
+            No readings yet. Add your first monthly reading.
+          </p>
+          {addReadingAction}
+        </div>
       ) : (
         <Table>
           <TableCaption>

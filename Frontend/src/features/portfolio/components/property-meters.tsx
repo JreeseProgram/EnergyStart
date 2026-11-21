@@ -1,10 +1,13 @@
-import { useId, useState } from "react"
-import { Plus, Pencil, ChevronLeft, ChevronRight } from "lucide-react"
+import { useId, useState, useRef } from "react"
+import { Plus, ChevronLeft, ChevronRight } from "lucide-react"
 import { ContentHeader } from "@/components/layouts/content-header"
 import type { Property } from "@/features/portfolio/models/property.models"
 import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
 import { EnergyMeterModal } from "@/features/portfolio/modals/energy-meter.modal"
-import { EnergyMeterDetailsModal } from "@/features/portfolio/modals/energy-meter-details.modal"
+import { EnergyMeterHistoryModal } from "@/features/portfolio/modals/energy-meter-history.modal"
+import { EnergyReadingModal } from "@/features/portfolio/modals/energy-reading.modal"
+import { EnergyMeterActions } from "@/features/portfolio/components/energy-meter-actions"
+import { DialogTrigger, createDialogHandle } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -56,30 +59,30 @@ export function PropertyMeters({
   property: Property
   meters: EnergyMeter[]
 }) {
+  const [readingDialog] = useState(() => createDialogHandle<EnergyMeter>())
+  const [historyDialog] = useState(() => createDialogHandle<EnergyMeter>())
+  const [editDialog] = useState(() => createDialogHandle<EnergyMeter>())
+  const returnFocusRef = useRef<HTMLElement | null>(null)
+  const propertyName = property.name || "Unnamed property"
   const pageSizeId = useId()
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
+
   const columns = helper.columns([
     helper.accessor("meterName", {
       header: "Meter",
       cell: ({ row }) => (
-        <EnergyMeterDetailsModal
-          meter={row.original}
-          render={
-            <Button
-              variant="link"
-              className="h-auto justify-start p-0 font-semibold text-foreground underline"
-            />
-          }
-        >
+        <span className="font-semibold text-foreground">
           {row.original.meterName || "Unnamed meter"}
-        </EnergyMeterDetailsModal>
+        </span>
       ),
     }),
+
     helper.display({
       id: "property",
       header: "Attached to",
       cell: () => property.name,
     }),
+
     helper.accessor("meterType", {
       header: "Type",
       cell: ({ row }) => (
@@ -88,10 +91,12 @@ export function PropertyMeters({
         </Badge>
       ),
     }),
+
     helper.accessor("unitOfMeasure", {
       header: "Units",
       cell: ({ row }) => row.original.unitOfMeasure.replaceAll("_", " "),
     }),
+
     helper.display({
       id: "latest",
       header: "Latest reading",
@@ -109,27 +114,23 @@ export function PropertyMeters({
         )
       },
     }),
+
     helper.accessor("inUse", {
       header: "Status",
       cell: ({ row }) => (row.original.inUse ? "Active" : "Inactive"),
     }),
+
     helper.display({
       id: "actions",
       header: "",
       cell: ({ row }) => (
-        <EnergyMeterModal
-          propertyId={property.id}
+        <EnergyMeterActions
           meter={row.original}
-          render={
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label={`Edit ${row.original.meterName || "meter"}`}
-            />
-          }
-        >
-          <Pencil className="size-4" />
-        </EnergyMeterModal>
+          readingDialog={readingDialog}
+          historyDialog={historyDialog}
+          editDialog={editDialog}
+          returnFocusRef={returnFocusRef}
+        />
       ),
     }),
   ])
@@ -145,15 +146,32 @@ export function PropertyMeters({
 
   return (
     <>
+      <EnergyReadingModal handle={readingDialog} propertyName={propertyName} />
+
+      <EnergyMeterHistoryModal
+        handle={historyDialog}
+        propertyName={propertyName}
+        finalFocus={returnFocusRef}
+      />
+
+      <EnergyMeterModal
+        propertyId={property.id}
+        handle={editDialog}
+        finalFocus={returnFocusRef}
+      />
+
       <ContentHeader
         title="Energy meters"
-        description={`${meters.length} ${meters.length === 1 ? "meter" : "meters"} measuring ${property.name}`}
+        description={`${meters.length} ${meters.length === 1 ? "meter" : "meters"} measuring ${property.name}. Add monthly usage using Add reading on a meter.`}
         action={
-          <EnergyMeterModal propertyId={property.id} render={<Button />}>
-            Add meter <Plus className="size-4" />
+          <EnergyMeterModal propertyId={property.id}>
+            <DialogTrigger render={<Button />}>
+              Add meter <Plus className="size-4" />
+            </DialogTrigger>
           </EnergyMeterModal>
         }
       />
+
       <Card className="rounded-2xl">
         <CardContent>
           {meters.length === 0 ? (
@@ -195,6 +213,7 @@ export function PropertyMeters({
                   ))}
                 </TableBody>
               </Table>
+
               <div className="flex items-center justify-end gap-4 pt-4 text-sm">
                 <label htmlFor={pageSizeId}>Rows per page</label>
                 <Select
@@ -218,10 +237,12 @@ export function PropertyMeters({
                     ))}
                   </SelectContent>
                 </Select>
+
                 <span>
                   Page {pagination.pageIndex + 1} of{" "}
                   {Math.max(1, table.getPageCount())}
                 </span>
+
                 <Button
                   variant="outline"
                   size="icon-sm"
@@ -231,6 +252,7 @@ export function PropertyMeters({
                 >
                   <ChevronLeft />
                 </Button>
+
                 <Button
                   variant="outline"
                   size="icon-sm"
