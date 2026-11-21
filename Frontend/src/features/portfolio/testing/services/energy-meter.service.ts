@@ -1,9 +1,17 @@
+import type { PortfolioTestStore } from "@/features/portfolio/testing/portfolio-test-store"
+import { defaultEnergyMeters } from "@/features/portfolio/testing/fixtures/energy-meter.fixtures"
+import { delay } from "@/utils/delay"
+import type { PropertyService } from "@/features/portfolio/services/property.service"
 import { useState } from "react"
+
 import {
   EnergyMeter,
   EnergyMeterId,
 } from "@/features/portfolio/models/energy-meter.models"
+
 import {
+  DeleteEnergyMeterInput,
+  DeleteEnergyReadingInput,
   CreateEnergyMeterInput,
   UpdateEnergyMeterInput,
   CreateEnergyReadingInput,
@@ -11,12 +19,10 @@ import {
   GetEnergyMetersInput,
   type EnergyMeterService,
 } from "@/features/portfolio/services/energy-meter.service"
-import { defaultEnergyMeters } from "@/features/portfolio/testing/fixtures/energy-meter.fixtures"
-import { delay } from "@/utils/delay"
-import type { PropertyService } from "@/features/portfolio/services/property.service"
 
 export function createEnergyMeterMockService(
-  propertyService: PropertyService
+  propertyService: PropertyService,
+  store?: PortfolioTestStore
 ): EnergyMeterService {
   const meters = new Map(
     defaultEnergyMeters.map((meter) => [
@@ -24,6 +30,11 @@ export function createEnergyMeterMockService(
       EnergyMeter.parse(meter),
     ])
   )
+  store?.onPropertyDeleted.add((propertyId) => {
+    for (const [id, meter] of meters) {
+      if (meter.propertyId === propertyId) meters.delete(id)
+    }
+  })
   async function requireProperty(
     propertyId: GetEnergyMetersInput["propertyId"]
   ) {
@@ -49,6 +60,26 @@ export function createEnergyMeterMockService(
       throw new Error("A meter with this name already exists in this property.")
   }
   return {
+    deleteEnergyMeter: async (input) => {
+      const fields = DeleteEnergyMeterInput.parse(input)
+      await requireMeter(fields)
+      meters.delete(fields.energyMeterId)
+    },
+    deleteEnergyReading: async (input) => {
+      const fields = DeleteEnergyReadingInput.parse(input)
+      const meter = await requireMeter(fields)
+      if (!meter.readings.some((reading) => reading.id === fields.readingId))
+        throw new Error("Reading not found.")
+      meters.set(
+        meter.meterId,
+        EnergyMeter.parse({
+          ...meter,
+          readings: meter.readings.filter(
+            (reading) => reading.id !== fields.readingId
+          ),
+        })
+      )
+    },
     getEnergyMeter: async (input) => {
       await delay(300)
       return EnergyMeter.parse(
@@ -120,10 +151,11 @@ export function createEnergyMeterMockService(
 }
 
 export function useEnergyMeterTestService(
-  propertyService: PropertyService
+  propertyService: PropertyService,
+  store?: PortfolioTestStore
 ): EnergyMeterService {
   const [service] = useState(() =>
-    createEnergyMeterMockService(propertyService)
+    createEnergyMeterMockService(propertyService, store)
   )
   return service
 }

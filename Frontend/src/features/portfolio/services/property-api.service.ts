@@ -1,3 +1,4 @@
+import { DeletePropertyInput } from "@/features/portfolio/services/property.service"
 import z from "zod"
 import { isAxiosError } from "axios"
 import { api } from "@/lib/api-client"
@@ -46,6 +47,11 @@ function parseBasicProperty(response: unknown, propertyId: PropertyId) {
 }
 
 export class PropertyApiService implements PropertyService {
+  async deleteProperty(input: DeletePropertyInput): Promise<void> {
+    const { propertyId } = DeletePropertyInput.parse(input)
+    await api.delete(`/properties/${encodeURIComponent(propertyId)}`)
+  }
+
   constructor() {
     // Service methods are passed directly to query and mutation callbacks.
     this.getPropertyUsers = this.getPropertyUsers.bind(this)

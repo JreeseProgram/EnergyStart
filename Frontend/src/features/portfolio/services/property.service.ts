@@ -6,6 +6,7 @@ import z from "zod"
 import { UserId } from "@/features/portfolio/models/user.models"
 
 export interface PropertyService {
+  deleteProperty: (input: DeletePropertyInput) => Promise<void>
   getPropertyUsers: (input: GetPropertyInput) => Promise<PropertyUser[]>
   removePropertyUser: (input: RemovePropertyUserInput) => Promise<void>
   addPropertyUser: (input: AddPropertyUserInput) => Promise<void>
@@ -50,6 +51,33 @@ export const UpdatePropertyInput = CreatePropertyInput.extend({
   propertyId: PropertyId,
 })
 
+export type AddPropertyUserInput = z.infer<typeof AddPropertyUserInput>
+export const AddPropertyUserInput = z.object({
+  propertyId: PropertyId,
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .pipe(z.email("Enter a valid email address")),
+})
+
+export type PropertyUser = z.infer<typeof PropertyUser>
+export const PropertyUser = z.object({
+  userId: z.string().min(1).pipe(UserId),
+  email: z.email(),
+  firstName: z.string().nullable(),
+  lastName: z.string().nullable(),
+})
+
+export type RemovePropertyUserInput = z.infer<typeof RemovePropertyUserInput>
+export const RemovePropertyUserInput = z.object({
+  propertyId: PropertyId,
+  userId: z.string().min(1).pipe(UserId),
+})
+
+export type DeletePropertyInput = z.infer<typeof DeletePropertyInput>
+export const DeletePropertyInput = GetPropertyInput
+
 // The POST succeeded even if its response or refreshed details are unusable.
 export class PropertyCreateRefreshError extends Error {
   readonly propertyId: PropertyId | undefined
@@ -91,27 +119,3 @@ export class PropertyShareRefreshError extends Error {
     this.propertyId = propertyId
   }
 }
-
-export type AddPropertyUserInput = z.infer<typeof AddPropertyUserInput>
-export const AddPropertyUserInput = z.object({
-  propertyId: PropertyId,
-  email: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .pipe(z.email("Enter a valid email address")),
-})
-
-export const PropertyUser = z.object({
-  userId: z.string().min(1).pipe(UserId),
-  email: z.email(),
-  firstName: z.string().nullable(),
-  lastName: z.string().nullable(),
-})
-export type PropertyUser = z.infer<typeof PropertyUser>
-
-export const RemovePropertyUserInput = z.object({
-  propertyId: PropertyId,
-  userId: z.string().min(1).pipe(UserId),
-})
-export type RemovePropertyUserInput = z.infer<typeof RemovePropertyUserInput>

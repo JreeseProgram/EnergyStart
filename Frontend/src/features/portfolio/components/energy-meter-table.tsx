@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button"
 import type { ReactNode } from "react"
 import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
 import { meterDate } from "@/features/portfolio/utils/energy-meter-labels"
@@ -15,7 +16,9 @@ import {
 export function EnergyMeterTable({
   meter,
   addReadingAction,
+  onDeleteReading,
 }: {
+  onDeleteReading: (reading: EnergyMeter["readings"][number], trigger: HTMLElement) => void
   meter: EnergyMeter
   addReadingAction: ReactNode
 }) {
@@ -50,6 +53,7 @@ export function EnergyMeterTable({
               <TableHead>Month</TableHead>
               <TableHead className="text-right">Usage</TableHead>
               <TableHead className="text-right">Cost</TableHead>
+              <TableHead><span className="sr-only">Actions</span></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -67,6 +71,10 @@ export function EnergyMeterTable({
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="sm" aria-label={`Delete reading for ${meterDate(reading.date)}`}
+                      onClick={(event) => onDeleteReading(reading, event.currentTarget)}>Delete</Button>
                   </TableCell>
                 </TableRow>
               ))}

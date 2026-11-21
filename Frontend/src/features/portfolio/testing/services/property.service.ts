@@ -1,6 +1,7 @@
 import type { PortfolioTestStore } from "@/features/portfolio/testing/portfolio-test-store"
 import { Property } from "@/features/portfolio/models/property.models"
 import {
+  DeletePropertyInput,
   type PropertyService,
   CreatePropertyInput,
   UpdatePropertyInput,
@@ -81,6 +82,17 @@ export function createPropertyTestService(
   }
 
   return {
+    deleteProperty: async (input) => {
+      const { propertyId } = DeletePropertyInput.parse(input)
+      const actor = await requireUser()
+      const property = requireProperty(propertyId)
+      if (!canAccess(actor, property)) throw new Error("You do not have access to this property.")
+      store.properties = store.properties.filter((item) => item.id !== propertyId)
+      for (const [id, use] of store.buildingUses) {
+        if (use.propertyId === propertyId) store.buildingUses.delete(id)
+      }
+      for (const cleanup of store.onPropertyDeleted) cleanup(propertyId)
+    },
     getPropertyUsers: async (input) => {
       const { propertyId } = GetPropertyInput.parse(input)
       await delay(SERVER_DELAY)

@@ -1,18 +1,28 @@
+import type { PortfolioTestStore } from "@/features/portfolio/testing/portfolio-test-store"
 import { useState } from "react"
 import { EnergyReport } from "@/features/portfolio/models/energy-report.models"
+import type { PropertyService } from "@/features/portfolio/services/property.service"
+import type { PortfolioPerformanceService } from "@/features/portfolio/services/portfolio-performance.service"
+
 import {
   GetEnergyReportsInput,
   GetEnergyReportInput,
   type EnergyReportService,
 } from "@/features/portfolio/services/energy-report.service"
-import type { PropertyService } from "@/features/portfolio/services/property.service"
-import type { PortfolioPerformanceService } from "@/features/portfolio/services/portfolio-performance.service"
 
 export function createEnergyReportTestService(
   propertyService: PropertyService,
-  performanceService: PortfolioPerformanceService
+  performanceService: PortfolioPerformanceService,
+  store?: PortfolioTestStore
 ): EnergyReportService {
   const reports = new Map<string, EnergyReport>()
+
+  store?.onPropertyDeleted.add((propertyId) => {
+    for (const [id, report] of reports) {
+      if (report.PropertyId === propertyId) reports.delete(id)
+    }
+  })
+
   return {
     getEnergyReports: async (input) => {
       const { propertyId } = GetEnergyReportsInput.parse(input)
@@ -86,10 +96,11 @@ export function createEnergyReportTestService(
 }
 export function useEnergyReportTestService(
   propertyService: PropertyService,
-  performanceService: PortfolioPerformanceService
+  performanceService: PortfolioPerformanceService,
+  store?: PortfolioTestStore
 ) {
   const [service] = useState(() =>
-    createEnergyReportTestService(propertyService, performanceService)
+    createEnergyReportTestService(propertyService, performanceService, store)
   )
   return service
 }

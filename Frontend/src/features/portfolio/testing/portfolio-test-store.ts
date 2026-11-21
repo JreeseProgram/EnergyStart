@@ -12,6 +12,7 @@ import {
 
 export function createPortfolioTestStore(owner: User = testPortfolioUser) {
   return {
+    onPropertyDeleted: new Set<(propertyId: PropertyId) => void>(),
     users: [
       owner,
       ...mockSharingUsers.filter(

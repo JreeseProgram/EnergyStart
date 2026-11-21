@@ -14,11 +14,15 @@ type MeterDialogHandle = ReturnType<typeof createCredenzaHandle<EnergyMeter>>
 
 export function EnergyMeterActions({
   meter,
+  onDelete,
+  isDeleteOpen,
   readingDialog,
   historyDialog,
   editDialog,
   returnFocusRef,
 }: {
+  onDelete: (meter: EnergyMeter, trigger: HTMLElement | null) => void
+  isDeleteOpen: boolean
   meter: EnergyMeter
   readingDialog: MeterDialogHandle
   historyDialog: MeterDialogHandle
@@ -60,7 +64,7 @@ export function EnergyMeterActions({
           <DropdownMenuContent
             align="end"
             finalFocus={() =>
-              historyDialog.isOpen || editDialog.isOpen
+              historyDialog.isOpen || editDialog.isOpen || isDeleteOpen
                 ? false
                 : menuTrigger.current
             }
@@ -70,6 +74,9 @@ export function EnergyMeterActions({
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => openFromMenu(editDialog)}>
               Edit meter
+            </DropdownMenuItem>
+            <DropdownMenuItem variant="destructive" onClick={() => onDelete(meter, menuTrigger.current)}>
+              Delete meter
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

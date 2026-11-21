@@ -27,12 +27,13 @@ export function usePortfolioTestServices({
   })
 
   const buildingUseService = createBuildingUseTestService(store)
-  const energyMeterService = useEnergyMeterTestService(propertyService)
+  const energyMeterService = useEnergyMeterTestService(propertyService, store)
   const portfolioPerformanceService = usePortfolioPerformanceService()
 
   const energyReportService = useEnergyReportTestService(
     propertyService,
-    portfolioPerformanceService
+    portfolioPerformanceService,
+    store
   )
 
   return {
