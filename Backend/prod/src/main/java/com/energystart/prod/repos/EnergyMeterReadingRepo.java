@@ -13,4 +13,6 @@ public interface EnergyMeterReadingRepo extends MongoRepository<EnergyMeterReadi
     List<EnergyMeterReading> findAllByAssociatedMeterIDInAndDateBetween(List<String> associatedMeterID, String startDate, String endDate);
 
     void deleteAllByAssociatedMeterIDIn(List<String> associatedMeterIDs);
+    boolean existsByAssociatedMeterIDAndDate(String associatedMeterID, String date);
+    boolean existsByAssociatedMeterIDAndDateAndIdNot(String associatedMeterID, String date, String id);
 }
