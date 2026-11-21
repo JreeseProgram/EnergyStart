@@ -1,4 +1,6 @@
+import { useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "@/components/ui/button"
 import { useForm } from "react-hook-form"
 import { MonthYearField } from "@/components/form/month-year-field"
 import { InputField } from "@/components/form/input-field"
@@ -9,7 +11,15 @@ import { useCreateEnergyReading } from "@/features/portfolio/api/create-energy-r
 import { CreateEnergyReadingInput } from "@/features/portfolio/services/energy-meter.service"
 import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
 
-export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
+export function EnergyReadingForm({
+  meter,
+  onSuccess,
+  onCancel,
+}: {
+  meter: EnergyMeter
+  onSuccess: () => void
+  onCancel: () => void
+}) {
   const form = useForm({
     resolver: zodResolver(CreateEnergyReadingInput),
     defaultValues: {
@@ -21,10 +31,17 @@ export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
     },
   })
 
+  const { setFocus } = form
+
+  useEffect(() => {
+    if (meter.inUse) setFocus("date")
+  }, [meter.inUse, setFocus])
+
   const mutation = useCreateEnergyReading()
 
   function submit(data: CreateEnergyReadingInput) {
     if (mutation.isPending) return
+
     if (meter.readings.some((reading) => reading.date === data.date)) {
       form.setError(
         "date",
@@ -37,26 +54,31 @@ export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
       )
       return
     }
+
     mutation.mutate(data, {
       onSuccess: () => {
         form.reset()
-        toast.add({ type: "success", title: "Reading recorded" })
+        toast.add({ type: "success", title: "Reading saved" })
+        onSuccess()
       },
     })
   }
 
   return (
     <form onSubmit={form.handleSubmit(submit)} className="flex flex-col gap-4">
-      <h3 className="font-semibold">Record a reading</h3>
+      <p className="text-sm text-muted-foreground">
+        Enter usage for this month. Each month can have one reading.
+      </p>
+
       <FieldSet disabled={!meter.inUse || mutation.isPending}>
         <MonthYearField
           control={form.control}
           name="date"
-          label="Reading month"
+          label="Month"
           disabled={!meter.inUse || mutation.isPending}
         />
 
-        <FieldGroup className="grid grid-cols-2">
+        <FieldGroup className="grid grid-cols-1 sm:grid-cols-2">
           <InputField
             control={form.control}
             name="usage"
@@ -77,7 +99,7 @@ export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
             type="number"
             step="any"
             min={0}
-            parseValue={(value) => Number(value)}
+            parseValue={(value) => (value.trim() === "" ? NaN : Number(value))}
             inputMode="decimal"
             placeholder="0"
           />
@@ -88,9 +110,19 @@ export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
         )}
 
         <SubmitButton disabled={!meter.inUse || mutation.isPending}>
-          Record reading
+          Save reading
         </SubmitButton>
       </FieldSet>
+
+      <Button
+        type="button"
+        variant="outline"
+        onClick={onCancel}
+        disabled={mutation.isPending}
+      >
+        Cancel
+      </Button>
+
       {!meter.inUse && (
         <p className="text-sm text-muted-foreground">
           Edit this meter and make it active before recording readings.
