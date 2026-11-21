@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { MonthYearField } from "@/components/form/month-year-field"
 import { InputField } from "@/components/form/input-field"
 import { SubmitButton } from "@/components/form/submit-button"
 import { FieldError, FieldGroup, FieldSet } from "@/components/ui/field"
@@ -48,13 +49,13 @@ export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
     <form onSubmit={form.handleSubmit(submit)} className="flex flex-col gap-4">
       <h3 className="font-semibold">Record a reading</h3>
       <FieldSet disabled={!meter.inUse || mutation.isPending}>
-        <InputField
+        <MonthYearField
           control={form.control}
           name="date"
-          label="Month *"
-          type="month"
-          max={new Date().toISOString().slice(0, 7)}
+          label="Reading month"
+          disabled={!meter.inUse || mutation.isPending}
         />
+
         <FieldGroup className="grid grid-cols-2">
           <InputField
             control={form.control}
@@ -68,6 +69,7 @@ export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
             inputMode="decimal"
             placeholder="0"
           />
+
           <InputField
             control={form.control}
             name="cost"
@@ -80,9 +82,11 @@ export function EnergyReadingForm({ meter }: { meter: EnergyMeter }) {
             placeholder="0"
           />
         </FieldGroup>
+
         {mutation.isError && (
           <FieldError role="alert">{mutation.error.message}</FieldError>
         )}
+
         <SubmitButton disabled={!meter.inUse || mutation.isPending}>
           Record reading
         </SubmitButton>
