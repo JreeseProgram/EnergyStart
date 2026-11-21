@@ -8,6 +8,7 @@ import {
 } from "@/features/portfolio/models/building-use.models"
 
 export interface BuildingUseService {
+  deleteBuildingUse: (input: DeleteBuildingUseInput) => Promise<void>
   getBuildingUse: (input: GetBuildingUseInput) => Promise<BuildingUse>
   getBuildingUses: (input: GetBuildingUsesInput) => Promise<BuildingUse[]>
   createBuildingUse: (input: CreateBuildingUseInput) => Promise<BuildingUse>
@@ -16,6 +17,11 @@ export interface BuildingUseService {
 
 export type GetBuildingUseInput = z.infer<typeof GetBuildingUseInput>
 export const GetBuildingUseInput = z.object({ buildingUseId: BuildingUseId })
+
+export type DeleteBuildingUseInput = z.infer<typeof DeleteBuildingUseInput>
+export const DeleteBuildingUseInput = GetBuildingUseInput.extend({
+  propertyId: PropertyId,
+})
 
 export type GetBuildingUsesInput = z.infer<typeof GetBuildingUsesInput>
 export const GetBuildingUsesInput = z.object({ propertyId: PropertyId })

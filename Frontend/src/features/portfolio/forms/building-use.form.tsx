@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { SelectField } from "@/components/form/select-field"
 import { toast } from "@/components/ui/toast"
 import type { PropertyId } from "@/features/portfolio/models/property.models"
-import { usePortfolioUser } from "@/features/portfolio/api/get-user.api"
+import { usePortfolioUser } from "@/features/portfolio/api/user/get-user.api"
 import { getBuildingUseFields } from "@/features/portfolio/utils/building-use-fields"
 import { UserId } from "@/features/portfolio/models/user.models"
 import { BUILDING_USE_TYPES } from "@/features/portfolio/utils/form-constants"
@@ -20,10 +20,8 @@ import {
   type BuildingUse,
 } from "@/features/portfolio/models/building-use.models"
 
-import {
-  useCreateBuildingUse,
-  useUpdateBuildingUse,
-} from "@/features/portfolio/api/save-building-use.api"
+import { useCreateBuildingUse } from "@/features/portfolio/api/building-use/create-building-use.api"
+import { useUpdateBuildingUse } from "@/features/portfolio/api/building-use/update-building-use.api"
 
 type BuildingUseFormState = {
   isSubmitting: boolean

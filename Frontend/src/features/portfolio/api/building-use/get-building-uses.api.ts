@@ -1,3 +1,4 @@
+import { portfolioKeys } from "@/features/portfolio/api/query-keys"
 import { use } from "react"
 import { queryOptions, useQuery } from "@tanstack/react-query"
 import { Services } from "@/context/services.context"
@@ -14,7 +15,7 @@ export const getBuildingUsesQueryOptions = ({
 }) => {
   const parsedInput = GetBuildingUsesInput.parse(input)
   return queryOptions({
-    queryKey: ["BuildingUses", parsedInput],
+    queryKey: portfolioKeys.buildingUses(parsedInput.propertyId),
     queryFn: () => buildingUseService.getBuildingUses(parsedInput),
   })
 }

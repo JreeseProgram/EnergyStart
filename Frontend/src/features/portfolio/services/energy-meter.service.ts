@@ -8,6 +8,16 @@ import {
 import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
 import { PropertyId } from "@/features/portfolio/models/property.models"
 
+export interface EnergyMeterService {
+  deleteEnergyMeter: (input: DeleteEnergyMeterInput) => Promise<void>
+  deleteEnergyReading: (input: DeleteEnergyReadingInput) => Promise<void>
+  getEnergyMeter: (input: GetEnergyMeterInput) => Promise<EnergyMeter>
+  getEnergyMeters: (input: GetEnergyMetersInput) => Promise<EnergyMeter[]>
+  createEnergyMeter: (input: CreateEnergyMeterInput) => Promise<EnergyMeter>
+  updateEnergyMeter: (input: UpdateEnergyMeterInput) => Promise<EnergyMeter>
+  createEnergyReading: (input: CreateEnergyReadingInput) => Promise<EnergyMeter>
+}
+
 export type GetEnergyMetersInput = z.infer<typeof GetEnergyMetersInput>
 export const GetEnergyMetersInput = z.object({ propertyId: PropertyId })
 
@@ -35,6 +45,14 @@ export type CreateEnergyReadingInput = z.infer<typeof CreateEnergyReadingInput>
 export const CreateEnergyReadingInput = EnergyReadingFields.safeExtend({
   propertyId: PropertyId,
   energyMeterId: EnergyMeterId,
+})
+
+export type DeleteEnergyMeterInput = z.infer<typeof DeleteEnergyMeterInput>
+export const DeleteEnergyMeterInput = GetEnergyMeterInput
+
+export type DeleteEnergyReadingInput = z.infer<typeof DeleteEnergyReadingInput>
+export const DeleteEnergyReadingInput = GetEnergyMeterInput.extend({
+  readingId: z.string().min(1),
 })
 
 // The POST succeeded; an invalid response must not invite another write.
@@ -83,12 +101,4 @@ export class EnergyReadingCreateRefreshError extends Error {
     this.propertyId = propertyId
     this.energyMeterId = energyMeterId
   }
-}
-
-export interface EnergyMeterService {
-  getEnergyMeter: (input: GetEnergyMeterInput) => Promise<EnergyMeter>
-  getEnergyMeters: (input: GetEnergyMetersInput) => Promise<EnergyMeter[]>
-  createEnergyMeter: (input: CreateEnergyMeterInput) => Promise<EnergyMeter>
-  updateEnergyMeter: (input: UpdateEnergyMeterInput) => Promise<EnergyMeter>
-  createEnergyReading: (input: CreateEnergyReadingInput) => Promise<EnergyMeter>
 }

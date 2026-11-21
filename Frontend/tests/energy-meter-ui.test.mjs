@@ -1,3 +1,5 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { MemoryRouter } from "react-router"
 import assert from "node:assert/strict"
 import test from "node:test"
 import { registerHooks } from "node:module"
@@ -36,7 +38,7 @@ registerHooks({
         url: "data:text/javascript,export const DashboardLayout = () => null",
         shortCircuit: true,
       }
-    if (specifier === "@/features/portfolio/api/get-energy-meter.api")
+    if (specifier === "@/features/portfolio/api/energy-meter/get-energy-meter.api")
       return {
         url: `data:text/javascript,${encodeURIComponent(
           `import { state } from ${JSON.stringify(stateUrl)};
@@ -79,10 +81,14 @@ const meter = {
 test("closed meter dialogs do not load meter data", () => {
   state.calls = 0
   const html = renderToStaticMarkup(
-    createElement(PropertyMeters, {
-      property: { id: meter.propertyId, name: "Test property" },
-      meters: [meter, { ...meter, meterId: "meter-2", inUse: false }],
-    })
+    createElement(QueryClientProvider, { client: new QueryClient() },
+      createElement(MemoryRouter, null,
+        createElement(PropertyMeters, {
+          property: { id: meter.propertyId, name: "Test property" },
+          meters: [meter, { ...meter, meterId: "meter-2", inUse: false }],
+        })
+      )
+    )
   )
   assert.equal(state.calls, 0)
   assert.match(html, /Add reading for Main meter/)

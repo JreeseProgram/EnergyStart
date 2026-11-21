@@ -1,7 +1,7 @@
 import { ContentHeader } from "@/components/layouts/content-header"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useBuildingUses } from "@/features/portfolio/api/get-building-uses.api"
+import { useBuildingUses } from "@/features/portfolio/api/building-use/get-building-uses.api"
 import { BuildingUses } from "@/features/portfolio/components/building-uses"
 import type { PropertyId } from "@/features/portfolio/models/property.models"
 import { createCell } from "@/lib/react-query"

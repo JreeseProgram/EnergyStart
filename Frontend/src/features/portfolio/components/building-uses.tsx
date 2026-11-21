@@ -1,3 +1,4 @@
+import { usePortfolioDeletion } from "@/features/portfolio/hooks/use-portfolio-deletion"
 import { useState } from "react"
 import { Plus } from "lucide-react"
 import { ContentHeader } from "@/components/layouts/content-header"
@@ -14,6 +15,7 @@ export function BuildingUses({
   propertyId: PropertyId
   buildingUses: BuildingUse[]
 }) {
+  const { requestDelete, confirmation, successFocus, isDeleteOpen } = usePortfolioDeletion()
   const [buildingUse, setBuildingUse] = useState<BuildingUse | "new" | null>(
     null
   )
@@ -24,6 +26,7 @@ export function BuildingUses({
 
   return (
     <>
+      {confirmation}
       <ContentHeader
         title="Building uses"
         description={`${uses.length} ${uses.length === 1 ? "use defines" : "uses define"} the ${floorArea.toLocaleString("en-US")} ft² of floor area`}
@@ -34,8 +37,16 @@ export function BuildingUses({
         }
       />
 
-      <BuildingUsesTable buildingUses={uses} onEdit={setBuildingUse} />
+      <div ref={successFocus} tabIndex={-1} aria-label="Building uses">
+      <BuildingUsesTable buildingUses={uses} onEdit={setBuildingUse}
+        isDeleteOpen={isDeleteOpen}
+        onDelete={(use, trigger) => requestDelete(
+          { kind: "building use", propertyId, buildingUseId: use.id },
+          use.buildingUseType.replaceAll("_", " ").toLowerCase(), trigger
+        )}
+      />
 
+      </div>
       {buildingUse && (
         <BuildingUseModal
           propertyId={propertyId}

@@ -1,3 +1,4 @@
+import { portfolioKeys } from "@/features/portfolio/api/query-keys"
 import { Services } from "@/context/services.context"
 import type { PropertyId } from "@/features/portfolio/models/property.models"
 import type { PropertyService } from "@/features/portfolio/services/property.service"
@@ -13,7 +14,7 @@ export const getPropertyQueryOptions = ({
   propertyService: PropertyService
 }) => {
   return queryOptions({
-    queryKey: ["Properties", { propertyId }],
+    queryKey: portfolioKeys.properties.detail(propertyId),
     queryFn: () => propertyService.getProperty({ propertyId }),
   })
 }

@@ -1,3 +1,4 @@
+import { portfolioKeys } from "@/features/portfolio/api/query-keys"
 import { use } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Services } from "@/context/services.context"
@@ -9,7 +10,7 @@ export function useGenerateEnergyReport() {
     mutationFn: energyReportService.getEnergyReport,
     onSuccess: async (report) => {
       await client.invalidateQueries({
-        queryKey: ["EnergyReports", report.PropertyId],
+        queryKey: portfolioKeys.reports(report.PropertyId),
       })
     },
   })

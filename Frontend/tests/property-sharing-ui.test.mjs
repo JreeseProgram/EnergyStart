@@ -1,3 +1,4 @@
+import { portfolioKeys as keys } from "../src/features/portfolio/api/query-keys.ts"
 import assert from "node:assert/strict"
 import test from "node:test"
 import { registerHooks } from "node:module"
@@ -38,12 +39,16 @@ registerHooks({
     const harness = `import { state } from ${JSON.stringify(stateUrl)};`
     if (specifier === "@/context/services.context")
       return stub("export const Services = {}")
-    if (specifier === "@/features/portfolio/api/get-user.api")
+    if (specifier === "@/features/portfolio/api/user/get-user.api")
       return stub(
         harness +
           "export const usePortfolioUser = () => ({ data: { id: state.currentUserId } })"
       )
-    if (context.parentURL?.endsWith("property-sharing.api.ts")) {
+    if ([
+      "/property/add-property-user.api.ts",
+      "/property/get-property-users.api.ts",
+      "/property/remove-property-user.api.ts",
+    ].some((path) => context.parentURL?.endsWith(path))) {
       if (specifier === "react")
         return stub(
           harness +
@@ -74,11 +79,9 @@ registerHooks({
     return nextResolve(specifier, context)
   },
 })
-const {
-  useAddPropertyUser,
-  useRemovePropertyUser,
-  getPropertyUsersQueryOptions,
-} = await import("../src/features/portfolio/api/property-sharing.api.ts")
+const { useAddPropertyUser } = await import("../src/features/portfolio/api/property/add-property-user.api.ts")
+const { useRemovePropertyUser } = await import("../src/features/portfolio/api/property/remove-property-user.api.ts")
+const { getPropertyUsersQueryOptions } = await import("../src/features/portfolio/api/property/get-property-users.api.ts")
 const { PropertyShareRefreshError } =
   await import("../src/features/portfolio/services/property.service.ts")
 const { PropertySharingTable } =
@@ -150,7 +153,7 @@ test("invalid add response still invalidates sharing users", async () => {
   let reads = 0
   const unsubscribe = observe(
     client,
-    ["Properties", { propertyId: "one" }, "Users"],
+    keys.properties.users("one"),
     async () => {
       reads++
       return []
@@ -173,7 +176,7 @@ test("invalid add response still invalidates sharing users", async () => {
 
 test("self-removal waits for navigation, removes detail/users caches, and refreshes the list", async () => {
   const client = setup()
-  const propertyKey = ["Properties", { propertyId: "one" }]
+  const propertyKey = keys.properties.detail("one")
   const usersKey = [...propertyKey, "Users"]
   const unsubscribers = [propertyKey, usersKey].map((key) =>
     observe(client, key, async () =>
@@ -181,11 +184,11 @@ test("self-removal waits for navigation, removes detail/users caches, and refres
     )
   )
   let listReads = 0
-  const unsubscribeList = observe(client, ["Properties"], async () => {
+  const unsubscribeList = observe(client, keys.properties.list(), async () => {
     listReads++
     return []
   })
-  client.setQueryData(["Properties", { propertyId: "other" }], { id: "other" })
+  client.setQueryData(keys.properties.detail("other"), { id: "other" })
   state.navigate = async (path, options) => {
     assert.equal(path, "/app/properties")
     assert.equal(options.replace, true)
@@ -203,7 +206,7 @@ test("self-removal waits for navigation, removes detail/users caches, and refres
   assert.equal(client.getQueryData(propertyKey), undefined)
   assert.equal(client.getQueryData(usersKey), undefined)
   assert.deepEqual(
-    client.getQueryData(["Properties", { propertyId: "other" }]),
+    client.getQueryData(keys.properties.detail("other")),
     { id: "other" }
   )
   assert.equal(listReads, 1)

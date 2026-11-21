@@ -1,3 +1,4 @@
+import { usePortfolioDeletion } from "@/features/portfolio/hooks/use-portfolio-deletion"
 import { useId, useState, useRef } from "react"
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react"
 import { ContentHeader } from "@/components/layouts/content-header"
@@ -59,6 +60,7 @@ export function PropertyMeters({
   property: Property
   meters: EnergyMeter[]
 }) {
+  const { requestDelete, confirmation, successFocus, isDeleteOpen } = usePortfolioDeletion()
   const [readingDialog] = useState(() => createCredenzaHandle<EnergyMeter>())
   const [historyDialog] = useState(() => createCredenzaHandle<EnergyMeter>())
   const [editDialog] = useState(() => createCredenzaHandle<EnergyMeter>())
@@ -126,6 +128,11 @@ export function PropertyMeters({
       cell: ({ row }) => (
         <EnergyMeterActions
           meter={row.original}
+          isDeleteOpen={isDeleteOpen}
+          onDelete={(meter, trigger) => requestDelete(
+            { kind: "meter", propertyId: property.id, energyMeterId: meter.meterId },
+            meter.meterName || "Unnamed meter", trigger
+          )}
           readingDialog={readingDialog}
           historyDialog={historyDialog}
           editDialog={editDialog}
@@ -135,17 +142,19 @@ export function PropertyMeters({
     }),
   ])
 
+  const pageIndex = Math.min(pagination.pageIndex, Math.max(0, Math.ceil(meters.length / pagination.pageSize) - 1))
   const table = useTable({
     features,
     data: meters,
     columns,
-    state: { pagination },
+    state: { pagination: { ...pagination, pageIndex } },
     onPaginationChange: setPagination,
     getRowId: (row) => row.meterId,
   })
 
   return (
     <>
+      {confirmation}
       <EnergyReadingModal handle={readingDialog} propertyName={propertyName} />
 
       <EnergyMeterHistoryModal
@@ -172,7 +181,7 @@ export function PropertyMeters({
         }
       />
 
-      <Card className="rounded-2xl">
+      <Card ref={successFocus} tabIndex={-1} aria-label="Energy meters" className="rounded-2xl">
         <CardContent>
           {meters.length === 0 ? (
             <div className="flex flex-col items-start gap-3 py-8">
@@ -239,7 +248,7 @@ export function PropertyMeters({
                 </Select>
 
                 <span>
-                  Page {pagination.pageIndex + 1} of{" "}
+                  Page {pageIndex + 1} of{" "}
                   {Math.max(1, table.getPageCount())}
                 </span>
 

@@ -5,6 +5,7 @@ import {
 import { delay } from "@/utils/delay"
 
 import {
+  DeleteBuildingUseInput,
   CreateBuildingUseInput,
   UpdateBuildingUseInput,
   type BuildingUseService,
@@ -34,6 +35,13 @@ export function createBuildingUseTestService(
 ): BuildingUseService {
   const { buildingUses } = store
   return {
+    deleteBuildingUse: async (input) => {
+      const { propertyId, buildingUseId } = DeleteBuildingUseInput.parse(input)
+      requireProperty(store, propertyId)
+      const use = buildingUses.get(buildingUseId)
+      if (!use || use.propertyId !== propertyId) throw new Error("Building use not found.")
+      buildingUses.delete(buildingUseId)
+    },
     getBuildingUses: async ({ propertyId }) => {
       await delay(SERVER_DELAY)
 

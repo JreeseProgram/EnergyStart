@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useBuildingUses } from "@/features/portfolio/api/get-building-uses.api"
+import { useBuildingUses } from "@/features/portfolio/api/building-use/get-building-uses.api"
 import { PropertyBuildingUseSummary } from "@/features/portfolio/components/property-building-use-summary"
 import type { PropertyId } from "@/features/portfolio/models/property.models"
 import { createCell } from "@/lib/react-query"

@@ -1,3 +1,4 @@
+import { usePortfolioDeletion } from "@/features/portfolio/hooks/use-portfolio-deletion"
 import { useEffect, useId, useState, useRef, type RefObject } from "react"
 import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -60,6 +61,7 @@ export function EnergyMeterHistoryModal({
 }
 
 function EnergyMeterHistoryContent({ meter }: { meter: EnergyMeter }) {
+  const { requestDelete, confirmation, successFocus } = usePortfolioDeletion()
   const [isAdding, setIsAdding] = useState(false)
   const readingTriggerRef = useRef<HTMLButtonElement | null>(null)
   const restoreFocus = useRef(false)
@@ -79,6 +81,8 @@ function EnergyMeterHistoryContent({ meter }: { meter: EnergyMeter }) {
 
   return (
     <>
+      {confirmation}
+
       {isAdding && (
         <section
           aria-labelledby={formTitleId}
@@ -95,21 +99,35 @@ function EnergyMeterHistoryContent({ meter }: { meter: EnergyMeter }) {
         </section>
       )}
 
-      <EnergyMeterTable
-        meter={meter}
-        addReadingAction={
-          !isAdding && (
-            <Button
-              ref={readingTriggerRef}
-              size="sm"
-              disabled={!meter.inUse}
-              onClick={() => setIsAdding(true)}
-            >
-              <Plus /> Add reading
-            </Button>
-          )
-        }
-      />
+      <div ref={successFocus} tabIndex={-1} aria-label="Reading history">
+        <EnergyMeterTable
+          meter={meter}
+          onDeleteReading={(reading, trigger) =>
+            requestDelete(
+              {
+                kind: "reading",
+                propertyId: meter.propertyId,
+                energyMeterId: meter.meterId,
+                readingId: reading.id,
+              },
+              `the ${reading.date} reading for ${meter.meterName || "Unnamed meter"}`,
+              trigger
+            )
+          }
+          addReadingAction={
+            !isAdding && (
+              <Button
+                ref={readingTriggerRef}
+                size="sm"
+                disabled={!meter.inUse}
+                onClick={() => setIsAdding(true)}
+              >
+                <Plus /> Add reading
+              </Button>
+            )
+          }
+        />
+      </div>
     </>
   )
 }

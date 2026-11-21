@@ -1,4 +1,4 @@
-import { useId, useState } from "react"
+import { useId, useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardFooter } from "@/components/ui/card"
 import type { BuildingUse } from "@/features/portfolio/models/building-use.models"
@@ -45,10 +45,15 @@ const pageSizes = [5, 10, 20, 50].map((value) => ({
 export function BuildingUsesTable({
   buildingUses,
   onEdit,
+  onDelete,
+  isDeleteOpen,
 }: {
+  onDelete: (use: BuildingUse, trigger: HTMLElement | null) => void
+  isDeleteOpen: boolean
   buildingUses: BuildingUse[]
   onEdit: (buildingUse: BuildingUse) => void
 }) {
+  const triggers = useRef(new Map<string, HTMLButtonElement>())
   const [pagination, setPagination] = useState({ page: 0, size: 10 })
 
   const pageSizeId = useId()
@@ -125,6 +130,7 @@ export function BuildingUsesTable({
                 <TableCell className="pr-6 text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger
+                      ref={(element) => { if (element) triggers.current.set(use.id, element); else triggers.current.delete(use.id) }}
                       render={
                         <Button
                           variant="ghost"
@@ -135,10 +141,11 @@ export function BuildingUsesTable({
                     >
                       <EllipsisVertical />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" finalFocus={isDeleteOpen ? false : undefined}>
                       <DropdownMenuItem onClick={() => onEdit(use)}>
                         Edit
                       </DropdownMenuItem>
+                      <DropdownMenuItem variant="destructive" onClick={() => onDelete(use, triggers.current.get(use.id) ?? null)}>Delete building use</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

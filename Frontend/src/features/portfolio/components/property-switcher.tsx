@@ -61,10 +61,10 @@ export function PropertySwitcher({
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
               <MapPinned className="size-4" />
             </div>
-            <div className="flex flex-col gap-0.5 leading-none">
+            <div className="flex flex-col gap-0.5 truncate leading-none">
               <span className="font-medium">{selectedProperty.name}</span>
 
-              <span className="text-xs text-muted-foreground">
+              <span className="truncate text-xs text-muted-foreground">
                 {PROPERTY_TYPES.find(
                   (type) => type.value === selectedProperty.propertyType
                 )?.label ?? "Not specified"}{" "}

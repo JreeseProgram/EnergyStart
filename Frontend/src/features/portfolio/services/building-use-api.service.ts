@@ -1,3 +1,4 @@
+import { DeleteBuildingUseInput } from "@/features/portfolio/services/building-use.service"
 import { api } from "@/lib/api-client"
 import z from "zod"
 
@@ -36,6 +37,12 @@ const BuildingUseResponse = BuildingUse.transform((use) => {
 })
 
 export class BuildingUseApiService implements BuildingUseService {
+  async deleteBuildingUse(input: DeleteBuildingUseInput): Promise<void> {
+    const { buildingUseId } = DeleteBuildingUseInput.parse(input)
+    // Building uses are EnergyReport records; this route enforces property access.
+    await api.delete(`/energy-reports/${encodeURIComponent(buildingUseId)}`)
+  }
+
   async createBuildingUse(input: CreateBuildingUseInput): Promise<BuildingUse> {
     const details = BuildingUseSubmissionDetails.parse(
       CreateBuildingUseInput.parse(input)

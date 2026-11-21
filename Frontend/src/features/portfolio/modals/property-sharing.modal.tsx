@@ -1,6 +1,6 @@
 import { FieldError } from "@/components/ui/field"
 import { toast } from "@/components/ui/toast"
-import { useRemovePropertyUser } from "@/features/portfolio/api/property-sharing.api"
+import { useRemovePropertyUser } from "@/features/portfolio/api/property/remove-property-user.api"
 import type { PropertyUser } from "@/features/portfolio/services/property.service"
 import { useRef, useState } from "react"
 import { Plus } from "lucide-react"

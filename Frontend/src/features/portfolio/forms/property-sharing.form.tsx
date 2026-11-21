@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { InputField } from "@/components/form/input-field"
 import { FieldError, FieldSet } from "@/components/ui/field"
 import { toast } from "@/components/ui/toast"
-import { useAddPropertyUser } from "@/features/portfolio/api/property-sharing.api"
+import { useAddPropertyUser } from "@/features/portfolio/api/property/add-property-user.api"
 import type { PropertyId } from "@/features/portfolio/models/property.models"
 
 import {
