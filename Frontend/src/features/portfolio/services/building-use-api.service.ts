@@ -1,9 +1,10 @@
 import { api } from "@/lib/api-client"
 import z from "zod"
+
 import {
   BuildingUse,
-  BuildingUseDetails,
   BuildingUseId,
+  BuildingUseDetails,
 } from "@/features/portfolio/models/building-use.models"
 
 import {
@@ -15,9 +16,28 @@ import {
   type BuildingUseService,
 } from "@/features/portfolio/services/building-use.service"
 
+// Parse only at the HTTP write boundary: forms use percentages, requests use fractions.
+const BuildingUseSubmissionDetails = BuildingUseDetails.transform((details) => {
+  if ("percentCooled" in details) details.percentCooled /= 100
+  if ("percentHeated" in details) details.percentHeated /= 100
+  if ("percentColdStorage" in details) details.percentColdStorage /= 100
+  return details
+})
+
+// Parse only backend responses; internal models already use 0–100 percentages.
+const BuildingUseResponse = BuildingUse.transform((use) => {
+  if ("percentCooled" in use)
+    use.percentCooled = Number((use.percentCooled * 100).toFixed(2))
+  if ("percentHeated" in use)
+    use.percentHeated = Number((use.percentHeated * 100).toFixed(2))
+  if ("percentColdStorage" in use)
+    use.percentColdStorage = Number((use.percentColdStorage * 100).toFixed(2))
+  return use
+})
+
 export class BuildingUseApiService implements BuildingUseService {
   async createBuildingUse(input: CreateBuildingUseInput): Promise<BuildingUse> {
-    const details = BuildingUseDetails.parse(
+    const details = BuildingUseSubmissionDetails.parse(
       CreateBuildingUseInput.parse(input)
     )
 
@@ -32,7 +52,7 @@ export class BuildingUseApiService implements BuildingUseService {
       const saved = await api.get<unknown, unknown>(
         `/energy-reports/building-uses/${encodeURIComponent(ID)}`
       )
-      return BuildingUse.parse(saved)
+      return BuildingUseResponse.parse(saved)
     } catch (error) {
       throw new BuildingUseSaveRefreshError(details.propertyId, error)
     }
@@ -41,7 +61,7 @@ export class BuildingUseApiService implements BuildingUseService {
   async updateBuildingUse(input: UpdateBuildingUseInput): Promise<BuildingUse> {
     const parsed = UpdateBuildingUseInput.parse(input)
     const { id } = parsed
-    const details = BuildingUseDetails.parse(parsed)
+    const details = BuildingUseSubmissionDetails.parse(parsed)
 
     const response = await api.put<unknown, unknown>(
       `/energy-reports/building-uses/${encodeURIComponent(id)}`,
@@ -49,7 +69,7 @@ export class BuildingUseApiService implements BuildingUseService {
     )
 
     try {
-      return BuildingUse.parse(response)
+      return BuildingUseResponse.parse(response)
     } catch (error) {
       throw new BuildingUseSaveRefreshError(details.propertyId, error)
     }
@@ -61,7 +81,7 @@ export class BuildingUseApiService implements BuildingUseService {
       `/energy-reports/building-uses/${encodeURIComponent(buildingUseId)}`
     )
 
-    return BuildingUse.parse(response)
+    return BuildingUseResponse.parse(response)
   }
 
   async getBuildingUses(input: GetBuildingUsesInput): Promise<BuildingUse[]> {
@@ -71,7 +91,7 @@ export class BuildingUseApiService implements BuildingUseService {
     )
 
     // The backend currently exposes only an unfiltered collection endpoint.
-    return BuildingUse.array()
+    return BuildingUseResponse.array()
       .parse(response)
       .filter((use) => use.propertyId === propertyId)
   }

@@ -163,6 +163,7 @@ test("write validation respects backend numeric limits", () => {
 })
 const service = new BuildingUseApiService()
 const input = { ...office, userId: "user-id" }
+const officeResponse = { ...office, percentCooled: 0.01 }
 test("create posts DTO details and reads back the DTO by legacy ID", async () => {
   const calls = []
   api.post = async (url, body) => {
@@ -171,12 +172,15 @@ test("create posts DTO details and reads back the DTO by legacy ID", async () =>
   }
   api.get = async (url) => {
     calls.push([url])
-    return office
+    return officeResponse
   }
   const create = service.createBuildingUse // React Query does not bind this.
   assert.deepEqual(await create(input), office)
   assert.equal(calls[0][0], "/energy-reports/building-uses")
-  assert.deepEqual(calls[0][1], BuildingUseFormDetails.parse(office))
+  assert.deepEqual(calls[0][1], {
+    ...BuildingUseFormDetails.parse(office),
+    percentCooled: 0.01,
+  })
   assert.equal(calls[1][0], "/energy-reports/building-uses/saved%2Fid")
 })
 test("successful create with invalid response or failed refresh never repeats the write", async () => {
@@ -201,8 +205,11 @@ test("successful create with invalid response or failed refresh never repeats th
 test("update strips metadata and identity, and reports unreadable saved responses", async () => {
   api.put = async (url, body) => {
     assert.equal(url, "/energy-reports/building-uses/mongo-id")
-    assert.deepEqual(body, BuildingUseFormDetails.parse(office))
-    return office
+    assert.deepEqual(body, {
+      ...BuildingUseFormDetails.parse(office),
+      percentCooled: 0.01,
+    })
+    return officeResponse
   }
   assert.deepEqual(await service.updateBuildingUse(input), office)
   api.put = async () => ({})
@@ -211,10 +218,74 @@ test("update strips metadata and identity, and reports unreadable saved response
     BuildingUseSaveRefreshError
   )
 })
+test("all variants round-trip percentages across create, reads, and update without mutating inputs", async () => {
+  for (const [type, dto] of dtos) {
+    for (const [percentage, fraction] of [
+      [0, 0],
+      [100, 1],
+      [87, 0.87],
+      [50.5, 0.505],
+    ]) {
+      const details = BuildingUseFormDetails.parse(dto)
+      const expected = { ...details }
+      for (const field of [
+        "percentCooled",
+        "percentHeated",
+        "percentColdStorage",
+      ]) {
+        if (field in details) {
+          details[field] = percentage
+          expected[field] = fraction
+        }
+      }
+      const submission = Object.freeze({
+        ...details,
+        id: dto.id,
+        userId: "user-id",
+      })
+      const original = { ...submission }
+      const response = Object.freeze({ ...dto, ...expected })
+      const originalResponse = { ...response }
+      const expectedUse = { ...dto, ...details }
+      let posts = 0
+      let puts = 0
+      api.post = async (_url, body) => {
+        posts++
+        assert.deepEqual(body, expected, type)
+        return { ID: dto.id }
+      }
+      api.get = async () => response
+      api.put = async (_url, body) => {
+        puts++
+        assert.deepEqual(body, expected, type)
+        return response
+      }
+      assert.deepEqual(await service.createBuildingUse(submission), expectedUse)
+      const saved = await service.getBuildingUse({ buildingUseId: dto.id })
+      assert.deepEqual(saved, expectedUse)
+      assert.deepEqual(
+        await service.updateBuildingUse({ ...saved, userId: "user-id" }),
+        expectedUse
+      )
+      api.get = async () => [response]
+      assert.deepEqual(
+        await service.getBuildingUses({ propertyId: dto.propertyId }),
+        [expectedUse]
+      )
+      assert.equal(posts, 1)
+      assert.equal(puts, 1)
+      assert.deepEqual(submission, original)
+      assert.deepEqual(response, originalResponse)
+    }
+  }
+})
 test("reads use DTO routes and filter by property", async () => {
   api.get = async (url) => {
     assert.equal(url, "/energy-reports/building-uses")
-    return [office, { ...office, id: "other", propertyId: "other-property" }]
+    return [
+      officeResponse,
+      { ...officeResponse, id: "other", propertyId: "other-property" },
+    ]
   }
   assert.deepEqual(
     await service.getBuildingUses({ propertyId: office.propertyId }),
@@ -222,7 +293,7 @@ test("reads use DTO routes and filter by property", async () => {
   )
   api.get = async (url) => {
     assert.equal(url, "/energy-reports/building-uses/mongo-id")
-    return office
+    return officeResponse
   }
   assert.deepEqual(
     await service.getBuildingUse({ buildingUseId: office.id }),
