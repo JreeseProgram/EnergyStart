@@ -95,7 +95,7 @@ export function PropertyOverview({ property }: { property: Property }) {
             Start with this property’s building uses and energy meters. Metrics
             will appear when performance data is available.
           </p>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
               render={

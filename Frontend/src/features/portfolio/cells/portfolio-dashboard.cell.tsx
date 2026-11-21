@@ -18,7 +18,7 @@ export function PortfolioDashboardCell() {
         aria-label="Loading portfolio dashboard"
         className="flex flex-col gap-6"
       >
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 4 }, (_, index) => (
             <Skeleton key={index} className="h-48 rounded-2xl" />
           ))}
@@ -52,11 +52,7 @@ export function PortfolioDashboardCell() {
   })
 }
 
-function PortfolioPerformanceCell({
-  properties,
-}: {
-  properties: Property[]
-}) {
+function PortfolioPerformanceCell({ properties }: { properties: Property[] }) {
   const query = usePortfolioPerformance({
     input: {
       propertyIds: properties.map((property) => property.id),

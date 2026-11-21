@@ -17,7 +17,7 @@ export function CardGrid({
     <div
       data-slot="card-grid"
       className={cn(
-        "grid grid-cols-4 gap-4 **:data-[slot=card]:bg-[linear-gradient(130deg,color-mix(in_oklab,var(--card-gradient)_8%,transparent)_0%,var(--color-card)_100%)]",
+        "grid min-w-0 grid-cols-1 gap-4 **:data-[slot=card]:bg-[linear-gradient(130deg,color-mix(in_oklab,var(--card-gradient)_8%,transparent)_0%,var(--color-card)_100%)] md:grid-cols-2 xl:grid-cols-4",
         "**:data-[slot=badge]:bg-[color-mix(in_oklab,var(--card-gradient)_15%,transparent)]",
         "**:data-[slot=badge]:text-[color-mix(in_oklab,var(--card-gradient)_60%,var(--color-foreground))]",
         "**:data-[slot=badge]:border-[color-mix(in_oklab,var(--card-gradient)_30%,transparent)]",

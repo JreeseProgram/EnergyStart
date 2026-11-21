@@ -71,7 +71,7 @@ export function PortfolioPerformanceChart({
 
   return (
     <Card className="rounded-2xl">
-      <CardHeader spacing="between">
+      <CardHeader spacing="between" className="flex-wrap">
         <div>
           <CardTitle>
             {isProperty
@@ -84,7 +84,7 @@ export function PortfolioPerformanceChart({
               : "Simulated monthly performance at portfolio properties"}
           </CardDescription>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <label htmlFor={rangeId} className="sr-only">
             Performance date range
           </label>
@@ -121,7 +121,10 @@ export function PortfolioPerformanceChart({
               onMetricChange(value)
           }}
         >
-          <TabsList aria-label="Performance metric">
+          <TabsList
+            aria-label="Performance metric"
+            className="max-w-full flex-wrap group-data-horizontal/tabs:h-auto"
+          >
             {Object.entries(metrics).map(([key, label]) => (
               <TabsTrigger key={key} value={key}>
                 {label}
@@ -209,15 +212,15 @@ export function PerformanceChartSkeleton() {
       role="status"
       aria-label="Loading performance chart"
     >
-      <CardHeader spacing="between">
+      <CardHeader spacing="between" className="flex-wrap">
         <div className="flex flex-col gap-2">
-          <Skeleton className="h-5 w-52" />
-          <Skeleton className="h-4 w-72" />
+          <Skeleton className="h-5 w-52 max-w-full" />
+          <Skeleton className="h-4 w-72 max-w-full" />
         </div>
         <Skeleton className="h-8 w-32" />
       </CardHeader>
       <CardContent>
-        <Skeleton className="h-8 w-72" />
+        <Skeleton className="h-8 w-72 max-w-full" />
         <Skeleton className="my-6 h-9 w-40" />
         <Skeleton className="h-64 w-full" />
         <Skeleton className="mt-3 h-4 w-3/4" />
