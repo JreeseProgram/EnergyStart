@@ -2,7 +2,7 @@ import { EnergyReportPeriod } from "@/features/portfolio/services/energy-report.
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { InputField } from "@/components/form/input-field"
+import { MonthYearField } from "@/components/form/month-year-field"
 import { SubmitButton } from "@/components/form/submit-button"
 import { Button } from "@/components/ui/button"
 import { DialogFooter } from "@/components/ui/dialog"
@@ -25,11 +25,14 @@ export function EnergyReportForm({
   onPendingChange: (pending: boolean) => void
 }) {
   const period = defaultReportPeriod()
+
   const form = useForm<EnergyReportPeriod>({
     resolver: zodResolver(EnergyReportPeriod),
     defaultValues: period,
   })
+
   const mutation = useGenerateEnergyReport()
+
   useEffect(() => {
     onPendingChange(mutation.isPending)
   }, [mutation.isPending, onPendingChange])
@@ -53,23 +56,24 @@ export function EnergyReportForm({
       noValidate
     >
       <FieldSet disabled={mutation.isPending}>
-        <FieldGroup className="grid grid-cols-2">
-          <InputField
+        <FieldGroup className="grid grid-cols-1">
+          <MonthYearField
             control={form.control}
             name="startMonth"
-            label="Start month *"
-            type="month"
+            label="Start period"
+            disabled={mutation.isPending}
           />
-          <InputField
+
+          <MonthYearField
             control={form.control}
             name="endMonth"
-            label="End month *"
-            type="month"
+            label="End period"
+            disabled={mutation.isPending}
           />
         </FieldGroup>
         <p className="text-sm text-muted-foreground">
-          Choose a reporting period. The report includes site EUI, source EUI,
-          and an energy score with any qualification details.
+          The report includes site EUI, source EUI, and an energy score with any
+          qualification details.
         </p>
         {mutation.isError && (
           <FieldError role="alert">{mutation.error.message}</FieldError>
