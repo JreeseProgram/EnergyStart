@@ -1,11 +1,11 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog"
+  Credenza,
+  CredenzaContent,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaDescription,
+} from "@/components/ui/credenza"
 import { EnergyReportForm } from "@/features/portfolio/forms/energy-report.form"
 import type { EnergyReport } from "@/features/portfolio/models/energy-report.models"
 import type { PropertyId } from "@/features/portfolio/models/property.models"
@@ -19,32 +19,51 @@ export function EnergyReportModal({
   onClose: () => void
   onGenerated: (report: EnergyReport) => void
 }) {
+  const [open, setOpen] = useState(false)
+
+  // These modals mount on demand; start closed so Base UI runs its entrance transition.
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setOpen(true))
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
+  const [generatedReport, setGeneratedReport] = useState<EnergyReport | null>(
+    null
+  )
+
   const [pending, setPending] = useState(false)
+
   return (
-    <Dialog
-      open
-      onOpenChange={(open) => {
-        if (!open && !pending) onClose()
+    <Credenza
+      open={open}
+      onOpenChange={(next, event) => {
+        if (!next && pending) event.cancel()
+        else setOpen(next)
+      }}
+      onOpenChangeComplete={(next) => {
+        if (next) return
+        if (generatedReport) onGenerated(generatedReport)
+        else onClose()
       }}
     >
-      <DialogContent
-        className="max-h-[85vh] overflow-y-auto sm:max-w-xl"
-        showCloseButton={!pending}
-      >
-        <DialogHeader>
-          <DialogTitle>Generate new report</DialogTitle>
-          <DialogDescription>
+      <CredenzaContent dialogClassName="sm:max-w-xl" showCloseButton={!pending}>
+        <CredenzaHeader>
+          <CredenzaTitle>Generate new report</CredenzaTitle>
+          <CredenzaDescription>
             Get results for a month range and keep them in this session’s
             history.
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
         <EnergyReportForm
           propertyId={propertyId}
-          onCancel={onClose}
-          onGenerated={onGenerated}
+          onCancel={() => setOpen(false)}
+          onGenerated={(report) => {
+            setGeneratedReport(report)
+            setOpen(false)
+          }}
           onPendingChange={setPending}
         />
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

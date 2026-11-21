@@ -23,13 +23,13 @@ function useDrawer() {
   return context
 }
 
-function Drawer({
+function Drawer<T>({
   modal = true,
   showSwipeHandle = false,
   snapPoints,
   swipeDirection = "down",
   ...props
-}: DrawerPrimitive.Root.Props & {
+}: DrawerPrimitive.Root.Props<T> & {
   showSwipeHandle?: boolean
 }) {
   const hasSnapPoints = snapPoints != null && snapPoints.length > 0
@@ -51,7 +51,7 @@ function Drawer({
   )
 }
 
-function DrawerTrigger({ ...props }: DrawerPrimitive.Trigger.Props) {
+function DrawerTrigger<T>({ ...props }: DrawerPrimitive.Trigger.Props<T>) {
   return <DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props} />
 }
 

@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { MonthYearField } from "@/components/form/month-year-field"
 import { SubmitButton } from "@/components/form/submit-button"
 import { Button } from "@/components/ui/button"
-import { DialogFooter } from "@/components/ui/dialog"
+import { CredenzaFooter } from "@/components/ui/credenza"
 import { FieldError, FieldGroup, FieldSet } from "@/components/ui/field"
 import { toast } from "@/components/ui/toast"
 import { useGenerateEnergyReport } from "@/features/portfolio/api/generate-energy-report.api"
@@ -79,7 +79,7 @@ export function EnergyReportForm({
           <FieldError role="alert">{mutation.error.message}</FieldError>
         )}
       </FieldSet>
-      <DialogFooter>
+      <CredenzaFooter>
         <Button
           type="button"
           variant="outline"
@@ -91,7 +91,7 @@ export function EnergyReportForm({
         <SubmitButton disabled={mutation.isPending}>
           Generate report
         </SubmitButton>
-      </DialogFooter>
+      </CredenzaFooter>
     </form>
   )
 }

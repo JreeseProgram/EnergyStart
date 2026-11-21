@@ -7,7 +7,7 @@ import { SubmitButton } from "@/components/form/submit-button"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { FieldError, FieldSet } from "@/components/ui/field"
-import { DialogFooter } from "@/components/ui/dialog"
+import { CredenzaFooter } from "@/components/ui/credenza"
 import { toast } from "@/components/ui/toast"
 import { useSaveEnergyMeter } from "@/features/portfolio/api/save-energy-meter.api"
 import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
@@ -128,7 +128,7 @@ export function EnergyMeterForm({
           <FieldError role="alert">{mutation.error.message}</FieldError>
         )}
       </FieldSet>
-      <DialogFooter>
+      <CredenzaFooter>
         <Button
           type="button"
           variant="outline"
@@ -138,7 +138,7 @@ export function EnergyMeterForm({
           Cancel
         </Button>
         <SubmitButton>{meter ? "Save changes" : "Add meter"}</SubmitButton>
-      </DialogFooter>
+      </CredenzaFooter>
     </form>
   )
 }

@@ -7,7 +7,7 @@ import { EnergyMeterModal } from "@/features/portfolio/modals/energy-meter.modal
 import { EnergyMeterHistoryModal } from "@/features/portfolio/modals/energy-meter-history.modal"
 import { EnergyReadingModal } from "@/features/portfolio/modals/energy-reading.modal"
 import { EnergyMeterActions } from "@/features/portfolio/components/energy-meter-actions"
-import { DialogTrigger, createDialogHandle } from "@/components/ui/dialog"
+import { CredenzaTrigger, createCredenzaHandle } from "@/components/ui/credenza"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -59,9 +59,9 @@ export function PropertyMeters({
   property: Property
   meters: EnergyMeter[]
 }) {
-  const [readingDialog] = useState(() => createDialogHandle<EnergyMeter>())
-  const [historyDialog] = useState(() => createDialogHandle<EnergyMeter>())
-  const [editDialog] = useState(() => createDialogHandle<EnergyMeter>())
+  const [readingDialog] = useState(() => createCredenzaHandle<EnergyMeter>())
+  const [historyDialog] = useState(() => createCredenzaHandle<EnergyMeter>())
+  const [editDialog] = useState(() => createCredenzaHandle<EnergyMeter>())
   const returnFocusRef = useRef<HTMLElement | null>(null)
   const propertyName = property.name || "Unnamed property"
   const pageSizeId = useId()
@@ -165,9 +165,9 @@ export function PropertyMeters({
         description={`${meters.length} ${meters.length === 1 ? "meter" : "meters"} measuring ${property.name}. Add monthly usage using Add reading on a meter.`}
         action={
           <EnergyMeterModal propertyId={property.id}>
-            <DialogTrigger render={<Button />}>
+            <CredenzaTrigger render={<Button />}>
               Add meter <Plus className="size-4" />
-            </DialogTrigger>
+            </CredenzaTrigger>
           </EnergyMeterModal>
         }
       />
@@ -214,7 +214,7 @@ export function PropertyMeters({
                 </TableBody>
               </Table>
 
-              <div className="flex items-center justify-end gap-4 pt-4 text-sm">
+              <div className="flex flex-wrap items-center justify-end gap-4 pt-4 text-sm">
                 <label htmlFor={pageSizeId}>Rows per page</label>
                 <Select
                   items={[10, 20, 50].map((value) => ({
