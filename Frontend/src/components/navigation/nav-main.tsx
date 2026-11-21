@@ -22,7 +22,7 @@ export function NavMain() {
         nativeButton={false}
       >
         <LayoutGrid />
-        <span>{"Dashbaord"}</span>
+        <span>Dashboard</span>
       </Button>
       <ButtonGroup>
         <Button

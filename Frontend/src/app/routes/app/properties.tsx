@@ -15,7 +15,7 @@ const PropertiesRoute = () => {
           <PropertyModal
             render={
               <Button>
-                Add Proprerty <Plus />
+                Add Property <Plus />
               </Button>
             }
           />
