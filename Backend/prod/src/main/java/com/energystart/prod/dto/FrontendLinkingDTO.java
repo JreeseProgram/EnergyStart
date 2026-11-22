@@ -64,7 +64,7 @@ public class FrontendLinkingDTO {
             String id,
             String humanReadablePropertyId,
             String city,
-            int energyStarScore,
+            Integer energyStarScore,
             String name,
             String notes,
             List<String> authUsers,
@@ -76,6 +76,7 @@ public class FrontendLinkingDTO {
             float siteEui,
             float sourceEui,
             float energyUse,
-            int grossFloorArea
+            int grossFloorArea,
+            List<String> scoreUnavailableReasons
     ){}
 }

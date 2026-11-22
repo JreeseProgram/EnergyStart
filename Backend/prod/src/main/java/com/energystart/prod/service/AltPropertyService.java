@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.YearMonth;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,9 +77,13 @@ public class AltPropertyService {
             largestType = "None";
         }
 
-        int energyScore = 0;
-        long months = ChronoUnit.MONTHS.between(startDate, endDate) + 1; //+1 makes it inclusive
-        if (months >= 12 && !largestType.equals("None")) {
+        List<String> scoreUnavailableReasons = EnergyScoreQualification.reasons(
+                startDate, endDate, energyMeters, energyMeterReadings);
+        if (largestType.equals("None") || totalSqft <= 0) {
+            scoreUnavailableReasons.add("A primary building use and positive floor area are required");
+        }
+        Integer energyScore = null;
+        if (scoreUnavailableReasons.isEmpty()) {
             Integer[] cddhdd = EnergyReport.retrieveCDDHDD(dbProperty.getZipcode(),startDate.atDay(1),endDate.atEndOfMonth());
             energyScore = dbProperty.calculateEnergyScore(
                     energyReportRepo,
@@ -118,7 +121,8 @@ public class AltPropertyService {
                 siteEUI,
                 sourceEUI,
                 energyUse,
-                totalSqft
+                totalSqft,
+                scoreUnavailableReasons
         );
         return property;
     }

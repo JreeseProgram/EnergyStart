@@ -240,6 +240,6 @@ test("renders backend metrics, qualification reasons, nullable property fields a
   ]) {
     assert.ok(markup.includes(text), text)
   }
-  assert.match(markup, />0<\/p>/)
+  assert.match(markup, />Not available<\/p>/)
   assert.ok(!markup.includes("Simulated"))
 })

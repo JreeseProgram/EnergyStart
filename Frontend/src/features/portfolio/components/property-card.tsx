@@ -1,3 +1,4 @@
+import { availableEnergyScore } from "@/features/portfolio/utils/energy-score"
 import {
   Card,
   CardContent,
@@ -15,6 +16,10 @@ import { MapPinned } from "lucide-react"
 import { Link } from "react-router"
 
 export function PropertyCard({ property }: { property: Property }) {
+  const score = availableEnergyScore(
+    property.energyStarScore,
+    property.scoreUnavailableReasons
+  )
   return (
     <Link to={paths.app.property.root.getHref(property.id)} className="group">
       <Card
@@ -24,7 +29,11 @@ export function PropertyCard({ property }: { property: Property }) {
       >
         <CardHeader spacing="between">
           <CardDescription>Energy Star Score</CardDescription>
-          <Gauge value={property.energyStarScore} />
+          {score === undefined ? (
+            <span className="text-sm text-muted-foreground">Not available</span>
+          ) : (
+            <Gauge value={score} />
+          )}
         </CardHeader>
         <CardContent className="pb-2">
           <CardIcon>
