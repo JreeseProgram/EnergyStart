@@ -1,6 +1,7 @@
 import z from "zod"
 import { isAxiosError } from "axios"
 import { api } from "@/lib/api-client"
+import { fetchEnergyReport } from "@/features/portfolio/services/energy-report-api.service"
 import { defaultReportPeriod } from "@/features/portfolio/utils/energy-report-labels"
 
 import {
@@ -188,6 +189,22 @@ export class PropertyApiService implements PropertyService {
     }
   }
 
+  private async withScoreAvailability(
+    property: Property,
+    period: ReturnType<typeof defaultReportPeriod>
+  ): Promise<Property> {
+    try {
+      const report = await fetchEnergyReport({ propertyId: property.id, ...period })
+      return {
+        ...property,
+        energyStarScore: report.energyScore,
+        scoreUnavailableReasons: report.disqualifiers,
+      }
+    } catch {
+      return { ...property, energyStarScore: null }
+    }
+  }
+
   async getProperty(input: GetPropertyInput) {
     const { propertyId } = GetPropertyInput.parse(input)
     const id = encodeURIComponent(propertyId)
@@ -207,7 +224,10 @@ export class PropertyApiService implements PropertyService {
       params: { startDate: startMonth, endDate: endMonth },
     })
 
-    return Property.parse(response)
+    return this.withScoreAvailability(Property.parse(response), {
+      startMonth,
+      endMonth,
+    })
   }
 
   async getProperties() {
@@ -224,7 +244,10 @@ export class PropertyApiService implements PropertyService {
           { params: { startDate: startMonth, endDate: endMonth } }
         )
 
-        return Property.parse(response)
+        return this.withScoreAvailability(Property.parse(response), {
+          startMonth,
+          endMonth,
+        })
       })
     )
   }

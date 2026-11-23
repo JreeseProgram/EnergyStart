@@ -100,13 +100,23 @@ public class EnergyStatisticReportService {
         //Determine if We send Energy Score or EUI
         int energyScore = 0;
         long months = ChronoUnit.MONTHS.between(startDate, endDate) + 1; //+1 makes it inclusive
-        List<String> disqualifiers = EnergyScoreQualification.reasons(
-                startDate, endDate, energyMeters, meterReadings);
-        List<EnergyReport> buildingUses = energyReportRepo.findAllByRelatedPropertyID(propertyId);
-        int totalSqft = buildingUses.stream().mapToInt(EnergyReport::getGrossFloorArea).sum();
-        int largestArea = buildingUses.stream().mapToInt(EnergyReport::getGrossFloorArea).max().orElse(0);
-        if (totalSqft <= 0 || (double) largestArea / totalSqft <= 0.5) {
-            disqualifiers.add("A primary building use and positive floor area are required");
+        List<String> disqualifiers = new ArrayList<>();
+        Map<String, Long> readingCounts = meterReadings.stream()
+                .collect(Collectors.groupingBy(
+                        EnergyMeterReading::getAssociatedMeterID,
+                        Collectors.counting()
+                ));
+
+        for (EnergyMeter meter : energyMeters){
+            long count = readingCounts.getOrDefault(meter.getID(), 0L);
+
+            if(!meter.isDelivered() && count < months){
+                disqualifiers.add(String.format(
+                        "%s does not have data for every month",
+                        meter.getMeterName()
+                        )
+                );
+            }
         }
         if (months >= 12 && disqualifiers.isEmpty()) {
             Integer[] cddhdd = EnergyReport.retrieveCDDHDD(
@@ -124,6 +134,13 @@ public class EnergyStatisticReportService {
             );
 
         }
+        else{
+            disqualifiers.add("Query was for less than 12 months; Energy star score requires 12 months of data");
+        }
+
+        int totalSqft = energyReportRepo.findAllByRelatedPropertyID(propertyId).stream()
+                .mapToInt(EnergyReport::getGrossFloorArea)
+                .sum();
 
         return new FrontendLinkingDTO.EnergyReport(
                 id,
