@@ -28,7 +28,7 @@ export function NavUser() {
           <Button
             size="lg"
             variant={"ghost"}
-            className="aria-expanded:bg-muted max-md:h-9 max-md:shrink-0 max-md:px-1"
+            className="shrink-0 aria-expanded:bg-muted max-md:h-9 max-md:px-1"
             aria-label="Account menu"
           />
         }
@@ -36,12 +36,16 @@ export function NavUser() {
         <Avatar className="size-8 grayscale md:mr-1">
           <AvatarFallback>{user.data?.firstName.split("")[0]}</AvatarFallback>
         </Avatar>
-        <div className="hidden flex-1 text-left text-sm leading-tight md:grid">
+        <div className="hidden max-w-32 min-w-0 text-left text-sm leading-tight lg:grid">
           <span className="truncate font-medium">{user.data?.firstName}</span>
         </div>
         <ChevronDown className="ml-auto size-4" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="min-w-56" align="end" sideOffset={4}>
+      <DropdownMenuContent
+        className="w-56 max-w-[calc(100vw-1.5rem)] min-w-0"
+        align="end"
+        sideOffset={4}
+      >
         <DropdownMenuGroup>
           <DropdownMenuLabel className="p-0 font-normal">
             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
@@ -50,7 +54,7 @@ export function NavUser() {
                   {user.data?.firstName.split("")[0]}
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">
                   {user.data?.firstName}
                 </span>
