@@ -26,7 +26,7 @@ export function PropertySidebar({
         </div>
         <PropertySwitcherCell />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="overscroll-contain">
         <NavSidebar propertyId={propertyId} />
       </SidebarContent>
     </Sidebar>
@@ -42,7 +42,7 @@ export function PropertySidebarSkeleton() {
         </div>
         <PropertySwitcherCell />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="overscroll-contain">
         <SidebarMenu>
           {Array.from({ length: 6 }).map((_, index) => (
             <SidebarMenuItem key={index}>

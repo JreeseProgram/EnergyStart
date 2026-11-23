@@ -1,4 +1,4 @@
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 import { cn } from "cn"
 
 export function SidebarLayout({
@@ -10,6 +10,8 @@ export function SidebarLayout({
   sidebar?: React.ReactNode
   mobileNavigation?: React.ReactNode
 }) {
+  const { open } = useSidebar()
+
   return (
     <div className="flex flex-1 **:data-[slot=sidebar-container]:top-(--header-height) **:data-[slot=sidebar-container]:h-[calc(100svh-var(--header-height))]">
       {sidebar}
@@ -23,13 +25,23 @@ export function SidebarLayout({
         >
           {sidebar &&
             (mobileNavigation ? (
-              <div className="mt-1 flex h-11 min-w-0 shrink-0 items-center gap-2 px-4 md:hidden">
-                <SidebarTrigger className="size-9 shrink-0" />
+              <div className="sticky top-(--header-height) z-20 flex h-12 min-w-0 shrink-0 items-center gap-2 border-b bg-background px-4 md:hidden">
+                <SidebarTrigger
+                  className="size-9 shrink-0"
+                  aria-label="Toggle property navigation"
+                />
                 {mobileNavigation}
               </div>
             ) : (
-              <SidebarTrigger className="ml-4 shrink-0 md:hidden" />
+              <div className="sticky top-(--header-height) z-20 border-b bg-background px-4 py-1 md:hidden">
+                <SidebarTrigger aria-label="Toggle property navigation" />
+              </div>
             ))}
+          {sidebar && !open && (
+            <div className="sticky top-(--header-height) z-20 hidden self-start bg-background md:block">
+              <SidebarTrigger aria-label="Open property navigation" />
+            </div>
+          )}
           {children}
         </div>
       </main>

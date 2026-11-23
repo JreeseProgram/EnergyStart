@@ -39,6 +39,7 @@ type SidebarContextProps = {
   openMobile: boolean
   setOpenMobile: (open: boolean) => void
   isMobile: boolean
+  mobileTrigger: React.RefObject<HTMLElement | null>
   toggleSidebar: () => void
 }
 
@@ -67,6 +68,7 @@ function SidebarProvider({
   onOpenChange?: (open: boolean) => void
 }) {
   const isMobile = useIsMobile()
+  const mobileTrigger = React.useRef<HTMLElement | null>(null)
   const [openMobile, setOpenMobile] = React.useState(false)
 
   // This is the internal state of the sidebar.
@@ -119,6 +121,7 @@ function SidebarProvider({
       open,
       setOpen,
       isMobile,
+      mobileTrigger,
       openMobile,
       setOpenMobile,
       toggleSidebar,
@@ -162,7 +165,8 @@ function Sidebar({
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
 }) {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const { isMobile, state, openMobile, setOpenMobile, mobileTrigger } =
+    useSidebar()
 
   if (collapsible === "none") {
     return (
@@ -184,10 +188,11 @@ function Sidebar({
       <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
         <SheetContent
           dir={dir}
+          finalFocus={() => mobileTrigger.current ?? true}
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+          className="w-(--sidebar-width) bg-sidebar pt-12 text-sidebar-foreground"
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -229,6 +234,7 @@ function Sidebar({
       <div
         data-slot="sidebar-container"
         data-side={side}
+        inert={state === "collapsed" && collapsible === "offcanvas"}
         className={cn(
           "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear data-[side=left]:left-0 data-[side=left]:group-data-[collapsible=offcanvas]:-left-(--sidebar-width) data-[side=right]:right-0 data-[side=right]:group-data-[collapsible=offcanvas]:-right-(--sidebar-width) md:flex",
           // Adjust the padding for floating and inset variants.
@@ -256,10 +262,12 @@ function SidebarTrigger({
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar, isMobile, openMobile, open, mobileTrigger } =
+    useSidebar()
 
   return (
     <Button
+      aria-expanded={isMobile ? openMobile : open}
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="ghost"
@@ -267,6 +275,8 @@ function SidebarTrigger({
       className={cn(className)}
       onClick={(event) => {
         onClick?.(event)
+        if (event.defaultPrevented) return
+        if (isMobile) mobileTrigger.current = event.currentTarget
         toggleSidebar()
       }}
       {...props}
@@ -510,6 +520,7 @@ function SidebarMenuButton({
     tooltip?: string | React.ComponentProps<typeof TooltipContent>
   } & VariantProps<typeof sidebarMenuButtonVariants>) {
   const { isMobile, state } = useSidebar()
+  const showTooltip = Boolean(tooltip) && state === "collapsed" && !isMobile
   const comp = useRender({
     defaultTagName: "button",
     props: mergeProps<"button">(
@@ -518,7 +529,7 @@ function SidebarMenuButton({
       },
       props
     ),
-    render: !tooltip ? render : <TooltipTrigger render={render} />,
+    render: showTooltip ? <TooltipTrigger render={render} /> : render,
     state: {
       slot: "sidebar-menu-button",
       sidebar: "menu-button",
@@ -527,7 +538,7 @@ function SidebarMenuButton({
     },
   })
 
-  if (!tooltip) {
+  if (!showTooltip) {
     return comp
   }
 
@@ -540,12 +551,7 @@ function SidebarMenuButton({
   return (
     <Tooltip>
       {comp}
-      <TooltipContent
-        side="right"
-        align="center"
-        hidden={state !== "collapsed" || isMobile}
-        {...tooltip}
-      />
+      <TooltipContent side="right" align="center" {...tooltip} />
     </Tooltip>
   )
 }
