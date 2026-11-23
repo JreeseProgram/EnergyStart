@@ -18,6 +18,7 @@ import {
   GetEnergyMeterInput,
   GetEnergyMetersInput,
   UpdateEnergyMeterInput,
+  UpdateEnergyReadingInput,
   type EnergyMeterService,
 } from "@/features/portfolio/services/energy-meter.service"
 
@@ -35,6 +36,16 @@ export class EnergyMeterApiService implements EnergyMeterService {
   async deleteEnergyReading(input: DeleteEnergyReadingInput): Promise<void> {
     const { readingId } = DeleteEnergyReadingInput.parse(input)
     await api.delete(`/energy-meter-readings/${encodeURIComponent(readingId)}`)
+  }
+
+  async updateEnergyReading(input: UpdateEnergyReadingInput): Promise<void> {
+    const { readingId, date, usage, cost } =
+      UpdateEnergyReadingInput.parse(input)
+    await api.put(`/energy-meter-readings/${encodeURIComponent(readingId)}`, {
+      date,
+      usage,
+      cost,
+    })
   }
 
   async createEnergyReading(

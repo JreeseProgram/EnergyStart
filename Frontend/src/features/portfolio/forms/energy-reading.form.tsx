@@ -8,41 +8,51 @@ import { SubmitButton } from "@/components/form/submit-button"
 import { FieldError, FieldGroup, FieldSet } from "@/components/ui/field"
 import { toast } from "@/components/ui/toast"
 import { useCreateEnergyReading } from "@/features/portfolio/api/energy-reading/create-energy-reading.api"
+import { useUpdateEnergyReading } from "@/features/portfolio/api/energy-reading/update-energy-reading.api"
 import { CreateEnergyReadingInput } from "@/features/portfolio/services/energy-meter.service"
 import type { EnergyMeter } from "@/features/portfolio/models/energy-meter.models"
 
 export function EnergyReadingForm({
   meter,
+  reading,
   onSuccess,
   onCancel,
 }: {
   meter: EnergyMeter
+  reading?: EnergyMeter["readings"][number]
   onSuccess: () => void
   onCancel: () => void
 }) {
+  const canSave = Boolean(reading) || meter.inUse
   const form = useForm({
     resolver: zodResolver(CreateEnergyReadingInput),
     defaultValues: {
       propertyId: meter.propertyId,
       energyMeterId: meter.meterId,
-      date: "",
-      usage: NaN,
-      cost: 0,
+      date: reading?.date ?? "",
+      usage: reading?.usage ?? NaN,
+      cost: reading?.cost ?? 0,
     },
   })
 
   const { setFocus } = form
 
   useEffect(() => {
-    if (meter.inUse) setFocus("date")
-  }, [meter.inUse, setFocus])
+    if (canSave) setFocus("date")
+  }, [canSave, setFocus])
 
-  const mutation = useCreateEnergyReading()
+  const create = useCreateEnergyReading()
+  const update = useUpdateEnergyReading()
+  const mutation = reading ? update : create
 
   function submit(data: CreateEnergyReadingInput) {
     if (mutation.isPending) return
 
-    if (meter.readings.some((reading) => reading.date === data.date)) {
+    if (
+      meter.readings.some(
+        (item) => item.id !== reading?.id && item.date === data.date
+      )
+    ) {
       form.setError(
         "date",
         {
@@ -55,13 +65,18 @@ export function EnergyReadingForm({
       return
     }
 
-    mutation.mutate(data, {
-      onSuccess: () => {
-        form.reset()
-        toast.add({ type: "success", title: "Reading saved" })
-        onSuccess()
-      },
-    })
+    function saved() {
+      form.reset()
+      toast.add({
+        type: "success",
+        title: reading ? "Reading updated" : "Reading saved",
+      })
+      onSuccess()
+    }
+
+    if (reading)
+      update.mutate({ ...data, readingId: reading.id }, { onSuccess: saved })
+    else create.mutate(data, { onSuccess: saved })
   }
 
   return (
@@ -70,13 +85,13 @@ export function EnergyReadingForm({
         Enter usage for this month. Each month can have one reading.
       </p>
 
-      <FieldSet disabled={!meter.inUse || mutation.isPending}>
+      <FieldSet disabled={!canSave || mutation.isPending}>
         <MonthYearField
           control={form.control}
           name="date"
           label="Month"
           hideLabel
-          disabled={!meter.inUse || mutation.isPending}
+          disabled={!canSave || mutation.isPending}
         />
 
         <FieldGroup className="grid grid-cols-1 sm:grid-cols-2">
@@ -110,7 +125,7 @@ export function EnergyReadingForm({
           <FieldError role="alert">{mutation.error.message}</FieldError>
         )}
 
-        <SubmitButton disabled={!meter.inUse || mutation.isPending}>
+        <SubmitButton disabled={!canSave || mutation.isPending}>
           Save reading
         </SubmitButton>
       </FieldSet>
@@ -124,7 +139,7 @@ export function EnergyReadingForm({
         Cancel
       </Button>
 
-      {!meter.inUse && (
+      {!canSave && (
         <p className="text-sm text-muted-foreground">
           Edit this meter and make it active before recording readings.
         </p>

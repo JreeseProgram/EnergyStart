@@ -17,8 +17,18 @@ export function EnergyMeterTable({
   meter,
   addReadingAction,
   onDeleteReading,
+  onEditReading,
+  actionsDisabled,
 }: {
-  onDeleteReading: (reading: EnergyMeter["readings"][number], trigger: HTMLElement) => void
+  actionsDisabled: boolean
+  onEditReading: (
+    reading: EnergyMeter["readings"][number],
+    trigger: HTMLElement
+  ) => void
+  onDeleteReading: (
+    reading: EnergyMeter["readings"][number],
+    trigger: HTMLElement
+  ) => void
   meter: EnergyMeter
   addReadingAction: ReactNode
 }) {
@@ -53,7 +63,9 @@ export function EnergyMeterTable({
               <TableHead>Month</TableHead>
               <TableHead className="text-right">Usage</TableHead>
               <TableHead className="text-right">Cost</TableHead>
-              <TableHead><span className="sr-only">Actions</span></TableHead>
+              <TableHead>
+                <span className="sr-only">Actions</span>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -73,8 +85,28 @@ export function EnergyMeterTable({
                     })}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" aria-label={`Delete reading for ${meterDate(reading.date)}`}
-                      onClick={(event) => onDeleteReading(reading, event.currentTarget)}>Delete</Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      disabled={actionsDisabled}
+                      aria-label={`Edit reading for ${meterDate(reading.date)}`}
+                      onClick={(event) =>
+                        onEditReading(reading, event.currentTarget)
+                      }
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      disabled={actionsDisabled}
+                      variant="ghost"
+                      size="sm"
+                      aria-label={`Delete reading for ${meterDate(reading.date)}`}
+                      onClick={(event) =>
+                        onDeleteReading(reading, event.currentTarget)
+                      }
+                    >
+                      Delete
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

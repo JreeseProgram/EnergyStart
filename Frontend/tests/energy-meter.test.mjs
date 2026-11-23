@@ -74,6 +74,35 @@ const readingInput = {
 }
 const createdReading = { ...reading, createdAt: null }
 
+test("updates the selected reading through the existing endpoint", async () => {
+  const service = new EnergyMeterApiService()
+  const edit = { ...readingInput, readingId: "reading/id", usage: 18.5 }
+  const calls = []
+  api.put = async (...args) => {
+    calls.push(args)
+  }
+
+  await service.updateEnergyReading(edit)
+  assert.deepEqual(calls, [
+    [
+      "/energy-meter-readings/reading%2Fid",
+      { date: reading.date, usage: 18.5, cost: 0 },
+    ],
+  ])
+
+  await assert.rejects(service.updateEnergyReading({ ...edit, cost: -1 }))
+  assert.equal(calls.length, 1)
+
+  const failure = new Error("Reading could not be updated")
+  api.put = async () => {
+    throw failure
+  }
+  await assert.rejects(
+    service.updateEnergyReading(edit),
+    (error) => error === failure
+  )
+})
+
 test("reading form uses the service input resolver for numeric fields and accepts corrections", async () => {
   const resolver = zodResolver(CreateEnergyReadingInput)
   const options = { fields: {}, shouldUseNativeValidation: false }
