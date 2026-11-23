@@ -118,7 +118,7 @@ public class EnergyStatisticReportService {
                 );
             }
         }
-        if (months >= 12 && disqualifiers.isEmpty()) {
+        if (months == 12 && disqualifiers.isEmpty()) {
             Integer[] cddhdd = EnergyReport.retrieveCDDHDD(
                     property.getZipcode(),
                     startDate.atDay(1),
@@ -134,8 +134,11 @@ public class EnergyStatisticReportService {
             );
 
         }
+        else if(months < 12){
+            disqualifiers.add("Query was for less than 12 months; Energy star score requires Exactly 12 months of data");
+        }
         else{
-            disqualifiers.add("Query was for less than 12 months; Energy star score requires 12 months of data");
+            disqualifiers.add("Query was for more than 12 months; Energy star score requires Exactly 12 months of data");
         }
 
         int totalSqft = energyReportRepo.findAllByRelatedPropertyID(propertyId).stream()
