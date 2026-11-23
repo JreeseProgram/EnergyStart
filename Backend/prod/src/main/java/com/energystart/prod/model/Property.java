@@ -96,7 +96,7 @@ public class Property {
 
         List<EnergyMeterReading> energyMeterReadings = new ArrayList<>();
         for (EnergyMeter energyMeter : energyMeters) {
-            energyMeterReadings.addAll(energyMeterReadingRepo.findAllByAssociatedMeterID(energyMeter.getID()));
+            energyMeterReadings.addAll(energyMeterReadingRepo.findAllByAssociatedMeterIDInAndDateBetween(List.of(energyMeter.getID()), startDate, endDate));
         }
         for ( EnergyMeterReading reading: energyMeterReadings) {
             totalSourceKBtu += reading.getSourceEUI() * totalsqft;
