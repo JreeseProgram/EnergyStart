@@ -1,9 +1,14 @@
 package com.energystart.prod.energy.report_types;
 
 import com.energystart.prod.energy.EnergyReport;
-import com.energystart.prod.repos.EnergyMeterRepo;
-import com.energystart.prod.repos.PropertyRepo;
 
+/**
+ * This report is a child of Energy Report that focuses on Senior Living Communities.
+ * <p>
+ *     Contains additional fields pertinent to its specific energy star score
+ *     requirements and a customized regression calc.
+ * </p>
+ */
 public class SeniorLivingCommunityReport extends EnergyReport {
 
     private int avgNumResidents;
@@ -18,13 +23,28 @@ public class SeniorLivingCommunityReport extends EnergyReport {
     private float percentCooled;
     private float percentHeated;
 
-    private PropertyRepo repo;
-    private EnergyMeterRepo meterRepo;
 
     //Constructors
 
     public SeniorLivingCommunityReport() {};
 
+    /**
+     * Typical Constructor for this object
+     * @param grossFloorArea Total sqft of this building use
+     * @param parkingSize Total sqft for parking
+     * @param yearOfConstruction Year the building was made
+     * @param avgNumResidents Average number of residents present
+     * @param maxResidentCapacity Max amount of residents possible
+     * @param numOfComputers Total amount of computers in the building
+     * @param numCommercialFreezer Amount of commercial freezers
+     * @param numOfCommercialWashingMachines Total amount of commercial washing machines
+     * @param numOfResidentialLifts Total amount of lifts in the building
+     * @param numOfResidentialUnits Total amount of residential units present
+     * @param numOfResidentialWashingMachines Total amount of Residential Washing machines
+     * @param numOfWorkersMainShift Total number of workers on the primary shift
+     * @param percentCooled Percent of the building that is cooled
+     * @param percentHeated Percent of the building that is heated
+     */
     public SeniorLivingCommunityReport(int grossFloorArea, int parkingSize, int yearOfConstruction,
                                        int avgNumResidents, int maxResidentCapacity, int numOfComputers,
                                        int numCommercialFreezer, int numOfCommercialWashingMachines,
@@ -48,7 +68,15 @@ public class SeniorLivingCommunityReport extends EnergyReport {
 
     //Custom Methods
 
-
+    /**
+     * This takes cooling degree days, heating degree days, and the total SqFt of the use
+     * to calculate the Estimated Building EUI, then converts itself back to Source kBtu instead of EUI
+     * to simplify the EER calculations
+     * @param cdd Cooling Degree Days
+     * @param hdd Heating Degree Days
+     * @param sqft Total Square foot
+     * @return Predicted kBtu as float
+     */
     public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 219.4f; //standard

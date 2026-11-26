@@ -1,11 +1,15 @@
 package com.energystart.prod.energy.report_types;
 
 import com.energystart.prod.energy.EnergyReport;
-import com.energystart.prod.repos.EnergyMeterRepo;
-import com.energystart.prod.repos.PropertyRepo;
 
+/**
+ * This report is a child of Energy Report that focuses on Multifamily Housing.
+ * <p>
+ *     Contains additional fields pertinent to its specific energy star score
+ *     requirements and a customized regression calc.
+ * </p>
+ */
 public class MultifamilyHousingReport extends EnergyReport {
-    //low-rise stories 1-4; mid-rise 5-9; high-rise 10+
 
     private int lowRiseUnits; //1-4 stories
     private int midRiseUnits; //5-9 stories
@@ -13,13 +17,21 @@ public class MultifamilyHousingReport extends EnergyReport {
     private int numOfBedrooms;
     private int numOfResidentialUnits;
 
-    private PropertyRepo repo;
-    private EnergyMeterRepo meterRepo;
-
     //Constructors
 
     public MultifamilyHousingReport() {}
 
+    /**
+     * Typical constructor for this object
+     * @param grossFloorArea Total Sqft of this object
+     * @param parkingSize Total sqft of parking
+     * @param yearOfConstruction Year the building was made
+     * @param lowRiseUnits Total amount of low rise units (1-4 stories)
+     * @param midRiseUnits Total amount of mid rise units (5-9 stories)
+     * @param highRiseUnits Total amount of high rise unites (10+ stories)
+     * @param numOfBedrooms Total number of bedrooms
+     * @param numOfResidentialUnits Total number of residential units
+     */
     public MultifamilyHousingReport(int grossFloorArea, int parkingSize, int yearOfConstruction,
                                     int lowRiseUnits, int midRiseUnits, int highRiseUnits, int numOfBedrooms,
                                     int numOfResidentialUnits) {
@@ -33,6 +45,16 @@ public class MultifamilyHousingReport extends EnergyReport {
     }
 
     //Custom Methods
+
+    /**
+     * This takes cooling degree days, heating degree days, and the total SqFt of the use
+     * to calculate the Estimated Building EUI, then converts itself back to Source kBtu instead of EUI
+     * to simplify the EER calculations
+     * @param cdd Cooling Degree Days
+     * @param hdd Heating Degree Days
+     * @param sqft Total Square foot
+     * @return Predicted kBtu as float
+     */
     public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 130.7f; //standard

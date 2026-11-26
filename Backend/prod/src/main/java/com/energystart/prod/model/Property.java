@@ -54,6 +54,19 @@ public class Property {
         this.notes = notes;
     }
     //Custom methods
+
+    /**
+     * Calculates an energy star score for the property, and returns it
+     * (Note that it does not set this property's score, only returns it)
+     * @param energyReportRepo Required to lookup Report info
+     * @param energyMeterRepo Required to lookup Meter info
+     * @param energyMeterReadingRepo Required to lookup Reading info
+     * @param startDate Start date for the query
+     * @param endDate End date for the query
+     * @param cdd Cooling Degree Days for the time period
+     * @param hdd Heating Degree Days for the period
+     * @return Energy star score as an int
+     */
     public int calculateEnergyScore(EnergyReportRepo energyReportRepo,
                                      EnergyMeterRepo energyMeterRepo,
                                      EnergyMeterReadingRepo energyMeterReadingRepo,

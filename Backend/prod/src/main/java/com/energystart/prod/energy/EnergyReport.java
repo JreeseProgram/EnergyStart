@@ -23,6 +23,15 @@ import java.time.LocalDate;
 //NOTE: due to abstraction issues, this will not be abstract. Instead, NEVER MAKE A REAL ENERGY REPORT OBJECT;
 //Only use its children
 
+/**
+ * This contains the basis of which all other energy reports are based from, with all common
+ * information and a helper function
+ * <p>
+ *     This should <b>NEVER</b> be instantiated. It's not abstract due to issues pertaining to the differences of
+ *     Data center sub type, and instead has a special overloaded method for it.
+ * </p>
+ */
+
 @Document("EnergyReports")
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -64,13 +73,21 @@ public class EnergyReport {
     //Constructors
     public EnergyReport() {}
 
-    //NOTE: This is the main constructor for this class
+    /**
+     * This is the primary constructor for the Object
+     * @param grossFloorArea Total area in SqFt
+     * @param parkingSize Total Area of the area dedicated to parking
+     * @param yearOfConstruction When the building was built
+     */
     public EnergyReport(int grossFloorArea, int parkingSize, int yearOfConstruction) {
         setGrossFloorArea(grossFloorArea);
         setParkingSize(parkingSize);
         setYearOfConstruction(yearOfConstruction);
     }
 
+    /**
+     * All args constructor
+     */
     public EnergyReport(String ID, String relatedPropertyID,
                         int grossFloorArea, int parkingSize, int yearOfConstruction) {
         setID(ID);
@@ -82,6 +99,12 @@ public class EnergyReport {
 
     //Custom Methods
 
+    /**
+     * This takes a string that should be a simple class name and returns it in our
+     * formatting for each type of building use
+     * @param input Should be a simple class name
+     * @return Properly formatted version of the class
+     */
     public static String consistentName(String input){
         return switch (input) {
             case "BankBranchReport" -> "BANK_BRANCH";
@@ -109,17 +132,29 @@ public class EnergyReport {
     }
 
 
-    //IMPORTANT: DO NOT USE THIS METHOD IN AN ENERGY REPORT, IT WILL BE OVERRIDDEN BY CHILD CLASSES
+    /**
+     * This is the format used for all Energy reports (except data center)
+     * @param cdd Cooling Degree Days
+     * @param hdd Heating Degree Days
+     * @param sqft Total Square foot
+     * @return see the child classes for more information
+     */
     public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         return -1;
     }
 
+    /**
+     * This is the specific overload for Data Center Regression
+     * @return see the child class for more information
+     */
     public float energyStarRegressionCalc() {
         return -1;
     }
 
 
     /**
+     * This uses Zippopotam.us and open-meteo to retrieve information on the temperatures
+     * and allows to calculate the Cooling Degree Days and Heating Degree Days.
      * @param zipcode Provide the 5 digit zipcode for the request
      * @param startDate Start date for query (YYYY-MM-DD LocalDate)
      * @param endDate End date for query (YYYY-MM-DD LocalDate)

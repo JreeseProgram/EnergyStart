@@ -1,9 +1,14 @@
 package com.energystart.prod.energy.report_types;
 
 import com.energystart.prod.energy.EnergyReport;
-import com.energystart.prod.repos.EnergyMeterRepo;
-import com.energystart.prod.repos.PropertyRepo;
 
+/**
+ * This report is a child of Energy Report that focuses on Wholesale Clubs.
+ * <p>
+ *     Contains additional fields pertinent to its specific energy star score
+ *     requirements and a customized regression calc.
+ * </p>
+ */
 public class WholesaleClubReport extends EnergyReport {
 
     private boolean hasExteriorEntrance = false;
@@ -14,13 +19,24 @@ public class WholesaleClubReport extends EnergyReport {
     private float percentHeated;
     private int weeklyOperatingHours;
 
-    private PropertyRepo repo;
-    private EnergyMeterRepo meterRepo;
-
     //Constructors
 
     public WholesaleClubReport(){ };
 
+    /**
+     * Typical constructor of this object
+     * @param grossFloorArea Total Sqft of this use
+     * @param parkingSize Total Sqft of Parking
+     * @param yearOfConstruction Year the building was made
+     * @param hasExteriorEntrance Flag for if the building has an entrance on the outside
+     * @param isSingleStore Flag for if the store is on its own and not combined
+     *                      (example: in a strip mall)
+     * @param numOfFreezers Total number of freezers in the building use
+     * @param numOfWorkersMainShift Total number of workers on the primary shift
+     * @param percentCooled Percent of the building that is cooled
+     * @param percentHeated Percent of the building that is heated
+     * @param weeklyOperatingHours Total operating hours in a week
+     */
     public WholesaleClubReport(int grossFloorArea, int parkingSize, int yearOfConstruction,
                                boolean hasExteriorEntrance, boolean isSingleStore,
                                int numOfFreezers,
@@ -40,6 +56,15 @@ public class WholesaleClubReport extends EnergyReport {
 
     //Custom Methods
 
+    /**
+     * This takes cooling degree days, heating degree days, and the total SqFt of the use
+     * to calculate the Estimated Building EUI, then converts itself back to Source kBtu instead of EUI
+     * to simplify the EER calculations
+     * @param cdd Cooling Degree Days
+     * @param hdd Heating Degree Days
+     * @param sqft Total Square foot
+     * @return Predicted kBtu as float
+     */
     public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 162.0f + 252.6f; //standard + supermarket specific added

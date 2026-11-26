@@ -40,6 +40,15 @@ public class AltPropertyService {
     }
 
     //GET request
+
+    /**
+     * Handles Get requests related to properties structured for the frontend
+     * @param id Property Id
+     * @param startDate Start date for the query
+     * @param endDate End date for the query
+     * @param userId Id of the user asking for the info
+     * @return DTO for the frontend property
+     */
     public FrontendLinkingDTO.Property getProperty(String id, YearMonth startDate, YearMonth endDate, String userId) {
         FrontendLinkingDTO.Property property;
         Property dbProperty = propertyRepo.findById(id).get();
@@ -80,7 +89,7 @@ public class AltPropertyService {
 
         int energyScore = 0;
         long months = ChronoUnit.MONTHS.between(startDate, endDate) + 1; //+1 makes it inclusive
-        if (months >= 12 && !largestType.equals("None")) {
+        if (months == 12 && !largestType.equals("None")) {
             Integer[] cddhdd = EnergyReport.retrieveCDDHDD(dbProperty.getZipcode(),startDate.atDay(1),endDate.atEndOfMonth());
             energyScore = dbProperty.calculateEnergyScore(
                     energyReportRepo,
@@ -123,6 +132,10 @@ public class AltPropertyService {
         return property;
     }
 
+    /**
+     * Utility method to see if the user is logged in
+     * @param userId ID of the user requesting
+     */
     private void requireUser(String userId) {
         if (userId == null || userId.isBlank()) {
             throw new ResponseStatusException(
@@ -131,6 +144,11 @@ public class AltPropertyService {
         }
     }
 
+    /**
+     * Utility method to see if the user is authorized to access the info
+     * @param userId ID of the user trying to access info
+     * @param property The property that the user is trying to access
+     */
     private void verifyUser(String userId, Property property){
         List<String> users = property.getAuthorizedUserIds();
 

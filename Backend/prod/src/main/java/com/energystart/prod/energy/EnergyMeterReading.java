@@ -7,6 +7,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
+/**
+ * This contains all direct energy information on a monthly basis.
+ * <p>
+ *     This contains information about the date, kBtu, raw use, EUI.
+ *     These are tied to a specific meter, which contains the type of
+ *     energy and readings.
+ * </p>
+ */
 @Document("EnergyMeterReading")
 public class EnergyMeterReading {
 
@@ -53,6 +61,9 @@ public class EnergyMeterReading {
         this.calcKBtu(repo);
     }
 
+    /**
+     * Constructor used for building w/o ID
+     */
     public EnergyMeterReading(EnergyMeterRepo repo, String associatedMeterID, String date,
                               float meterKBtu, float rawUse, float cost,
                               float siteEUI, float sourceEUI) {
@@ -81,12 +92,23 @@ public class EnergyMeterReading {
         this.calcKBtu(repo);
     }
 
+    //Custom Methods
+
+    /**
+     * This finds the associated Meter and gets the kBtu back
+     * @param repo this requires an EnergyMeterRepo to find it
+     */
     public void calcKBtu(EnergyMeterRepo repo){
         EnergyMeter meter = repo.findByID(this.getAssociatedMeterID());
         this.setMeterKBtu(meter.calculateKBtu(this.getRawUse()));
     }
 
-    //Custom Methods
+    /**
+     * This calculates EUI based off information from energy reports and energy meters
+     *
+     * @param repo Gets the information about all energy reports to get total sqft
+     * @param meterRepo gets the information about all Meters to get required info
+     */
     public void calcEUI(EnergyReportRepo repo, EnergyMeterRepo meterRepo){
         //Get square footage
         int sqrFootage = 0;

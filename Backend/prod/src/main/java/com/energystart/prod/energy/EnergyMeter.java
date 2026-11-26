@@ -8,6 +8,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+/**
+ * EnergyMeter itself holds the information about the meter,
+ * no readings themselves.
+ *
+ * <p>Think of it as a container for
+ * meter readings with pertinent information for any calculations.</p>
+ */
 @Document
 @Service
 public class EnergyMeter {
@@ -65,9 +72,18 @@ public class EnergyMeter {
     private boolean isDelivered;
 
 
-
-    //This is used to calculate
+    /**
+     * This is a template for a key in the kBtuMultiplier map to quickly
+     * find the correct multiplier
+     * @param a this takes a type of meter
+     * @param b this takes a type of measure
+     */
     private record key(TYPE_OF_METER a, TYPE_OF_MEASURE b) {}
+
+    /**
+     * This stores the multipliers for each possible combination of
+     * meter type and measure to ensure a fast lookup
+     */
     @Transient
     private static final Map<key, Float> kBtuMultipliers = Map.ofEntries(
             //Electric Grid
@@ -668,7 +684,15 @@ public class EnergyMeter {
     //empty constructor
     public EnergyMeter(){}
 
-    //Constructor from input (no meter ID)
+    /**
+     * This is the main constructor to be used for most scenarios.
+     * @param meterSelected users choice of meter
+     * @param unitOfMeasure users choice of measure
+     * @param meterName Name of this meter
+     * @param inUse a flag indicating if the meter is in use
+     * @param isDelivered a flag indicating if the meter is not constant but delivered; meaning it does not require 12
+     *                    continuous months of data
+     */
     public EnergyMeter(TYPE_OF_METER meterSelected,
                        TYPE_OF_MEASURE unitOfMeasure,
                        String meterName,
@@ -695,13 +719,16 @@ public class EnergyMeter {
         this.setUnitOfMeasure(unitOfMeasure);
         this.setInUse(inUse);
         this.setDelivered(isDelivered);
-
-
     }
 
 
     //Custom Methods
-    //TODO: Add Error Handling to incompatible Keys
+
+    /**
+     * This takes a raw use amount and returns its kbtu
+     * @param rawUse This is the raw use of measure
+     * @return the kBtu retrieved from the multiplier
+     */
     public float calculateKBtu(float rawUse){
         float result = kBtuMultipliers.get(
                 new key(meterSelected, unitOfMeasure)
@@ -709,7 +736,6 @@ public class EnergyMeter {
         return (rawUse * result);
     }
 
-    //TODO: update with potentially better error handling
 
     //Getters and Setters
 

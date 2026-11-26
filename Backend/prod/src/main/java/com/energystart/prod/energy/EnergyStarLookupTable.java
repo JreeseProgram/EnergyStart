@@ -10,8 +10,15 @@ import java.util.Set;
 
 //All Scores derrived from here:
 // https://www.energystar.gov/buildings/benchmark/understand-metrics/score-details
+
+/**
+ * This handles how it takes an EER (Energy Efficiency Ratio) and how they equate to a score
+ */
 public class EnergyStarLookupTable {
 
+    /**
+     * This is a helper class to more easily manage EER to score lookups
+     */
     private static class Range {
         float min;
         float max;
@@ -1446,11 +1453,12 @@ public class EnergyStarLookupTable {
 //    is less than the score, meaning we found the highest possible value
 //
     /**
-     *
+     * This takes an EER, Reports, and corresponding Weight list to average together all reports into one
+     * unified score balanced by each report's total sqft
      * @param EER The Energy Efficiency Ratio
      * @param reports A list of energy report or child of
      * @param weights A list of Float used to apply a proportional weight to the score
-     * @return energy star score as a float
+     * @return energy star score as an int
      */
     public static int getScore(float EER, List<EnergyReport> reports, List<Float> weights) {
         float result = -1;
@@ -1480,10 +1488,15 @@ public class EnergyStarLookupTable {
                 return score;
             }
         }
-        //worst possible score incase not found
+        //worst possible score in case not found
         return 1;
     }
 
+    /**
+     * Utility Method that takes a list of Reports and creates a List of the ranges corresponding to the reports
+     * @param reports All pertinent reports so their ranges can be added
+     * @return A List of List of ranges
+     */
     private static List<List<Range>> getListOfReportRange(List<EnergyReport> reports){
         List<List<Range>> list = new ArrayList<>();
 
