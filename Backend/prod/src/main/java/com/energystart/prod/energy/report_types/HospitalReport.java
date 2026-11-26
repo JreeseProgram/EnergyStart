@@ -1,8 +1,14 @@
 package com.energystart.prod.energy.report_types;
 
 import com.energystart.prod.energy.EnergyReport;
-import com.energystart.prod.repos.EnergyMeterRepo;
-import com.energystart.prod.repos.PropertyRepo;
+
+/**
+ * This report is a child of Energy Report that focuses on Hospitals.
+ * <p>
+ *     Contains additional fields pertinent to its specific energy star score
+ *     requirements and a customized regression calc.
+ * </p>
+ */
 
 public class HospitalReport extends EnergyReport {
 
@@ -10,13 +16,19 @@ public class HospitalReport extends EnergyReport {
     private int numOfMRIMachines;
     private int numOfStaffedBeds;
 
-    private PropertyRepo repo;
-    private EnergyMeterRepo meterRepo;
-
     //Constructors
 
     public HospitalReport() {}
 
+    /**
+     * Typical constructor of this object
+     * @param grossFloorArea Total Sqft of the building use
+     * @param parkingSize Total Sqft of parking
+     * @param yearOfConstruction Year the building was built
+     * @param numOfFullTimeWorkers Total number of full time equivalent workers
+     * @param numOfMRIMachines Total amount of MRI machines present
+     * @param numOfStaffedBeds Number of beds that are staffed
+     */
     public HospitalReport(int grossFloorArea, int parkingSize, int yearOfConstruction, int numOfFullTimeWorkers,
                           int numOfMRIMachines, int numOfStaffedBeds) {
         super(grossFloorArea, parkingSize, yearOfConstruction);
@@ -28,6 +40,15 @@ public class HospitalReport extends EnergyReport {
 
     //Custom Methods
 
+    /**
+     * This takes cooling degree days, heating degree days, and the total SqFt of the use
+     * to calculate the Estimated Building EUI, then converts itself back to Source kBtu instead of EUI
+     * to simplify the EER calculations
+     * @param cdd Cooling Degree Days
+     * @param hdd Heating Degree Days
+     * @param sqft Total Square foot
+     * @return Predicted kBtu as float
+     */
     public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 433.6f; //standard

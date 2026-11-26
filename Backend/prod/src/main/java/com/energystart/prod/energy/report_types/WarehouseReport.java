@@ -1,10 +1,14 @@
 package com.energystart.prod.energy.report_types;
 
 import com.energystart.prod.energy.EnergyReport;
-import com.energystart.prod.repos.EnergyMeterRepo;
-import com.energystart.prod.repos.PropertyRepo;
 
-
+/**
+ * This report is a child of Energy Report that focuses on Warehouses.
+ * <p>
+ *     Contains additional fields pertinent to its specific energy star score
+ *     requirements and a customized regression calc.
+ * </p>
+ */
 public class WarehouseReport extends EnergyReport {
 
     private int numOfWorkersMainShift;
@@ -13,12 +17,20 @@ public class WarehouseReport extends EnergyReport {
     private float percentHeated;
     private int weeklyOperatingHours;
 
-    private PropertyRepo repo;
-    private EnergyMeterRepo meterRepo;
-
     //Constructors
     public WarehouseReport(){ };
 
+    /**
+     * Typical constructor for this object
+     * @param grossFloorArea Total Sqft of the building use
+     * @param parkingSize Total sqft of parking
+     * @param yearOfConstruction Year the building is made
+     * @param numOfWorkersMainShift Total workers on the primary shift
+     * @param percentColdStorage Percent of the building used for cold storage
+     * @param percentCooled Percent of the building cooled
+     * @param percentHeated Percent of the building heated
+     * @param weeklyOperatingHours Total operating hours in a week
+     */
     public WarehouseReport(int grossFloorArea, int parkingSize, int yearOfConstruction,
                            int numOfWorkersMainShift, float percentColdStorage,
                            float percentCooled, float percentHeated, int weeklyOperatingHours) {
@@ -33,6 +45,15 @@ public class WarehouseReport extends EnergyReport {
 
     //Custom Methods
 
+    /**
+     * This takes cooling degree days, heating degree days, and the total SqFt of the use
+     * to calculate the Estimated Building EUI, then converts itself back to Source kBtu instead of EUI
+     * to simplify the EER calculations
+     * @param cdd Cooling Degree Days
+     * @param hdd Heating Degree Days
+     * @param sqft Total Square foot
+     * @return Predicted kBtu as float
+     */
     public float energyStarRegressionCalc(float cdd, float hdd, int sqft) {
         //Calculate predicted source EUI
         float predictedSourceEUI = 69.62f; //standard
