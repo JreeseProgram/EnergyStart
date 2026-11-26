@@ -39,6 +39,14 @@ public class EnergyStatisticReportService {
         this.workOsUserService = workOsUserService;
     }
 
+    /**
+     * Handles the get request for the report (front end side) on a certain time
+     * @param propId Property ID for the request
+     * @param startDate Start date for the query
+     * @param endDate End date for the query
+     * @param userId ID of the user that wishes to access this info
+     * @return DTO for an energy report (frontend style)
+     */
     public FrontendLinkingDTO.EnergyReport getEnergyReport(
             String propId,
             YearMonth startDate,
@@ -171,6 +179,10 @@ public class EnergyStatisticReportService {
         );
     }
 
+    /**
+     * Utility method to see if the user is logged in
+     * @param userId ID of the user requesting
+     */
     private void requireUser(String userId) {
         if (userId == null || userId.isBlank()) {
             throw new ResponseStatusException(
@@ -179,6 +191,11 @@ public class EnergyStatisticReportService {
         }
     }
 
+    /**
+     * Utility method to see if the user is authorized to access the info
+     * @param userId ID of the user trying to access info
+     * @param property The property that the user is trying to access
+     */
     private void verifyUser(String userId, Property property){
         List<String> users = property.getAuthorizedUserIds();
 
