@@ -18,7 +18,7 @@ export const EnergyReport = z.object({
   generatedAt: localDateTime,
   aggregateSiteEUI: z.number(),
   aggregateSourceEUI: z.number(),
-  energyScore: z.number().int(),
+  energyScore: z.number().int().nullable(),
   disqualifiers: z.array(z.string()),
   propertySnapshot: z.object({
     name: z.string().nullable(),

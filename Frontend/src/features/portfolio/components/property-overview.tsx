@@ -1,3 +1,4 @@
+import { availableEnergyScore } from "@/features/portfolio/utils/energy-score"
 import { Button } from "@/components/ui/button"
 import { paths } from "@/config/paths"
 import { Link } from "react-router"
@@ -14,8 +15,10 @@ import { CardGrid } from "@/components/card-grid"
 import { Badge } from "@/components/ui/badge"
 
 export function PropertyOverview({ property }: { property: Property }) {
-  const score =
-    property.energyStarScore > 0 ? property.energyStarScore : undefined
+  const score = availableEnergyScore(
+    property.energyStarScore,
+    property.scoreUnavailableReasons
+  )
 
   const metrics = [
     {
@@ -25,7 +28,8 @@ export function PropertyOverview({ property }: { property: Property }) {
       title: "Property score",
       description:
         score === undefined
-          ? "No score is available yet"
+          ? property.scoreUnavailableReasons?.join(". ") ||
+            "A score needs complete energy data and an eligible building use"
           : "Score supplied for this property",
     },
     {
@@ -65,9 +69,17 @@ export function PropertyOverview({ property }: { property: Property }) {
               <Badge variant={"outline"}>{metric.label}</Badge>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold tabular-nums">
+              <p
+                className={
+                  metric.value === undefined
+                    ? "text-xl font-semibold wrap-anywhere"
+                    : "text-4xl font-bold tabular-nums"
+                }
+              >
                 {metric.value === undefined
-                  ? "No data"
+                  ? metric.label === "Energy Star Score"
+                    ? "Not available"
+                    : "No data"
                   : metric.value.toLocaleString("en-US", {
                       maximumFractionDigits: 1,
                     })}{" "}
@@ -78,11 +90,7 @@ export function PropertyOverview({ property }: { property: Property }) {
             </CardContent>
             <CardHeader>
               <CardTitle>{metric.title}</CardTitle>
-              <CardDescription>
-                {metric.value === undefined
-                  ? "Add property data to see this metric"
-                  : metric.description}
-              </CardDescription>
+              <CardDescription>{metric.description}</CardDescription>
             </CardHeader>
           </Card>
         ))}

@@ -96,6 +96,56 @@ test("fetches and preserves the backend DTO as a detached callback", async () =>
   assert.equal(calls, 1)
 })
 
+test("Overview checks report eligibility for the property response period", async () => {
+  const { PropertyApiService } =
+    await import("../src/features/portfolio/services/property-api.service.ts")
+  const service = new PropertyApiService()
+  let propertyPeriod
+  let disqualifiers = ["Insufficient history"]
+  api.get = async (path, options) => {
+    if (path.startsWith("/properties/")) return { id: input.propertyId }
+    if (path.startsWith("/propertyDTO/")) {
+      propertyPeriod = options.params
+      return {
+        id: input.propertyId,
+        humanReadablePropertyId: null,
+        city: null,
+        energyStarScore: 100,
+        name: null,
+        notes: null,
+        authUsers: [],
+        propertyType: "None",
+        state: null,
+        streetAddress: null,
+        zip: null,
+        reportingYear: null,
+        siteEui: 0,
+        sourceEui: 0,
+        energyUse: 0,
+        grossFloorArea: 0,
+      }
+    }
+    assert.equal(path, "/energyStatisticReport/property%2Fwith%20space")
+    assert.deepEqual(options.params, propertyPeriod)
+    return {
+      ...dto,
+      startMonth: propertyPeriod.startDate,
+      endMonth: propertyPeriod.endDate,
+      energyScore: disqualifiers.length ? 0 : 100,
+      disqualifiers,
+    }
+  }
+
+  const incomplete = await service.getProperty(input)
+  assert.equal(incomplete.energyStarScore, 0)
+  assert.deepEqual(incomplete.scoreUnavailableReasons, disqualifiers)
+
+  disqualifiers = []
+  const complete = await service.getProperty(input)
+  assert.equal(complete.energyStarScore, 100)
+  assert.deepEqual(complete.scoreUnavailableReasons, [])
+})
+
 test("rejects invalid input without requesting data", async () => {
   api.get = () => assert.fail("Invalid inputs must not reach the backend")
   for (const change of [
@@ -240,6 +290,6 @@ test("renders backend metrics, qualification reasons, nullable property fields a
   ]) {
     assert.ok(markup.includes(text), text)
   }
-  assert.match(markup, />0<\/p>/)
+  assert.match(markup, />Not available<\/p>/)
   assert.ok(!markup.includes("Simulated"))
 })

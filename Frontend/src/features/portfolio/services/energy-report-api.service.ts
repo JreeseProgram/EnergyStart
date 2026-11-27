@@ -22,30 +22,36 @@ export class EnergyReportApiService implements EnergyReportService {
   getEnergyReport = async (
     input: GetEnergyReportInput
   ): Promise<EnergyReport> => {
-    const { propertyId, startMonth, endMonth } =
-      GetEnergyReportInput.parse(input)
-    const response = await api.get<unknown, unknown>(
-      `/energyStatisticReport/${encodeURIComponent(propertyId)}`,
-      { params: { startDate: startMonth, endDate: endMonth } }
-    )
-
-    const report = EnergyReport.refine(
-      (report) => report.PropertyId === propertyId,
-      {
-        message: "Report property ID does not match the requested property",
-        path: ["PropertyId"],
-      }
-    )
-      .refine((report) => report.startMonth === startMonth, {
-        message: "Report start month does not match the requested period",
-        path: ["startMonth"],
-      })
-      .refine((report) => report.endMonth === endMonth, {
-        message: "Report end month does not match the requested period",
-        path: ["endMonth"],
-      })
-      .parse(response)
+    const report = await fetchEnergyReport(input)
     this.reports.set(report.id, EnergyReport.parse(report))
     return report
   }
+}
+
+export async function fetchEnergyReport(
+  input: GetEnergyReportInput
+): Promise<EnergyReport> {
+  const { propertyId, startMonth, endMonth } =
+    GetEnergyReportInput.parse(input)
+  const response = await api.get<unknown, unknown>(
+    `/energyStatisticReport/${encodeURIComponent(propertyId)}`,
+    { params: { startDate: startMonth, endDate: endMonth } }
+  )
+
+  return EnergyReport.refine(
+    (report) => report.PropertyId === propertyId,
+    {
+      message: "Report property ID does not match the requested property",
+      path: ["PropertyId"],
+    }
+  )
+    .refine((report) => report.startMonth === startMonth, {
+      message: "Report start month does not match the requested period",
+      path: ["startMonth"],
+    })
+    .refine((report) => report.endMonth === endMonth, {
+      message: "Report end month does not match the requested period",
+      path: ["endMonth"],
+    })
+    .parse(response)
 }

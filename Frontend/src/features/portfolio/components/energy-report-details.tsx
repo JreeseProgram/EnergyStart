@@ -1,3 +1,4 @@
+import { energyScoreLabel } from "@/features/portfolio/utils/energy-score"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import {
   Table,
@@ -62,7 +63,10 @@ export function EnergyReportDetails({ report }: { report: EnergyReport }) {
         {[
           ["Site EUI", reportEuiLabel(report.aggregateSiteEUI)],
           ["Source EUI", reportEuiLabel(report.aggregateSourceEUI)],
-          ["Energy score", report.energyScore.toLocaleString("en-US")],
+          [
+            "Energy score",
+            energyScoreLabel(report.energyScore, report.disqualifiers),
+          ],
         ].map(([label, value]) => (
           <Card key={label}>
             <CardHeader>

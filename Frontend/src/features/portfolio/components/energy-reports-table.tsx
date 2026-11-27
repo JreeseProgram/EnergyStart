@@ -1,3 +1,4 @@
+import { energyScoreLabel } from "@/features/portfolio/utils/energy-score"
 import { useId, useState } from "react"
 import {
   createColumnHelper,
@@ -92,7 +93,11 @@ export function EnergyReportsTable({
       header: "Source EUI",
       cell: ({ row }) => reportEuiLabel(row.original.aggregateSourceEUI),
     }),
-    helper.accessor("energyScore", { header: "Energy score" }),
+    helper.accessor("energyScore", {
+      header: "Energy score",
+      cell: ({ row }) =>
+        energyScoreLabel(row.original.energyScore, row.original.disqualifiers),
+    }),
     helper.accessor("generatedAt", {
       header: "Generated",
       cell: ({ row }) => (
