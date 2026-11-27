@@ -15,6 +15,7 @@ import {
   CreateEnergyMeterInput,
   UpdateEnergyMeterInput,
   CreateEnergyReadingInput,
+  UpdateEnergyReadingInput,
   GetEnergyMeterInput,
   GetEnergyMetersInput,
   type EnergyMeterService,
@@ -126,6 +127,25 @@ export function createEnergyMeterMockService(
       })
       meters.set(updated.meterId, updated)
       return EnergyMeter.parse(updated)
+    },
+    updateEnergyReading: async (input) => {
+      const { propertyId, energyMeterId, readingId, ...fields } =
+        UpdateEnergyReadingInput.parse(input)
+      const meter = await requireMeter({ propertyId, energyMeterId })
+      if (!meter.readings.some((reading) => reading.id === readingId))
+        throw new Error("Reading not found.")
+      if (
+        meter.readings.some(
+          (reading) => reading.id !== readingId && reading.date === fields.date
+        )
+      )
+        throw new Error("A reading already exists for this month.")
+      meters.set(meter.meterId, {
+        ...meter,
+        readings: meter.readings.map((reading) =>
+          reading.id === readingId ? { ...reading, ...fields } : reading
+        ),
+      })
     },
     createEnergyReading: async (input) => {
       await delay(300)

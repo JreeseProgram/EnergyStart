@@ -62,37 +62,46 @@ export function EnergyMeterHistoryModal({
 
 function EnergyMeterHistoryContent({ meter }: { meter: EnergyMeter }) {
   const { requestDelete, confirmation, successFocus } = usePortfolioDeletion()
-  const [isAdding, setIsAdding] = useState(false)
-  const readingTriggerRef = useRef<HTMLButtonElement | null>(null)
+  const [formMode, setFormMode] = useState<
+    "add" | EnergyMeter["readings"][number] | null
+  >(null)
+  const addReadingTrigger = useRef<HTMLButtonElement | null>(null)
+  const editReadingTrigger = useRef<HTMLElement | null>(null)
   const restoreFocus = useRef(false)
   const formTitleId = useId()
 
   useEffect(() => {
-    if (!isAdding && restoreFocus.current) {
+    if (!formMode && restoreFocus.current) {
       restoreFocus.current = false
-      readingTriggerRef.current?.focus()
+      const editTrigger = editReadingTrigger.current
+      const target = editTrigger?.isConnected
+        ? editTrigger
+        : (addReadingTrigger.current ?? successFocus.current)
+      target?.focus()
+      editReadingTrigger.current = null
     }
-  }, [isAdding])
+  }, [formMode, successFocus])
 
   function closeForm() {
     restoreFocus.current = true
-    setIsAdding(false)
+    setFormMode(null)
   }
 
   return (
     <>
       {confirmation}
 
-      {isAdding && (
+      {formMode && (
         <section
           aria-labelledby={formTitleId}
           className="space-y-4 rounded-lg border p-4"
         >
           <h3 id={formTitleId} className="font-semibold">
-            Add reading
+            {formMode === "add" ? "Add reading" : "Edit reading"}
           </h3>
           <EnergyReadingForm
             meter={meter}
+            reading={formMode === "add" ? undefined : formMode}
             onSuccess={closeForm}
             onCancel={closeForm}
           />
@@ -102,6 +111,11 @@ function EnergyMeterHistoryContent({ meter }: { meter: EnergyMeter }) {
       <div ref={successFocus} tabIndex={-1} aria-label="Reading history">
         <EnergyMeterTable
           meter={meter}
+          actionsDisabled={Boolean(formMode)}
+          onEditReading={(reading, trigger) => {
+            editReadingTrigger.current = trigger
+            setFormMode(reading)
+          }}
           onDeleteReading={(reading, trigger) =>
             requestDelete(
               {
@@ -115,12 +129,12 @@ function EnergyMeterHistoryContent({ meter }: { meter: EnergyMeter }) {
             )
           }
           addReadingAction={
-            !isAdding && (
+            !formMode && (
               <Button
-                ref={readingTriggerRef}
+                ref={addReadingTrigger}
                 size="sm"
                 disabled={!meter.inUse}
-                onClick={() => setIsAdding(true)}
+                onClick={() => setFormMode("add")}
               >
                 <Plus /> Add reading
               </Button>

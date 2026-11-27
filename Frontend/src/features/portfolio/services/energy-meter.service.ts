@@ -15,6 +15,7 @@ export interface EnergyMeterService {
   getEnergyMeters: (input: GetEnergyMetersInput) => Promise<EnergyMeter[]>
   createEnergyMeter: (input: CreateEnergyMeterInput) => Promise<EnergyMeter>
   updateEnergyMeter: (input: UpdateEnergyMeterInput) => Promise<EnergyMeter>
+  updateEnergyReading: (input: UpdateEnergyReadingInput) => Promise<void>
   createEnergyReading: (input: CreateEnergyReadingInput) => Promise<EnergyMeter>
 }
 
@@ -45,6 +46,11 @@ export type CreateEnergyReadingInput = z.infer<typeof CreateEnergyReadingInput>
 export const CreateEnergyReadingInput = EnergyReadingFields.safeExtend({
   propertyId: PropertyId,
   energyMeterId: EnergyMeterId,
+})
+
+export type UpdateEnergyReadingInput = z.infer<typeof UpdateEnergyReadingInput>
+export const UpdateEnergyReadingInput = CreateEnergyReadingInput.safeExtend({
+  readingId: z.string().min(1),
 })
 
 export type DeleteEnergyMeterInput = z.infer<typeof DeleteEnergyMeterInput>
